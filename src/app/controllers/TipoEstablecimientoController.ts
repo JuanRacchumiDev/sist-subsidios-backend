@@ -1,0 +1,82 @@
+import { Request, Response, NextFunction } from 'express'
+import CreateTipoEstablecimientoService from '../services/TipoEstablecimiento/CreateTipo'
+import DeleteTipoEstablecimientoService from '../services/TipoEstablecimiento/DeleteTipo'
+import GetTipoEstablecimientoService from '../services/TipoEstablecimiento/GetTipo'
+import GetTipoEstablecimientosService from '../services/TipoEstablecimiento/GetTipos'
+import GetByNombreService from '../services/TipoEstablecimiento/GetByNombre'
+import UpdateTipoEstablecimientoService from '../services/TipoEstablecimiento/UpdateTipo'
+import { ITipoEstablecimiento } from '../interfaces/TipoEstablecimiento/ITipoEstablecimiento';
+
+class TipoEstablecimientoController {
+    async getAllTipoEstablecimientos(req: Request, res: Response, next: NextFunction) {
+        try {
+            const estadoParam = req.query.estado
+            let estado: boolean | undefined
+
+            if (typeof estadoParam === 'string') {
+                estado = estadoParam.toLowerCase() === 'true'
+            }
+
+            const result = await GetTipoEstablecimientosService.execute(estado)
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error) // Pasa al error al middleware de manejo de errores
+        }
+    }
+
+    async getTipoEstablecimientoById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const result = await GetTipoEstablecimientoService.execute(id);
+            res.status(result.status || 200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getTipoEstablecimientoByNombre(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { nombre } = req.query; // Asumiendo que se pasa como query param
+            if (typeof nombre !== 'string') {
+                return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
+            }
+            const result = await GetByNombreService.execute(nombre);
+            res.status(result.status || 200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async createTipoEstablecimiento(req: Request, res: Response, next: NextFunction) {
+        try {
+            const TipoEstablecimientoData: ITipoEstablecimiento = req.body;
+            const result = await CreateTipoEstablecimientoService.execute(TipoEstablecimientoData);
+            res.status(result.status || 201).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async updateTipoEstablecimiento(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const TipoEstablecimientoData: ITipoEstablecimiento = req.body;
+            const result = await UpdateTipoEstablecimientoService.execute(id, TipoEstablecimientoData);
+            res.status(result.status || 200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async deleteTipoEstablecimiento(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const result = await DeleteTipoEstablecimientoService.execute(id);
+            res.status(result.status || 200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+}
+
+export default new TipoEstablecimientoController()
