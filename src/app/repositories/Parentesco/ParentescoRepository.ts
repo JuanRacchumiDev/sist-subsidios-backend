@@ -3,6 +3,14 @@ import HString from "../../../utils/helpers/HString";
 import { IParentesco, ParentescoResponse } from '../../interfaces/Parentesco/IParentesco';
 import { Op } from 'sequelize'
 
+const PARENTESCO_ATTRIBUTES = [
+    'id',
+    'nombre',
+    'nombre_url',
+    'sistema',
+    'estado'
+];
+
 class ParentescoRepository {
     /**
      * Obtiene todos los parentescos
@@ -11,13 +19,7 @@ class ParentescoRepository {
     async getAll(): Promise<ParentescoResponse> {
         try {
             const parentescos = await Parentesco.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: PARENTESCO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -41,13 +43,7 @@ class ParentescoRepository {
                 where: {
                     estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: PARENTESCO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -68,13 +64,7 @@ class ParentescoRepository {
     async getById(id: string): Promise<ParentescoResponse> {
         try {
             const parentesco = await Parentesco.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ]
+                attributes: PARENTESCO_ATTRIBUTES
             })
 
             if (!parentesco) {
@@ -99,13 +89,7 @@ class ParentescoRepository {
                 where: {
                     nombre
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: PARENTESCO_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]

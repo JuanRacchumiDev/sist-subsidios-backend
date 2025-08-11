@@ -3,6 +3,14 @@ import HString from "../../../utils/helpers/HString";
 import { ITipoEstablecimiento, TipoEstablecimientoResponse } from '../../interfaces/TipoEstablecimiento/ITipoEstablecimiento';
 import { Op } from 'sequelize'
 
+const TIPO_ESTABLECIMIENTO_ATTRIBUTES = [
+    'id',
+    'nombre',
+    'nombre_url',
+    'sistema',
+    'estado'
+];
+
 class TipoEstablecimientoRepository {
     /**
      * Obtiene todos los tipo de establecimientos
@@ -11,13 +19,7 @@ class TipoEstablecimientoRepository {
     async getAll(): Promise<TipoEstablecimientoResponse> {
         try {
             const tipos = await TipoEstablecimiento.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_ESTABLECIMIENTO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -41,13 +43,7 @@ class TipoEstablecimientoRepository {
                 where: {
                     estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_ESTABLECIMIENTO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -68,13 +64,7 @@ class TipoEstablecimientoRepository {
     async getById(id: string): Promise<TipoEstablecimientoResponse> {
         try {
             const tipo = await TipoEstablecimiento.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ]
+                attributes: TIPO_ESTABLECIMIENTO_ATTRIBUTES
             })
 
             if (!tipo) {
@@ -99,13 +89,7 @@ class TipoEstablecimientoRepository {
                 where: {
                     nombre
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_ESTABLECIMIENTO_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]

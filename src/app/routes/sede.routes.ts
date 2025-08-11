@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import SedeController from "../controllers/SedeController";
+import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
@@ -85,7 +86,7 @@ const router = Router()
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', SedeController.getAllSedes)
+router.get('/', authToken, SedeController.getAllSedes)
 
 /**
  * @swagger
@@ -126,7 +127,7 @@ router.get('/', SedeController.getAllSedes)
  * 
  *                 
  */
-router.get('/:id', SedeController.getSedeById)
+router.get('/:id', authToken, SedeController.getSedeById)
 
 /**
  * @swagger
@@ -171,7 +172,7 @@ router.get('/:id', SedeController.getSedeById)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse' 
  */
-router.get('/by-nombre', SedeController.getSedeByNombre)
+router.get('/by-nombre', authToken, SedeController.getSedeByNombre)
 
 /**
  * @swagger
@@ -215,7 +216,7 @@ router.get('/by-nombre', SedeController.getSedeByNombre)
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', SedeController.createSede)
+router.post('/', authToken, SedeController.createSede)
 
 /**
  * @swagger
@@ -275,7 +276,7 @@ router.post('/', SedeController.createSede)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', SedeController.updateSede)
+router.put('/:id', authToken, SedeController.updateSede)
 
 /**
  * @swagger
@@ -314,6 +315,6 @@ router.put('/:id', SedeController.updateSede)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', SedeController.deleteSede)
+router.delete('/:id', authToken, SedeController.deleteSede)
 
 export default router

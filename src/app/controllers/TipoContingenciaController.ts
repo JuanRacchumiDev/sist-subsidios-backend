@@ -49,8 +49,8 @@ class TipoContingenciaController {
 
     async createTipoContingencia(req: Request, res: Response, next: NextFunction) {
         try {
-            const TipoContingenciaData: ITipoContingencia = req.body;
-            const result = await CreateTipoContingenciaService.execute(TipoContingenciaData);
+            const tipoContingenciaData: ITipoContingencia = req.body;
+            const result = await CreateTipoContingenciaService.execute(tipoContingenciaData);
             res.status(result.status || 201).json(result);
         } catch (error) {
             next(error);
@@ -60,8 +60,8 @@ class TipoContingenciaController {
     async updateTipoContingencia(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const TipoContingenciaData: ITipoContingencia = req.body;
-            const result = await UpdateTipoContingenciaService.execute(id, TipoContingenciaData);
+            const tipoContingenciaData: ITipoContingencia = req.body;
+            const result = await UpdateTipoContingenciaService.execute(id, tipoContingenciaData);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

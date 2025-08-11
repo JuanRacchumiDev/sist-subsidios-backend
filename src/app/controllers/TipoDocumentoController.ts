@@ -65,8 +65,8 @@ class TipoDocumentoController {
 
     async createTipoDocumento(req: Request, res: Response, next: NextFunction) {
         try {
-            const TipoDocumentoData: ITipoDocumento = req.body;
-            const result = await CreateTipoDocumentoService.execute(TipoDocumentoData);
+            const tipoDocumentoData: ITipoDocumento = req.body;
+            const result = await CreateTipoDocumentoService.execute(tipoDocumentoData);
             res.status(result.status || 201).json(result);
         } catch (error) {
             next(error);
@@ -76,8 +76,8 @@ class TipoDocumentoController {
     async updateTipoDocumento(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const TipoDocumentoData: ITipoDocumento = req.body;
-            const result = await UpdateTipoDocumentoService.execute(id, TipoDocumentoData);
+            const tipoDocumentoData: ITipoDocumento = req.body;
+            const result = await UpdateTipoDocumentoService.execute(id, tipoDocumentoData);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

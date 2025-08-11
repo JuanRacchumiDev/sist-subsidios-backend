@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import AreaController from "../controllers/AreaController";
+import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
@@ -85,7 +86,7 @@ const router = Router()
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', AreaController.getAllAreas)
+router.get('/', authToken, AreaController.getAllAreas)
 
 /**
  * @swagger
@@ -126,7 +127,7 @@ router.get('/', AreaController.getAllAreas)
  * 
  *                 
  */
-router.get('/:id', AreaController.getAreaById)
+router.get('/:id', authToken, AreaController.getAreaById)
 
 /**
  * @swagger
@@ -171,7 +172,7 @@ router.get('/:id', AreaController.getAreaById)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse' 
  */
-router.get('/by-nombre', AreaController.getAreaByNombre)
+router.get('/by-nombre', authToken, AreaController.getAreaByNombre)
 
 /**
  * @swagger
@@ -215,7 +216,7 @@ router.get('/by-nombre', AreaController.getAreaByNombre)
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', AreaController.createArea)
+router.post('/', authToken, AreaController.createArea)
 
 /**
  * @swagger
@@ -275,7 +276,7 @@ router.post('/', AreaController.createArea)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', AreaController.updateArea)
+router.put('/:id', authToken, AreaController.updateArea)
 
 /**
  * @swagger
@@ -314,6 +315,6 @@ router.put('/:id', AreaController.updateArea)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', AreaController.deleteArea)
+router.delete('/:id', authToken, AreaController.deleteArea)
 
 export default router

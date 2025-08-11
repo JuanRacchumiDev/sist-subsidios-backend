@@ -11,6 +11,10 @@ import personaRoutes from './persona.routes'
 import empresaRoutes from './empresa.routes'
 import trabajadorSocialRoutes from './trabajadorSocial.routes'
 import colaboradorRoutes from './colaborador.routes'
+import usuarioRoutes from './usuario.routes'
+import descansoMedicoRoutes from './descansoMedico.routes'
+import canjeRoutes from './canje.routes'
+import authRoutes from './auth.routes'
 
 const router = Router()
 
@@ -27,5 +31,9 @@ router.use('/personas', personaRoutes)
 router.use('/empresas', empresaRoutes)
 router.use('/trab-sociales', trabajadorSocialRoutes)
 router.use('/colaboradores', colaboradorRoutes)
+router.use('/usuarios', usuarioRoutes)
+router.use('/descansos', descansoMedicoRoutes)
+router.use('/canjes', canjeRoutes)
+router.use('/auth', authRoutes)
 
 export default router

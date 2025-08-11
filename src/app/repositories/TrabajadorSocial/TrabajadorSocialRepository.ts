@@ -1,11 +1,11 @@
-import { ITrabajadorSocial, TrabajadorSocialResponse } from "@/interfaces/TrabajadorSocial/ITrabajadorSocial";
-import { Area } from "@/models/Area";
-import { Cargo } from "@/models/Cargo";
-import { Empresa } from "@/models/Empresa";
-import { Pais } from "@/models/Pais";
-import { Sede } from "@/models/Sede";
-import { TipoDocumento } from "@/models/TipoDocumento";
-import { TrabajadorSocial } from "@/models/TrabajadorSocial";
+import { ITrabajadorSocial, TrabajadorSocialResponse } from "../../interfaces/TrabajadorSocial/ITrabajadorSocial";
+import { Area } from "../../models/Area";
+import { Cargo } from "../../models/Cargo";
+import { Empresa } from "../../models/Empresa";
+import { Pais } from "../../models/Pais";
+import { Sede } from "../../models/Sede";
+import { TipoDocumento } from "../../models/TipoDocumento";
+import { TrabajadorSocial } from "../../models/TrabajadorSocial";
 import sequelize from '../../../config/database'
 
 const TRABAJADOR_SOCIAL_ATTRIBUTES = [

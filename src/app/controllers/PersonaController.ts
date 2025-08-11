@@ -41,8 +41,8 @@ class PersonaController {
 
     async createPersona(req: Request, res: Response, next: NextFunction) {
         try {
-            const PersonaData: IPersona = req.body;
-            const result = await CreatePersonaService.execute(PersonaData);
+            const personaData: IPersona = req.body;
+            const result = await CreatePersonaService.execute(personaData);
             res.status(result.status || 201).json(result);
         } catch (error) {
             next(error);
@@ -52,8 +52,8 @@ class PersonaController {
     async updatePersona(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const PersonaData: IPersona = req.body;
-            const result = await UpdatePersonaService.execute(id, PersonaData);
+            const personaData: IPersona = req.body;
+            const result = await UpdatePersonaService.execute(id, personaData);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

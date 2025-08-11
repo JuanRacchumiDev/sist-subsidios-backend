@@ -49,8 +49,8 @@ class PaisController {
 
     async createPais(req: Request, res: Response, next: NextFunction) {
         try {
-            const PaisData: IPais = req.body;
-            const result = await CreatePaisService.execute(PaisData);
+            const paisData: IPais = req.body;
+            const result = await CreatePaisService.execute(paisData);
             res.status(result.status || 201).json(result);
         } catch (error) {
             next(error);
@@ -60,8 +60,8 @@ class PaisController {
     async updatePais(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const PaisData: IPais = req.body;
-            const result = await UpdatePaisService.execute(id, PaisData);
+            const paisData: IPais = req.body;
+            const result = await UpdatePaisService.execute(id, paisData);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

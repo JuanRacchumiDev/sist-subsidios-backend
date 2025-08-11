@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import ColaboradorController from "../controllers/ColaboradorController";
+import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
@@ -38,7 +39,7 @@ const router = Router()
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', ColaboradorController.getColaboradores)
+router.get('/', authToken, ColaboradorController.getColaboradores)
 
 /**
  * @swagger
@@ -79,7 +80,7 @@ router.get('/', ColaboradorController.getColaboradores)
  * 
  *                 
  */
-router.get('/:id', ColaboradorController.getColaboradorById)
+router.get('/:id', authToken, ColaboradorController.getColaboradorById)
 
 /**
  * @swagger
@@ -123,7 +124,7 @@ router.get('/:id', ColaboradorController.getColaboradorById)
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', ColaboradorController.createColaborador)
+router.post('/', authToken, ColaboradorController.createColaborador)
 
 /**
  * @swagger
@@ -183,7 +184,7 @@ router.post('/', ColaboradorController.createColaborador)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', ColaboradorController.updateColaborador)
+router.put('/:id', authToken, ColaboradorController.updateColaborador)
 
 /**
  * @swagger
@@ -222,6 +223,6 @@ router.put('/:id', ColaboradorController.updateColaborador)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', ColaboradorController.deleteColaborador)
+router.delete('/:id', authToken, ColaboradorController.deleteColaborador)
 
 export default router

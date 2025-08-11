@@ -7,6 +7,11 @@ import { Area } from './Area';
 import { Sede } from './Sede';
 import { Pais } from './Pais';
 import { Empresa } from './Empresa';
+import { ICargo } from '@/interfaces/Cargo/ICargo';
+import { IEmpresa } from '@/interfaces/Empresa/IEmpresa';
+import { IArea } from '@/interfaces/Area/IArea';
+import { ISede } from '@/interfaces/Sede/ISede';
+import { IPais } from '@/interfaces/Pais/IPais';
 
 interface TrabajadorSocialCreationAttributes extends Optional<ITrabajadorSocial, 'id'> { }
 
@@ -39,6 +44,11 @@ export class TrabajadorSocial extends Model<ITrabajadorSocial, TrabajadorSocialC
     public user_elimina?: string | undefined;
     public sistema?: boolean | undefined;
     public estado?: boolean | undefined;
+    public cargo?: ICargo | undefined;
+    public empresa?: IEmpresa | undefined;
+    public area?: IArea | undefined;
+    public sede?: ISede | undefined;
+    public pais?: IPais | undefined;
 
     // Timestamps
     public readonly created_at!: Date

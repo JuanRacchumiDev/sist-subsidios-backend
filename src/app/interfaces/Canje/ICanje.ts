@@ -1,4 +1,4 @@
-import { ECanje } from "@/enums/ECanje"
+import { ECanje } from "../../enums/ECanje"
 import { IDescansoMedico } from "../DescansoMedico/IDescansoMedico"
 
 export interface ICanje {

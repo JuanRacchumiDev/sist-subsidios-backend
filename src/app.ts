@@ -23,6 +23,7 @@ import { DescansoMedico } from './app/models/DescansoMedico'
 import { Canje } from './app/models/Canje'
 import { Reembolso } from './app/models/Reembolso'
 import { Cobro } from './app/models/Cobro'
+import { Usuario } from './app/models/Usuario'
 
 import swaggerUi from 'swagger-ui-express'
 import swaggerSpec from './config/swagger'
@@ -70,6 +71,7 @@ const setupDatabase = async () => {
         TrabajadorSocial.belongsTo(Sede, { foreignKey: 'id_sede', as: 'sede' })
         TrabajadorSocial.hasMany(DescansoMedico, { foreignKey: 'id_colaborador', as: 'descansosMedicos' })
         TrabajadorSocial.belongsTo(Empresa, { foreignKey: 'id_empresa', as: 'empresa' })
+        TrabajadorSocial.belongsTo(Cargo, { foreignKey: 'id_cargo', as: 'cargo' })
 
         // DescansoMedico.belongsTo(Canje, { foreignKey: 'id_canje', as: 'canje' })
         DescansoMedico.belongsTo(Colaborador, { foreignKey: 'id_colaborador', as: 'colaborador' })
@@ -92,6 +94,8 @@ const setupDatabase = async () => {
 
         Persona.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })
 
+        Perfil.hasMany(Usuario, { foreignKey: 'id_perfil', as: 'usuarios' })
+
         Reembolso.hasOne(Canje, { foreignKey: 'id_reembolso', as: 'canje' })
         Reembolso.belongsTo(Cobro, { foreignKey: 'id_cobro', as: 'cobro' })
 
@@ -106,6 +110,10 @@ const setupDatabase = async () => {
         TipoDocumento.hasMany(Persona, { foreignKey: 'id_tipodocumento', as: 'personas' })
 
         TipoEstablecimiento.hasMany(Establecimiento, { foreignKey: 'id_tipoestablecimiento', as: 'establecimiento' })
+
+        Usuario.belongsTo(Perfil, { foreignKey: 'id_perfil', as: 'perfil' })
+        Usuario.belongsTo(Colaborador, { foreignKey: 'id_colaborador', as: 'colaborador' })
+        Usuario.belongsTo(TrabajadorSocial, { foreignKey: 'id_trabajadorsocial', as: 'trabajadorSocial' })
 
         await sequelize.authenticate();
         console.log('Connection to the database has been established successfully.');

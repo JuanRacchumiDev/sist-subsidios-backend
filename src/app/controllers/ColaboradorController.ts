@@ -4,7 +4,7 @@ import CreateColaboradorService from "../services/Colaborador/CreateColaborador"
 import UpdateColaboradorService from "../services/Colaborador/UpdateColaborador"
 import DeleteColaboradorService from "../services/Colaborador/DeleteColaborador"
 import { NextFunction, Request, Response } from "express";
-import { IColaborador } from "@/interfaces/Colaborador/IColaborador";
+import { IColaborador } from "../interfaces/Colaborador/IColaborador";
 
 class ColaboradorController {
     async getColaboradores(req: Request, res: Response, next: NextFunction) {

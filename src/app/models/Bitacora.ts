@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize'
 import { IBitacora } from '../interfaces/Bitacora/IBitacora';
-import { EAccion } from '@/enums/EAccion';
+import { EAccion } from '../enums/EAccion';
 import sequelize from '../../config/database'
 
 interface BitacoraCreationAttributes extends Optional<IBitacora, 'id'> { }

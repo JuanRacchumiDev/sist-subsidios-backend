@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize'
 import { ICanje } from '../interfaces/Canje/ICanje';
-import { ECanje } from '@/enums/ECanje';
+import { ECanje } from '../enums/ECanje';
 import { DescansoMedico } from './DescansoMedico';
 import sequelize from '../../config/database'
 import { Reembolso } from './Reembolso';

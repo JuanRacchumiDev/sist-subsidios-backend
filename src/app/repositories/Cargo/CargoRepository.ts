@@ -3,6 +3,14 @@ import HString from "../../../utils/helpers/HString";
 import { ICargo, CargoResponse } from '../../interfaces/Cargo/ICargo';
 import { Op } from 'sequelize'
 
+const CARGO_ATTRIBUTES = [
+    'id',
+    'nombre',
+    'nombre_url',
+    'sistema',
+    'estado'
+];
+
 class CargoRepository {
     /**
      * Obtiene todos los cargos
@@ -11,13 +19,7 @@ class CargoRepository {
     async getAll(): Promise<CargoResponse> {
         try {
             const cargos = await Cargo.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: CARGO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -41,13 +43,7 @@ class CargoRepository {
                 where: {
                     estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: CARGO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -68,13 +64,7 @@ class CargoRepository {
     async getById(id: string): Promise<CargoResponse> {
         try {
             const cargo = await Cargo.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ]
+                attributes: CARGO_ATTRIBUTES
             })
 
             if (!cargo) {
@@ -99,13 +89,7 @@ class CargoRepository {
                 where: {
                     nombre
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: CARGO_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]

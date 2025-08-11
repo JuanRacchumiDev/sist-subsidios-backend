@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import CargoController from "../controllers/CargoController";
+import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
@@ -85,7 +86,7 @@ const router = Router()
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', CargoController.getAllCargos)
+router.get('/', authToken, CargoController.getAllCargos)
 
 /**
  * @swagger
@@ -126,7 +127,7 @@ router.get('/', CargoController.getAllCargos)
  * 
  *                 
  */
-router.get('/:id', CargoController.getCargoById)
+router.get('/:id', authToken, CargoController.getCargoById)
 
 /**
  * @swagger
@@ -171,7 +172,7 @@ router.get('/:id', CargoController.getCargoById)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse' 
  */
-router.get('/by-nombre', CargoController.getCargoByNombre)
+router.get('/by-nombre', authToken, CargoController.getCargoByNombre)
 
 /**
  * @swagger
@@ -215,7 +216,7 @@ router.get('/by-nombre', CargoController.getCargoByNombre)
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', CargoController.createCargo)
+router.post('/', authToken, CargoController.createCargo)
 
 /**
  * @swagger
@@ -275,7 +276,7 @@ router.post('/', CargoController.createCargo)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', CargoController.updateCargo)
+router.put('/:id', authToken, CargoController.updateCargo)
 
 /**
  * @swagger
@@ -314,6 +315,6 @@ router.put('/:id', CargoController.updateCargo)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', CargoController.deleteCargo)
+router.delete('/:id', authToken, CargoController.deleteCargo)
 
 export default router

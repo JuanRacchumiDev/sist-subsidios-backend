@@ -49,8 +49,8 @@ class ParentescoController {
 
     async createParentesco(req: Request, res: Response, next: NextFunction) {
         try {
-            const ParentescoData: IParentesco = req.body;
-            const result = await CreateParentescoService.execute(ParentescoData);
+            const parentescoData: IParentesco = req.body;
+            const result = await CreateParentescoService.execute(parentescoData);
             res.status(result.status || 201).json(result);
         } catch (error) {
             next(error);
@@ -60,8 +60,8 @@ class ParentescoController {
     async updateParentesco(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const ParentescoData: IParentesco = req.body;
-            const result = await UpdateParentescoService.execute(id, ParentescoData);
+            const parentescoData: IParentesco = req.body;
+            const result = await UpdateParentescoService.execute(id, parentescoData);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

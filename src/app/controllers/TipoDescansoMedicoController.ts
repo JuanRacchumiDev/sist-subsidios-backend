@@ -49,8 +49,8 @@ class TipoDescansoMedicoController {
 
     async createTipoDescansoMedico(req: Request, res: Response, next: NextFunction) {
         try {
-            const TipoDescansoMedicoData: ITipoDescansoMedico = req.body;
-            const result = await CreateTipoDescansoMedicoService.execute(TipoDescansoMedicoData);
+            const tipoDescansoMedicoData: ITipoDescansoMedico = req.body;
+            const result = await CreateTipoDescansoMedicoService.execute(tipoDescansoMedicoData);
             res.status(result.status || 201).json(result);
         } catch (error) {
             next(error);
@@ -60,8 +60,8 @@ class TipoDescansoMedicoController {
     async updateTipoDescansoMedico(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const TipoDescansoMedicoData: ITipoDescansoMedico = req.body;
-            const result = await UpdateTipoDescansoMedicoService.execute(id, TipoDescansoMedicoData);
+            const tipoDescansoMedicoData: ITipoDescansoMedico = req.body;
+            const result = await UpdateTipoDescansoMedicoService.execute(id, tipoDescansoMedicoData);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

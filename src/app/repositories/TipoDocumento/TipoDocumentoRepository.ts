@@ -3,6 +3,20 @@ import HString from "../../../utils/helpers/HString";
 import { ITipoDocumento, TipoDocumentoResponse } from '../../interfaces/TipoDocumento/ITipoDocumento';
 import { Op } from 'sequelize'
 
+const TIPO_DOCUMENTO_ATTRIBUTES = [
+    'id',
+    'nombre',
+    'nombre_url',
+    'abreviatura',
+    'longitud',
+    'en_persona',
+    'en_empresa',
+    'compra',
+    'venta',
+    'sistema',
+    'estado'
+];
+
 class TipoDocumentoRepository {
     /**
      * Obtiene todos los tipo de documentos
@@ -11,19 +25,7 @@ class TipoDocumentoRepository {
     async getAll(): Promise<TipoDocumentoResponse> {
         try {
             const tipos = await TipoDocumento.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'abreviatura',
-                    'longitud',
-                    'en_persona',
-                    'en_empresa',
-                    'compra',
-                    'venta',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_DOCUMENTO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -47,19 +49,7 @@ class TipoDocumentoRepository {
                 where: {
                     estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'abreviatura',
-                    'longitud',
-                    'en_persona',
-                    'en_empresa',
-                    'compra',
-                    'venta',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_DOCUMENTO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -80,19 +70,7 @@ class TipoDocumentoRepository {
     async getById(id: string): Promise<TipoDocumentoResponse> {
         try {
             const tipo = await TipoDocumento.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'abreviatura',
-                    'longitud',
-                    'en_persona',
-                    'en_empresa',
-                    'compra',
-                    'venta',
-                    'sistema',
-                    'estado'
-                ]
+                attributes: TIPO_DOCUMENTO_ATTRIBUTES
             })
 
             if (!tipo) {
@@ -117,19 +95,7 @@ class TipoDocumentoRepository {
                 where: {
                     nombre
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'abreviatura',
-                    'longitud',
-                    'en_persona',
-                    'en_empresa',
-                    'compra',
-                    'venta',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_DOCUMENTO_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]
@@ -157,19 +123,7 @@ class TipoDocumentoRepository {
                 where: {
                     abreviatura
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'abreviatura',
-                    'longitud',
-                    'en_persona',
-                    'en_empresa',
-                    'compra',
-                    'venta',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_DOCUMENTO_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]

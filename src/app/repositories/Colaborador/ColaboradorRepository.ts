@@ -1,10 +1,10 @@
-import { IColaborador, ColaboradorResponse } from "@/interfaces/Colaborador/IColaborador";
-import { Area } from "@/models/Area";
-import { Empresa } from "@/models/Empresa";
-import { Pais } from "@/models/Pais";
-import { Sede } from "@/models/Sede";
-import { TipoDocumento } from "@/models/TipoDocumento";
-import { Colaborador } from "@/models/Colaborador";
+import { IColaborador, ColaboradorResponse } from "../../interfaces/Colaborador/IColaborador";
+import { Area } from "../../models/Area";
+import { Empresa } from "../../models/Empresa";
+import { Pais } from "../../models/Pais";
+import { Sede } from "../../models/Sede";
+import { TipoDocumento } from "../../models/TipoDocumento";
+import { Colaborador } from "../../models/Colaborador";
 import sequelize from '../../../config/database'
 
 const COLABORADOR_ATTRIBUTES = [

@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import TipoEstablecimientoController from "../controllers/TipoEstablecimientoController";
+import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
@@ -85,7 +86,7 @@ const router = Router()
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', TipoEstablecimientoController.getAllTipoEstablecimientos)
+router.get('/', authToken, TipoEstablecimientoController.getAllTipoEstablecimientos)
 
 /**
  * @swagger
@@ -126,7 +127,7 @@ router.get('/', TipoEstablecimientoController.getAllTipoEstablecimientos)
  * 
  *                 
  */
-router.get('/:id', TipoEstablecimientoController.getTipoEstablecimientoById)
+router.get('/:id', authToken, TipoEstablecimientoController.getTipoEstablecimientoById)
 
 /**
  * @swagger
@@ -171,7 +172,7 @@ router.get('/:id', TipoEstablecimientoController.getTipoEstablecimientoById)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse' 
  */
-router.get('/by-nombre', TipoEstablecimientoController.getTipoEstablecimientoByNombre)
+router.get('/by-nombre', authToken, TipoEstablecimientoController.getTipoEstablecimientoByNombre)
 
 /**
  * @swagger
@@ -215,7 +216,7 @@ router.get('/by-nombre', TipoEstablecimientoController.getTipoEstablecimientoByN
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', TipoEstablecimientoController.createTipoEstablecimiento)
+router.post('/', authToken, TipoEstablecimientoController.createTipoEstablecimiento)
 
 /**
  * @swagger
@@ -275,7 +276,7 @@ router.post('/', TipoEstablecimientoController.createTipoEstablecimiento)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', TipoEstablecimientoController.updateTipoEstablecimiento)
+router.put('/:id', authToken, TipoEstablecimientoController.updateTipoEstablecimiento)
 
 /**
  * @swagger
@@ -314,6 +315,6 @@ router.put('/:id', TipoEstablecimientoController.updateTipoEstablecimiento)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', TipoEstablecimientoController.deleteTipoEstablecimiento)
+router.delete('/:id', authToken, TipoEstablecimientoController.deleteTipoEstablecimiento)
 
 export default router

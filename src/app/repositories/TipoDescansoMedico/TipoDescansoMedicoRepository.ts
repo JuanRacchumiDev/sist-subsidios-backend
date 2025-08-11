@@ -3,6 +3,14 @@ import HString from "../../../utils/helpers/HString";
 import { ITipoDescansoMedico, TipoDescansoMedicoResponse } from '../../interfaces/TipoDescansoMedico/ITipoDescansoMedico';
 import { Op } from 'sequelize'
 
+const TIPO_DESCANSO_MEDICO_ATTRIBUTES = [
+    'id',
+    'nombre',
+    'nombre_url',
+    'sistema',
+    'estado'
+];
+
 class TipoDescansoMedicoRepository {
     /**
      * Obtiene todos los tipo de descansos médicos
@@ -11,13 +19,7 @@ class TipoDescansoMedicoRepository {
     async getAll(): Promise<TipoDescansoMedicoResponse> {
         try {
             const tipos = await TipoDescansoMedico.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_DESCANSO_MEDICO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -41,13 +43,7 @@ class TipoDescansoMedicoRepository {
                 where: {
                     estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_DESCANSO_MEDICO_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -68,13 +64,7 @@ class TipoDescansoMedicoRepository {
     async getById(id: string): Promise<TipoDescansoMedicoResponse> {
         try {
             const tipo = await TipoDescansoMedico.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ]
+                attributes: TIPO_DESCANSO_MEDICO_ATTRIBUTES
             })
 
             if (!tipo) {
@@ -99,13 +89,7 @@ class TipoDescansoMedicoRepository {
                 where: {
                     nombre
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_DESCANSO_MEDICO_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]

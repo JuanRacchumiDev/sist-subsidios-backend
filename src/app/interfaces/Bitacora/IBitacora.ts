@@ -1,4 +1,4 @@
-import { EAccion } from "@/enums/EAccion"
+import { EAccion } from "../../enums/EAccion"
 
 export interface IBitacora {
     id?: string

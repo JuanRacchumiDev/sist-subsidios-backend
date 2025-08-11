@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import TipoContingenciaController from "../controllers/TipoContingenciaController";
+import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
@@ -85,7 +86,7 @@ const router = Router()
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', TipoContingenciaController.getAllTipoContingencias)
+router.get('/', authToken, TipoContingenciaController.getAllTipoContingencias)
 
 /**
  * @swagger
@@ -126,7 +127,7 @@ router.get('/', TipoContingenciaController.getAllTipoContingencias)
  * 
  *                 
  */
-router.get('/:id', TipoContingenciaController.getTipoContingenciaById)
+router.get('/:id', authToken, TipoContingenciaController.getTipoContingenciaById)
 
 /**
  * @swagger
@@ -171,7 +172,7 @@ router.get('/:id', TipoContingenciaController.getTipoContingenciaById)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse' 
  */
-router.get('/by-nombre', TipoContingenciaController.getTipoContingenciaByNombre)
+router.get('/by-nombre', authToken, TipoContingenciaController.getTipoContingenciaByNombre)
 
 /**
  * @swagger
@@ -215,7 +216,7 @@ router.get('/by-nombre', TipoContingenciaController.getTipoContingenciaByNombre)
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', TipoContingenciaController.createTipoContingencia)
+router.post('/', authToken, TipoContingenciaController.createTipoContingencia)
 
 /**
  * @swagger
@@ -275,7 +276,7 @@ router.post('/', TipoContingenciaController.createTipoContingencia)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', TipoContingenciaController.updateTipoContingencia)
+router.put('/:id', authToken, TipoContingenciaController.updateTipoContingencia)
 
 /**
  * @swagger
@@ -314,6 +315,6 @@ router.put('/:id', TipoContingenciaController.updateTipoContingencia)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', TipoContingenciaController.deleteTipoContingencia)
+router.delete('/:id', authToken, TipoContingenciaController.deleteTipoContingencia)
 
 export default router

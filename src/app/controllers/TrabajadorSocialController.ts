@@ -4,7 +4,7 @@ import CreateTrabajadorSocialService from "../services/TrabajadorSocial/CreateTr
 import UpdateTrabajadorSocialService from "../services/TrabajadorSocial/UpdateTrabajadorSocial"
 import DeleteTrabajadorSocialService from "../services/TrabajadorSocial/DeleteTrabajadorSocial"
 import { NextFunction, Request, Response } from "express";
-import { ITrabajadorSocial } from "@/interfaces/TrabajadorSocial/ITrabajadorSocial";
+import { ITrabajadorSocial } from "../interfaces/TrabajadorSocial/ITrabajadorSocial";
 
 class TrabajadorSocialController {
     async getTrabajadoresSociales(req: Request, res: Response, next: NextFunction) {

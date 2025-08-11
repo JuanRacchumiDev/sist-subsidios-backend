@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import TrabajadorSocialController from "../controllers/TrabajadorSocialController";
+import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
@@ -38,7 +39,7 @@ const router = Router()
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', TrabajadorSocialController.getTrabajadoresSociales)
+router.get('/', authToken, TrabajadorSocialController.getTrabajadoresSociales)
 
 /**
  * @swagger
@@ -79,7 +80,7 @@ router.get('/', TrabajadorSocialController.getTrabajadoresSociales)
  * 
  *                 
  */
-router.get('/:id', TrabajadorSocialController.getTrabajadorSocialById)
+router.get('/:id', authToken, TrabajadorSocialController.getTrabajadorSocialById)
 
 /**
  * @swagger
@@ -123,7 +124,7 @@ router.get('/:id', TrabajadorSocialController.getTrabajadorSocialById)
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', TrabajadorSocialController.createTrabajadorSocial)
+router.post('/', authToken, TrabajadorSocialController.createTrabajadorSocial)
 
 /**
  * @swagger
@@ -183,7 +184,7 @@ router.post('/', TrabajadorSocialController.createTrabajadorSocial)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', TrabajadorSocialController.updateTrabajadorSocial)
+router.put('/:id', authToken, TrabajadorSocialController.updateTrabajadorSocial)
 
 /**
  * @swagger
@@ -222,6 +223,6 @@ router.put('/:id', TrabajadorSocialController.updateTrabajadorSocial)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', TrabajadorSocialController.deleteTrabajadorSocial)
+router.delete('/:id', authToken, TrabajadorSocialController.deleteTrabajadorSocial)
 
 export default router

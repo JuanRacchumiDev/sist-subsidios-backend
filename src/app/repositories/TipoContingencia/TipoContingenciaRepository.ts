@@ -3,6 +3,14 @@ import HString from "../../../utils/helpers/HString";
 import { ITipoContingencia, TipoContingenciaResponse } from '../../interfaces/TipoContingencia/ITipoContingencia';
 import { Op } from 'sequelize'
 
+const TIPO_CONTINGENCIA_ATTRIBUTES = [
+    'id',
+    'nombre',
+    'nombre_url',
+    'sistema',
+    'estado'
+];
+
 class TipoContingenciaRepository {
     /**
      * Obtiene todos los tipo de contingencias
@@ -11,13 +19,7 @@ class TipoContingenciaRepository {
     async getAll(): Promise<TipoContingenciaResponse> {
         try {
             const tipos = await TipoContingencia.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_CONTINGENCIA_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -41,13 +43,7 @@ class TipoContingenciaRepository {
                 where: {
                     estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_CONTINGENCIA_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -68,13 +64,7 @@ class TipoContingenciaRepository {
     async getById(id: string): Promise<TipoContingenciaResponse> {
         try {
             const tipo = await TipoContingencia.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ]
+                attributes: TIPO_CONTINGENCIA_ATTRIBUTES
             })
 
             if (!tipo) {
@@ -99,13 +89,7 @@ class TipoContingenciaRepository {
                 where: {
                     nombre
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: TIPO_CONTINGENCIA_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]

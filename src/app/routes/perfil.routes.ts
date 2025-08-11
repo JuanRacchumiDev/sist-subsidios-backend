@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import PerfilController from "../controllers/PerfilController";
+import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
@@ -85,7 +86,7 @@ const router = Router()
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', PerfilController.getAllPerfiles)
+router.get('/', authToken, PerfilController.getAllPerfiles)
 
 /**
  * @swagger
@@ -126,7 +127,7 @@ router.get('/', PerfilController.getAllPerfiles)
  * 
  *                 
  */
-router.get('/:id', PerfilController.getPerfilById)
+router.get('/:id', authToken, PerfilController.getPerfilById)
 
 /**
  * @swagger
@@ -171,7 +172,7 @@ router.get('/:id', PerfilController.getPerfilById)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse' 
  */
-router.get('/by-nombre', PerfilController.getPerfilByNombre)
+router.get('/by-nombre', authToken, PerfilController.getPerfilByNombre)
 
 /**
  * @swagger
@@ -215,7 +216,7 @@ router.get('/by-nombre', PerfilController.getPerfilByNombre)
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', PerfilController.createPerfil)
+router.post('/', authToken, PerfilController.createPerfil)
 
 /**
  * @swagger
@@ -275,7 +276,7 @@ router.post('/', PerfilController.createPerfil)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', PerfilController.updatePerfil)
+router.put('/:id', authToken, PerfilController.updatePerfil)
 
 /**
  * @swagger
@@ -314,6 +315,6 @@ router.put('/:id', PerfilController.updatePerfil)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', PerfilController.deletePerfil)
+router.delete('/:id', authToken, PerfilController.deletePerfil)
 
 export default router

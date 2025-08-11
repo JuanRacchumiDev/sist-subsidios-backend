@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import TipoDocumentoController from "../controllers/TipoDocumentoController";
+import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
@@ -109,7 +110,7 @@ const router = Router()
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', TipoDocumentoController.getAllTipoDocumentos)
+router.get('/', authToken, TipoDocumentoController.getAllTipoDocumentos)
 
 /**
  * @swagger
@@ -150,7 +151,7 @@ router.get('/', TipoDocumentoController.getAllTipoDocumentos)
  * 
  *                 
  */
-router.get('/:id', TipoDocumentoController.getTipoDocumentoById)
+router.get('/:id', authToken, TipoDocumentoController.getTipoDocumentoById)
 
 /**
  * @swagger
@@ -195,7 +196,7 @@ router.get('/:id', TipoDocumentoController.getTipoDocumentoById)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse' 
  */
-router.get('/nombre/:nombre', TipoDocumentoController.getTipoDocumentoByNombre)
+router.get('/nombre/:nombre', authToken, TipoDocumentoController.getTipoDocumentoByNombre)
 
 /**
  * @swagger
@@ -240,7 +241,7 @@ router.get('/nombre/:nombre', TipoDocumentoController.getTipoDocumentoByNombre)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse' 
  */
-router.get('/abreviatura/:abreviatura', TipoDocumentoController.getTipoDocumentoByAbreviatura)
+router.get('/abreviatura/:abreviatura', authToken, TipoDocumentoController.getTipoDocumentoByAbreviatura)
 
 /**
  * @swagger
@@ -284,7 +285,7 @@ router.get('/abreviatura/:abreviatura', TipoDocumentoController.getTipoDocumento
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', TipoDocumentoController.createTipoDocumento)
+router.post('/', authToken, TipoDocumentoController.createTipoDocumento)
 
 /**
  * @swagger
@@ -344,7 +345,7 @@ router.post('/', TipoDocumentoController.createTipoDocumento)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', TipoDocumentoController.updateTipoDocumento)
+router.put('/:id', authToken, TipoDocumentoController.updateTipoDocumento)
 
 /**
  * @swagger
@@ -383,6 +384,6 @@ router.put('/:id', TipoDocumentoController.updateTipoDocumento)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', TipoDocumentoController.deleteTipoDocumento)
+router.delete('/:id', authToken, TipoDocumentoController.deleteTipoDocumento)
 
 export default router

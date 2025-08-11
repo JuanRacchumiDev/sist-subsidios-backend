@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import EmpresaController from "../controllers/EmpresaController";
+import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
@@ -114,7 +115,7 @@ const router = Router()
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', EmpresaController.getAllEmpresas)
+router.get('/', authToken, EmpresaController.getAllEmpresas)
 
 /**
  * @swagger
@@ -154,6 +155,6 @@ router.get('/', EmpresaController.getAllEmpresas)
  * 
  *                 
  */
-router.get('/info-api/ruc/:ruc', EmpresaController.getEmpresaByApi)
+router.get('/ruc/:ruc', authToken, EmpresaController.getEmpresaByApi)
 
 export default router

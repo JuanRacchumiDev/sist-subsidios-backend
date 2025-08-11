@@ -49,8 +49,8 @@ class PerfilController {
 
     async createPerfil(req: Request, res: Response, next: NextFunction) {
         try {
-            const PerfilData: IPerfil = req.body;
-            const result = await CreatePerfilService.execute(PerfilData);
+            const perfilData: IPerfil = req.body;
+            const result = await CreatePerfilService.execute(perfilData);
             res.status(result.status || 201).json(result);
         } catch (error) {
             next(error);
@@ -60,8 +60,8 @@ class PerfilController {
     async updatePerfil(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const PerfilData: IPerfil = req.body;
-            const result = await UpdatePerfilService.execute(id, PerfilData);
+            const perfilData: IPerfil = req.body;
+            const result = await UpdatePerfilService.execute(id, perfilData);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

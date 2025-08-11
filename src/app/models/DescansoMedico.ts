@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize'
 import { IDescansoMedico } from '../interfaces/DescansoMedico/IDescansoMedico';
-import { EDescansoMedico } from '@/enums/EDescansoMedico';
+import { EDescansoMedico } from '../enums/EDescansoMedico';
 import { Colaborador } from './Colaborador';
 import { TipoDescansoMedico } from './TipoDescansoMedico';
 import { TipoContingencia } from './TipoContingencia';

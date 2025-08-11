@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import TipoDescansoMedicoController from "../controllers/TipoDescansoMedicoController";
+import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
@@ -85,7 +86,7 @@ const router = Router()
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', TipoDescansoMedicoController.getAllTipoDescansoMedicos)
+router.get('/', authToken, TipoDescansoMedicoController.getAllTipoDescansoMedicos)
 
 /**
  * @swagger
@@ -126,7 +127,7 @@ router.get('/', TipoDescansoMedicoController.getAllTipoDescansoMedicos)
  * 
  *                 
  */
-router.get('/:id', TipoDescansoMedicoController.getTipoDescansoMedicoById)
+router.get('/:id', authToken, TipoDescansoMedicoController.getTipoDescansoMedicoById)
 
 /**
  * @swagger
@@ -171,7 +172,7 @@ router.get('/:id', TipoDescansoMedicoController.getTipoDescansoMedicoById)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse' 
  */
-router.get('/by-nombre', TipoDescansoMedicoController.getTipoDescansoMedicoByNombre)
+router.get('/by-nombre', authToken, TipoDescansoMedicoController.getTipoDescansoMedicoByNombre)
 
 /**
  * @swagger
@@ -215,7 +216,7 @@ router.get('/by-nombre', TipoDescansoMedicoController.getTipoDescansoMedicoByNom
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', TipoDescansoMedicoController.createTipoDescansoMedico)
+router.post('/', authToken, TipoDescansoMedicoController.createTipoDescansoMedico)
 
 /**
  * @swagger
@@ -275,7 +276,7 @@ router.post('/', TipoDescansoMedicoController.createTipoDescansoMedico)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', TipoDescansoMedicoController.updateTipoDescansoMedico)
+router.put('/:id', authToken, TipoDescansoMedicoController.updateTipoDescansoMedico)
 
 /**
  * @swagger
@@ -314,6 +315,6 @@ router.put('/:id', TipoDescansoMedicoController.updateTipoDescansoMedico)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:id', TipoDescansoMedicoController.deleteTipoDescansoMedico)
+router.delete('/:id', authToken, TipoDescansoMedicoController.deleteTipoDescansoMedico)
 
 export default router

@@ -16,9 +16,17 @@ module.exports = {
         primaryKey: true,
         allowNull: false
       },
+      id_perfil: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model: 'perfil',
+          key: 'id'
+        }
+      },
       id_colaborador: {
         type: Sequelize.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: 'colaborador',
           key: 'id'
@@ -26,11 +34,15 @@ module.exports = {
       },
       id_trabajadorsocial: {
         type: Sequelize.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: 'trabajador_social',
           key: 'id'
         }
+      },
+      username: {
+        type: Sequelize.STRING(10),
+        allowNull: false
       },
       email: {
         type: Sequelize.STRING(60),

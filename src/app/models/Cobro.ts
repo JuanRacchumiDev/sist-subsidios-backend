@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize'
 import { ICobro } from '../interfaces/Cobro/ICobro';
-import { ECobro } from '@/enums/ECobro';
+import { ECobro } from '../enums/ECobro';
 import { Reembolso } from './Reembolso';
 import sequelize from '../../config/database'
 

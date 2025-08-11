@@ -6,7 +6,7 @@ import { Persona } from "../../models/Persona";
 import { TipoDocumento } from "../../models/TipoDocumento";
 import { EOrigen } from '../../enums/EOrigen';
 import TipoDocumentoRepository from '../TipoDocumento/TipoDocumentoRepository';
-import { ITipoDocumento } from '@/interfaces/TipoDocumento/ITipoDocumento';
+import { ITipoDocumento } from '../../interfaces/TipoDocumento/ITipoDocumento';
 
 const PERSONA_ATTRIBUTES = [
     'id',

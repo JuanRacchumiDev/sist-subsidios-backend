@@ -3,6 +3,14 @@ import HString from "../../../utils/helpers/HString";
 import { ISede, SedeResponse } from '../../interfaces/Sede/ISede';
 import { Op } from 'sequelize'
 
+const SEDE_ATTRIBUTES = [
+    'id',
+    'nombre',
+    'nombre_url',
+    'sistema',
+    'estado'
+];
+
 class SedeRepository {
     /**
      * Obtiene todas las sedes
@@ -11,13 +19,7 @@ class SedeRepository {
     async getAll(): Promise<SedeResponse> {
         try {
             const sedes = await Sede.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: SEDE_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -41,13 +43,7 @@ class SedeRepository {
                 where: {
                     estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: SEDE_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -68,13 +64,7 @@ class SedeRepository {
     async getById(id: string): Promise<SedeResponse> {
         try {
             const sede = await Sede.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ]
+                attributes: SEDE_ATTRIBUTES
             })
 
             if (!sede) {
@@ -99,13 +89,7 @@ class SedeRepository {
                 where: {
                     nombre
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: SEDE_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]

@@ -1,4 +1,4 @@
-import { EDescansoMedico } from "@/enums/EDescansoMedico"
+import { EDescansoMedico } from "../../enums/EDescansoMedico"
 import { IColaborador } from "../Colaborador/IColaborador"
 import { IDiagnostico } from "../Diagnostico/IDiagnostico"
 import { IEstablecimiento } from "../Establecimiento/IEstablecimiento"

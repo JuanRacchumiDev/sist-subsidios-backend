@@ -3,6 +3,15 @@ import HString from "../../../utils/helpers/HString";
 import { IPais, PaisResponse } from '../../interfaces/Pais/IPais';
 import { Op } from 'sequelize'
 
+const PAIS_ATTRIBUTES = [
+    'id',
+    'nombre',
+    'nombre_url',
+    'codigo_postal',
+    'sistema',
+    'estado'
+];
+
 class PaisRepository {
     /**
      * Obtiene todos los países
@@ -11,14 +20,7 @@ class PaisRepository {
     async getAll(): Promise<PaisResponse> {
         try {
             const paises = await Pais.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'codigo_postal',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: PAIS_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -42,14 +44,7 @@ class PaisRepository {
                 where: {
                     estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'codigo_postal',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: PAIS_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -70,14 +65,7 @@ class PaisRepository {
     async getById(id: string): Promise<PaisResponse> {
         try {
             const pais = await Pais.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'codigo_postal',
-                    'sistema',
-                    'estado'
-                ]
+                attributes: PAIS_ATTRIBUTES
             })
 
             if (!pais) {
@@ -102,14 +90,7 @@ class PaisRepository {
                 where: {
                     nombre
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'codigo_postal',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: PAIS_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]

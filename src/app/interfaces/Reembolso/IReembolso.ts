@@ -1,4 +1,4 @@
-import { EReembolso } from "@/enums/EReembolso"
+import { EReembolso } from "../../enums/EReembolso"
 import { ICanje } from "../Canje/ICanje"
 
 export interface IReembolso {

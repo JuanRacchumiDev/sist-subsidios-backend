@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import PersonaController from "../controllers/PersonaController";
+import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
@@ -149,11 +150,11 @@ const router = Router()
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/', PersonaController.getAllPersonas)
+router.get('/', authToken, PersonaController.getAllPersonas)
 
 /**
  * @swagger
- * /api/v1/personas/info-api/abreviatura/{abreviatura}/numdoc/{numdoc}:
+ * /api/v1/personas/abreviatura/{abreviatura}/numdoc/{numdoc}:
  *   get:
  *     summary: Obtiene una única persona obtenido desde la API
  *     tags: [Personas]
@@ -189,7 +190,7 @@ router.get('/', PersonaController.getAllPersonas)
  * 
  *                 
  */
-router.get('/info-api/abreviatura/:abreviatura/numdoc/:numeroDocumento', PersonaController.getPersonaByApi)
+router.get('/abreviatura/:abreviatura/numdoc/:numeroDocumento', authToken, PersonaController.getPersonaByApi)
 
 /**
  * @swagger
@@ -230,7 +231,7 @@ router.get('/info-api/abreviatura/:abreviatura/numdoc/:numeroDocumento', Persona
  * 
  *                 
  */
-router.get('/:id', PersonaController.getPersonaById)
+router.get('/:id', authToken, PersonaController.getPersonaById)
 
 /**
  * @swagger
@@ -274,7 +275,7 @@ router.get('/:id', PersonaController.getPersonaById)
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', PersonaController.createPersona)
+router.post('/', authToken, PersonaController.createPersona)
 
 /**
  * @swagger
@@ -334,6 +335,6 @@ router.post('/', PersonaController.createPersona)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', PersonaController.updatePersona)
+router.put('/:id', authToken, PersonaController.updatePersona)
 
 export default router

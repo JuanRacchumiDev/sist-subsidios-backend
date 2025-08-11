@@ -3,6 +3,14 @@ import HString from "../../../utils/helpers/HString";
 import { IPerfil, PerfilResponse } from '../../interfaces/Perfil/IPerfil';
 import { Op } from 'sequelize'
 
+const PERFIL_ATTRIBUTES = [
+    'id',
+    'nombre',
+    'nombre_url',
+    'sistema',
+    'estado'
+];
+
 class PerfilRepository {
     /**
      * Obtiene todos los perfiles
@@ -11,13 +19,7 @@ class PerfilRepository {
     async getAll(): Promise<PerfilResponse> {
         try {
             const perfiles = await Perfil.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: PERFIL_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -41,13 +43,7 @@ class PerfilRepository {
                 where: {
                     estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: PERFIL_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -68,13 +64,7 @@ class PerfilRepository {
     async getById(id: string): Promise<PerfilResponse> {
         try {
             const perfil = await Perfil.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ]
+                attributes: PERFIL_ATTRIBUTES
             })
 
             if (!perfil) {
@@ -99,13 +89,7 @@ class PerfilRepository {
                 where: {
                     nombre
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: PERFIL_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]

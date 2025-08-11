@@ -49,8 +49,8 @@ class TipoEstablecimientoController {
 
     async createTipoEstablecimiento(req: Request, res: Response, next: NextFunction) {
         try {
-            const TipoEstablecimientoData: ITipoEstablecimiento = req.body;
-            const result = await CreateTipoEstablecimientoService.execute(TipoEstablecimientoData);
+            const tipoEstablecimientoData: ITipoEstablecimiento = req.body;
+            const result = await CreateTipoEstablecimientoService.execute(tipoEstablecimientoData);
             res.status(result.status || 201).json(result);
         } catch (error) {
             next(error);
@@ -60,8 +60,8 @@ class TipoEstablecimientoController {
     async updateTipoEstablecimiento(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const TipoEstablecimientoData: ITipoEstablecimiento = req.body;
-            const result = await UpdateTipoEstablecimientoService.execute(id, TipoEstablecimientoData);
+            const tipoEstablecimientoData: ITipoEstablecimiento = req.body;
+            const result = await UpdateTipoEstablecimientoService.execute(id, tipoEstablecimientoData);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

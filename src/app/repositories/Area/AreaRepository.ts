@@ -3,6 +3,14 @@ import HString from "../../../utils/helpers/HString";
 import { IArea, AreaResponse } from '../../interfaces/Area/IArea';
 import { Op } from 'sequelize'
 
+const AREA_ATTRIBUTES = [
+    'id',
+    'nombre',
+    'nombre_url',
+    'sistema',
+    'estado'
+];
+
 class AreaRepository {
     /**
      * Obtiene todas las áreas
@@ -11,13 +19,7 @@ class AreaRepository {
     async getAll(): Promise<AreaResponse> {
         try {
             const areas = await Area.findAll({
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: AREA_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -41,13 +43,7 @@ class AreaRepository {
                 where: {
                     estado
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: AREA_ATTRIBUTES,
                 order: [
                     ['nombre', 'ASC']
                 ]
@@ -68,13 +64,7 @@ class AreaRepository {
     async getById(id: string): Promise<AreaResponse> {
         try {
             const area = await Area.findByPk(id, {
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ]
+                attributes: AREA_ATTRIBUTES
             })
 
             if (!area) {
@@ -99,13 +89,7 @@ class AreaRepository {
                 where: {
                     nombre
                 },
-                attributes: [
-                    'id',
-                    'nombre',
-                    'nombre_url',
-                    'sistema',
-                    'estado'
-                ],
+                attributes: AREA_ATTRIBUTES,
                 order: [
                     ['id', 'DESC']
                 ]

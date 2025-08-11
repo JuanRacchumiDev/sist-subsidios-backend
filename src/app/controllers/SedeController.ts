@@ -49,8 +49,8 @@ class SedeController {
 
     async createSede(req: Request, res: Response, next: NextFunction) {
         try {
-            const SedeData: ISede = req.body;
-            const result = await CreateSedeService.execute(SedeData);
+            const sedeData: ISede = req.body;
+            const result = await CreateSedeService.execute(sedeData);
             res.status(result.status || 201).json(result);
         } catch (error) {
             next(error);
@@ -60,8 +60,8 @@ class SedeController {
     async updateSede(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const SedeData: ISede = req.body;
-            const result = await UpdateSedeService.execute(id, SedeData);
+            const sedeData: ISede = req.body;
+            const result = await UpdateSedeService.execute(id, sedeData);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);
