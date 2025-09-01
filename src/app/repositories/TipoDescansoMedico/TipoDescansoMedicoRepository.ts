@@ -1,5 +1,5 @@
 import { TipoDescansoMedico } from "../../models/TipoDescansoMedico";
-import HString from "../../../utils/helpers/HString";
+import HString from "../../../helpers/HString";
 import { ITipoDescansoMedico, TipoDescansoMedicoResponse } from '../../interfaces/TipoDescansoMedico/ITipoDescansoMedico';
 import { Op } from 'sequelize'
 
@@ -133,7 +133,7 @@ class TipoDescansoMedicoRepository {
                 return { result: false, message: 'El tipo de descanso médico por registrar ya existe', status: 409 }
             }
 
-            const newTipo = await TipoDescansoMedico.create(data as any)
+            const newTipo = await TipoDescansoMedico.create(data as ITipoDescansoMedico)
 
             if (newTipo.id) {
                 return { result: true, message: 'Tipo de descanso médico registrado con éxito', data: newTipo, status: 200 }
@@ -228,7 +228,7 @@ class TipoDescansoMedicoRepository {
                 return { result: false, data: [], message: 'Tipo de descanso médico no encontrado', status: 404 };
             }
 
-            await TipoDescansoMedico.destroy();
+            await tipo.destroy();
 
             return { result: true, data: tipo, message: 'Tipo de descanso médico eliminado correctamente', status: 200 };
         } catch (error) {

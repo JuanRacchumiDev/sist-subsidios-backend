@@ -3,7 +3,8 @@ import CreateCargoService from '../services/Cargo/CreateCargo'
 import DeleteCargoService from '../services/Cargo/DeleteCargo'
 import GetCargoService from '../services/Cargo/GetCargo'
 import GetCargosService from '../services/Cargo/GetCargos'
-import GetByNombreService from '../services/Cargo/GetByNombre'
+import GetCargoByNombreService from '../services/Cargo/GetByNombre'
+import GetCargosPaginateService from '../services/Cargo/GetCargosPaginate'
 import UpdateCargoService from '../services/Cargo/UpdateCargo'
 import { ICargo } from '../interfaces/Cargo/ICargo';
 
@@ -24,6 +25,24 @@ class CargoController {
         }
     }
 
+    async getAllCargosPaginated(req: Request, res: Response, next: NextFunction) {
+        try {
+            const page = parseInt(req.query.page as string) || 1
+            const limit = parseInt(req.query.limit as string) || 10
+            const estadoParam = req.query.estado
+            let estado: boolean | undefined
+
+            if (typeof estadoParam === 'string') {
+                estado = estadoParam.toLowerCase() === 'true'
+            }
+
+            const result = await GetCargosPaginateService.execute(page, limit, estado)
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error)
+        }
+    }
+
     async getCargoById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
@@ -36,11 +55,26 @@ class CargoController {
 
     async getCargoByNombre(req: Request, res: Response, next: NextFunction) {
         try {
-            const { nombre } = req.query; // Asumiendo que se pasa como query param
-            if (typeof nombre !== 'string') {
-                return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
+            // const { nombre } = req.query; // Asumiendo que se pasa como query param
+            // if (typeof nombre !== 'string') {
+            //     return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
+            // }
+
+            const { query: { nombre } } = req
+
+            if (!nombre) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'El nombre es requerido como parámetro de consulta',
+                        status: 400
+                    }
+                );
             }
-            const result = await GetByNombreService.execute(nombre);
+
+            const nombreStr = nombre as string
+
+            const result = await GetCargoByNombreService.execute(nombreStr);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);
@@ -51,7 +85,12 @@ class CargoController {
         try {
             const cargoData: ICargo = req.body;
             const result = await CreateCargoService.execute(cargoData);
-            res.status(result.status || 201).json(result);
+            // res.status(result.status || 201).json(result);
+            const { status: statusCargo } = result
+            if (statusCargo === 201) {
+                res.status(statusCargo).json(result)
+            }
+            res.status(200).json(result)
         } catch (error) {
             next(error);
         }

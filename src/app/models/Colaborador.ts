@@ -7,6 +7,8 @@ import { Area } from './Area';
 import { Sede } from './Sede';
 import { Pais } from './Pais';
 import sequelize from '../../config/database'
+import { Adjunto } from './Adjunto';
+import { Empresa } from './Empresa';
 
 interface ColaboradorCreationAttributes extends Optional<IColaborador, 'id'> { }
 
@@ -18,6 +20,7 @@ export class Colaborador extends Model<IColaborador, ColaboradorCreationAttribut
     public id_area?: string | undefined;
     public id_sede?: string | undefined;
     public id_pais?: string | undefined;
+    public id_empresa?: string | undefined;
     public numero_documento?: string | undefined;
     public apellido_paterno?: string | undefined;
     public apellido_materno?: string | undefined;
@@ -51,58 +54,12 @@ export class Colaborador extends Model<IColaborador, ColaboradorCreationAttribut
     // Asociaciones
     public getParentesco?: () => Promise<Parentesco>
     public getTipoDocumento!: () => Promise<TipoDocumento>
-    public getCargo!: () => Promise<Cargo>
+    public getCargo?: () => Promise<Cargo>
     public getArea?: () => Promise<Area>
     public getSede?: () => Promise<Sede>
     public getPais?: () => Promise<Pais>
-
-    // // Asociación con el modelo Parentesco
-    // public parentesco?: Parentesco;
-
-    // // Asociación con el modelo TipoDocumento
-    // public tipoDocumento?: TipoDocumento;
-
-    // // Asociación con el modelo Área
-    // public area?: Area;
-
-    // // Asociación con el modelo Sede
-    // public sede?: Sede;
-
-    // // Asociación con el modelos Pais
-    // public pais?: Pais;
-
-    // Métodos de asociación
-    // static associate(models: any) {
-    //     Colaborador.belongsTo(models.Parentesco, {
-    //         foreignKey: 'id_parentesco',
-    //         as: 'parentesco',
-    //         onDelete: 'SET NULL'
-    //     });
-
-    //     Colaborador.belongsTo(models.TipoDocumento, {
-    //         foreignKey: 'id_tipodocumento',
-    //         as: 'tipoDocumento',
-    //         onDelete: 'RESTRICT'
-    //     });
-
-    //     Colaborador.belongsTo(models.Area, {
-    //         foreignKey: 'id_area',
-    //         as: 'area',
-    //         onDelete: 'SET NULL'
-    //     });
-
-    //     Colaborador.belongsTo(models.Sede, {
-    //         foreignKey: 'id_sede',
-    //         as: 'sede',
-    //         onDelete: 'SET NULL'
-    //     });
-
-    //     Colaborador.belongsTo(models.Pais, {
-    //         foreignKey: 'id_pais',
-    //         as: 'pais',
-    //         onDelete: 'SET NULL'
-    //     })
-    // }
+    public getEmpresa?: () => Promise<Empresa>
+    public getAdjuntos?: () => Promise<Adjunto>
 }
 
 // export default (sequelize: Sequelize) => {
@@ -129,6 +86,14 @@ Colaborador.init({
             key: 'id'
         }
     },
+    id_cargo: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: Cargo,
+            key: 'id'
+        }
+    },
     id_area: {
         type: DataTypes.UUID,
         allowNull: true,
@@ -150,6 +115,14 @@ Colaborador.init({
         allowNull: true,
         references: {
             model: Pais,
+            key: 'id'
+        }
+    },
+    id_empresa: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: Empresa,
             key: 'id'
         }
     },

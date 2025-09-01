@@ -82,6 +82,98 @@ const router = Router()
  *         status: {type: number, example: 404} 
  */
 
+router.get('/buscar', authToken, TipoDocumentoController.getTipoDocumentoBySearch)
+
+/**
+ * @swagger
+ * /api/v1/tipo-documentos/buscar-por-nombre:
+ *   get:
+ *     summary: Obtiene un único tipo de documento por su nombre.
+ *     tags: [TipoDocumentos]
+ *     parameters:
+ *       - in: query
+ *         name: nombre
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: Nombre del tipo de documento a obtener
+ *     responses:
+ *       200:
+ *         description: La descripción del tipo de documento por nombre
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/TipoDocumentoResponse'
+ *       400:
+ *         description: Bad request, name parameter is missing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Tipo de documento no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse' 
+ */
+// router.get('/buscar-por-nombre', authToken, TipoDocumentoController.getTipoDocumentoByNombre)
+
+/**
+ * @swagger
+ * /api/v1/tipo-documentos/buscar-por-abreviatura:
+ *   get:
+ *     summary: Obtiene un único tipo de documento por su abreviatura.
+ *     tags: [TipoDocumentos]
+ *     parameters:
+ *       - in: query
+ *         name: abreviatura
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: Abreviatura del tipo de documento a obtener
+ *     responses:
+ *       200:
+ *         description: La descripción del tipo de documento por abreviatura
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/TipoDocumentoResponse'
+ *       400:
+ *         description: Bad request, abreviatura parameter is missing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Tipo de documento no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse' 
+ */
+// router.get('/buscar-por-abreviatura', authToken, TipoDocumentoController.getTipoDocumentoByAbreviatura)
+
 /**
  * @swagger
  * /api/v1/tipo-documentos:
@@ -152,96 +244,6 @@ router.get('/', authToken, TipoDocumentoController.getAllTipoDocumentos)
  *                 
  */
 router.get('/:id', authToken, TipoDocumentoController.getTipoDocumentoById)
-
-/**
- * @swagger
- * /api/v1/tipo-documentos/nombre/{nombre}:
- *   get:
- *     summary: Obtiene un único tipo de documento por su nombre.
- *     tags: [TipoDocumentos]
- *     parameters:
- *       - in: query
- *         name: nombre
- *         required: true
- *         schema:
- *           type: string
- *           description: Nombre del tipo de documento a obtener
- *     responses:
- *       200:
- *         description: La descripción del tipo de documento por nombre
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/TipoDocumentoResponse'
- *       400:
- *         description: Bad request, name parameter is missing
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       404:
- *         description: Tipo de documento no encontrado.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse' 
- */
-router.get('/nombre/:nombre', authToken, TipoDocumentoController.getTipoDocumentoByNombre)
-
-/**
- * @swagger
- * /api/v1/tipo-documentos/abreviatura/{abreviatura}:
- *   get:
- *     summary: Obtiene un único tipo de documento por su abreviatura.
- *     tags: [TipoDocumentos]
- *     parameters:
- *       - in: query
- *         name: abreviatura
- *         required: true
- *         schema:
- *           type: string
- *           description: Abreviatura del tipo de documento a obtener
- *     responses:
- *       200:
- *         description: La descripción del tipo de documento por abreviatura
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/TipoDocumentoResponse'
- *       400:
- *         description: Bad request, abreviatura parameter is missing
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       404:
- *         description: Tipo de documento no encontrado.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse' 
- */
-router.get('/abreviatura/:abreviatura', authToken, TipoDocumentoController.getTipoDocumentoByAbreviatura)
 
 /**
  * @swagger
@@ -345,7 +347,7 @@ router.post('/', authToken, TipoDocumentoController.createTipoDocumento)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', authToken, TipoDocumentoController.updateTipoDocumento)
+router.patch('/:id', authToken, TipoDocumentoController.updateTipoDocumento)
 
 /**
  * @swagger

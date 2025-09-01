@@ -8,7 +8,7 @@ import { TipoEstablecimientoResponse } from '../../interfaces/TipoEstablecimient
 class GetByNombreService {
     /**
      * Ejecuta la operación para obtener un tipo de establecimiento por nombre.
-     * @param {string} nombre - El nombre del tipo de establecimiento a buscar.
+     * @param {string} nombre - El nombre del establecimiento a buscar
      * @returns {Promise<TipoEstablecimientoResponse>} La respuesta de la operación.
      */
     async execute(nombre: string): Promise<TipoEstablecimientoResponse> {

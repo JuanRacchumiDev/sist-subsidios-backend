@@ -10,7 +10,7 @@ export interface IDescansoMedico {
     id_colaborador?: string
     id_tipodescansomedico?: string
     id_tipocontingencia?: string
-    id_diagnostico?: string
+    codcie10_diagnostico?: string
     id_establecimiento?: string
     codigo?: string
     fecha_otorgamiento?: string
@@ -49,6 +49,24 @@ export interface DescansoMedicoResponse {
     result: boolean
     message?: string
     data?: IDescansoMedico | IDescansoMedico[]
+    error?: string
+    status?: number
+}
+
+export interface IDescansoMedicoPaginate {
+    currentPage: number
+    limit: number
+    totalPages: number
+    totalItems: number
+    nextPage: number | null
+    previousPage: number | null
+}
+
+export interface DescansoMedicoResponsePaginate {
+    result: boolean
+    message?: string
+    data?: IDescansoMedico[]
+    pagination?: IDescansoMedicoPaginate
     error?: string
     status?: number
 }

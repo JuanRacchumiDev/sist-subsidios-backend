@@ -1,5 +1,5 @@
 import { TipoEstablecimiento } from "../../models/TipoEstablecimiento";
-import HString from "../../../utils/helpers/HString";
+import HString from "../../../helpers/HString";
 import { ITipoEstablecimiento, TipoEstablecimientoResponse } from '../../interfaces/TipoEstablecimiento/ITipoEstablecimiento';
 import { Op } from 'sequelize'
 
@@ -80,7 +80,7 @@ class TipoEstablecimientoRepository {
 
     /**
      * Obtiene un tipo de establecimiento por su nombre
-     * @param {string} nombre - El nombre del tipo de establecimiento a buscar 
+     * @param {string} nombre - El nombre del establecimiento a buscar 
      * @returns {Promise<TipoEstablecimientoResponse>} Respuesta con el tipo de establecimiento encontrado o mensaje de no encontrado
      */
     async getByNombre(nombre: string): Promise<TipoEstablecimientoResponse> {
@@ -90,9 +90,6 @@ class TipoEstablecimientoRepository {
                     nombre
                 },
                 attributes: TIPO_ESTABLECIMIENTO_ATTRIBUTES,
-                order: [
-                    ['id', 'DESC']
-                ]
             })
 
             if (!tipo) {
@@ -130,10 +127,10 @@ class TipoEstablecimientoRepository {
             })
 
             if (existingTipo) {
-                return { result: false, message: 'El tipo de establecimiento por registrar ya existe', status: 409 }
+                return { result: false, message: 'El nombre del tipo de establecimiento por registrar ya existe', status: 409 }
             }
 
-            const newTipo = await TipoEstablecimiento.create(data as any)
+            const newTipo = await TipoEstablecimiento.create(data as ITipoEstablecimiento)
 
             if (newTipo.id) {
                 return { result: true, message: 'Tipo de establecimiento registrado con éxito', data: newTipo, status: 200 }
@@ -178,7 +175,7 @@ class TipoEstablecimientoRepository {
                 })
 
                 if (existingTipo) {
-                    return { result: false, message: 'El tipo de establecimeinto por actualizar ya existe', status: 409 }
+                    return { result: false, message: 'El nombre del tipo de establecimeinto por actualizar ya existe', status: 409 }
                 }
             }
 
@@ -228,7 +225,7 @@ class TipoEstablecimientoRepository {
                 return { result: false, data: [], message: 'Tipo de establecimiento no encontrado', status: 404 };
             }
 
-            await TipoEstablecimiento.destroy();
+            await tipo.destroy();
 
             return { result: true, data: tipo, message: 'Tipo de establecimiento eliminado correctamente', status: 200 };
         } catch (error) {

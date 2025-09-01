@@ -1,0 +1,21 @@
+import CobroRepository from "../../repositories/Cobro/CobroRepository";
+import { CobroResponsePaginate } from '../../interfaces/Cobro/ICobro';
+
+/**
+ * @class GetCobrosPaginateService
+ * @description Servicio para obtener todas los cobros con paginación, opcionalmente filtrados por estado
+ */
+class GetCobrosPaginateService {
+    /**
+     * Ejecuta la operación para obtener cobros paginadas
+     * @param {number} page - El número de la página actual
+     * @param {number} limit - El número de ítems por página
+     * @param {boolean | undefined} estado - Opcional. Filtra los cobros por su estado
+     * @returns {Promise<CobroResponsePaginate>} La respuesta de obtener los cobros
+     */
+    async execute(page: number, limit: number, estado?: boolean): Promise<CobroResponsePaginate> {
+        return await CobroRepository.getAllWithPaginate(page, limit, estado)
+    }
+}
+
+export default new GetCobrosPaginateService()

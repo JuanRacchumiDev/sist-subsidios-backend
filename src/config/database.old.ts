@@ -46,24 +46,6 @@ class Database {
                 this.config
             )
         }
-
-        // if (dbConfig.use_env_variable && process.env[dbConfig.use_env_variable]) {
-        //     this.config = {
-        //         dialect: dbConfig.dialect,
-        //         host: dbConfig.host,
-        //         logging: dbConfig.logging,
-        //         ...dbConfig
-        //     }
-        //     this.sequelize = new Sequelize(process.env[dbConfig.use_env_variable] as string, this.config)
-        // } else {
-        //     this.config = dbConfig
-        //     this.sequelize = new Sequelize(
-        //         dbConfig.database,
-        //         dbConfig.username,
-        //         dbConfig.password,
-        //         this.config
-        //     )
-        // }
     }
 
     /**

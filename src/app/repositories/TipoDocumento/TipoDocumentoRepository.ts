@@ -1,7 +1,8 @@
 import { TipoDocumento } from "../../models/TipoDocumento";
-import HString from "../../../utils/helpers/HString";
+import HString from "../../../helpers/HString";
 import { ITipoDocumento, TipoDocumentoResponse } from '../../interfaces/TipoDocumento/ITipoDocumento';
 import { Op } from 'sequelize'
+import { TTipoDocumentoSearch } from "../../types/TipoDocumento/TTipoDocumentoSearch";
 
 const TIPO_DOCUMENTO_ATTRIBUTES = [
     'id',
@@ -113,21 +114,39 @@ class TipoDocumentoRepository {
     }
 
     /**
-     * Obtiene un tipo de documento por su abreviatura
-     * @param {string} abreviatura - La abreviatura del tipo de documento a buscar 
+     * Obtiene un tipo de documento por criterios de búsqueda
+     * @param {TTipoDocumentoSearch} search - Los criterios de búsqueda 
      * @returns {Promise<TipoDocumentoResponse>} Respuesta con el tipo de documento encontrado o mensaje de no encontrado
      */
-    async getByAbreviatura(abreviatura: string): Promise<TipoDocumentoResponse> {
+    async getBySearch(search: TTipoDocumentoSearch): Promise<TipoDocumentoResponse> {
         try {
-            const tipo = await TipoDocumento.findOne({
-                where: {
-                    abreviatura
-                },
-                attributes: TIPO_DOCUMENTO_ATTRIBUTES,
-                order: [
-                    ['id', 'DESC']
-                ]
-            })
+            let tipo = null
+
+            const { nombre, abreviatura } = search
+
+            if (nombre && !abreviatura) {
+                tipo = await TipoDocumento.findOne({
+                    where: {
+                        nombre
+                    },
+                    attributes: TIPO_DOCUMENTO_ATTRIBUTES,
+                    order: [
+                        ['id', 'DESC']
+                    ]
+                })
+            }
+
+            if (!nombre && abreviatura) {
+                tipo = await TipoDocumento.findOne({
+                    where: {
+                        abreviatura
+                    },
+                    attributes: TIPO_DOCUMENTO_ATTRIBUTES,
+                    order: [
+                        ['id', 'DESC']
+                    ]
+                })
+            }
 
             if (!tipo) {
                 return { result: false, data: [], message: 'Tipo de documento no encontrado', status: 404 }
@@ -139,6 +158,34 @@ class TipoDocumentoRepository {
             return { result: false, error: errorMessage, status: 500 }
         }
     }
+
+    /**
+     * Obtiene un tipo de documento por su abreviatura
+     * @param {string} abreviatura - La abreviatura del tipo de documento a buscar 
+     * @returns {Promise<TipoDocumentoResponse>} Respuesta con el tipo de documento encontrado o mensaje de no encontrado
+     */
+    // async getByAbreviatura(abreviatura: string): Promise<TipoDocumentoResponse> {
+    //     try {
+    //         const tipo = await TipoDocumento.findOne({
+    //             where: {
+    //                 abreviatura
+    //             },
+    //             attributes: TIPO_DOCUMENTO_ATTRIBUTES,
+    //             order: [
+    //                 ['id', 'DESC']
+    //             ]
+    //         })
+
+    //         if (!tipo) {
+    //             return { result: false, data: [], message: 'Tipo de documento no encontrado', status: 404 }
+    //         }
+
+    //         return { result: true, data: tipo, message: 'Tipo de documento encontrado', status: 200 }
+    //     } catch (error) {
+    //         const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    //         return { result: false, error: errorMessage, status: 500 }
+    //     }
+    // }
 
     /**
      * Crea un nuevo tipo de documento
@@ -164,10 +211,10 @@ class TipoDocumentoRepository {
             })
 
             if (existingTipo) {
-                return { result: false, message: 'El tipo de documento por registrar ya existe', status: 409 }
+                return { result: false, message: 'El nombre del tipo de documento por registrar ya existe', status: 409 }
             }
 
-            const newTipo = await TipoDocumento.create(data as any)
+            const newTipo = await TipoDocumento.create(data as ITipoDocumento)
 
             if (newTipo.id) {
                 return { result: true, message: 'Tipo de documento registrado con éxito', data: newTipo, status: 200 }
@@ -212,7 +259,7 @@ class TipoDocumentoRepository {
                 })
 
                 if (existingTipo) {
-                    return { result: false, message: 'El tipo de documento por actualizar ya existe', status: 409 }
+                    return { result: false, message: 'El nombre del tipo de documento por actualizar ya existe', status: 409 }
                 }
             }
 
@@ -262,7 +309,7 @@ class TipoDocumentoRepository {
                 return { result: false, data: [], message: 'Tipo de documento no encontrado', status: 404 };
             }
 
-            await TipoDocumento.destroy();
+            await tipo.destroy();
 
             return { result: true, data: tipo, message: 'Tipo de documento eliminado correctamente', status: 200 };
         } catch (error) {

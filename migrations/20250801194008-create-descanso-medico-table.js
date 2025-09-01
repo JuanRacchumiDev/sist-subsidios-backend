@@ -1,5 +1,7 @@
 'use strict';
 
+const { STRING } = require('sequelize');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -40,12 +42,12 @@ module.exports = {
           key: 'id'
         }
       },
-      id_diagnostico: {
-        type: Sequelize.UUID,
+      codcie10_diagnostico: {
+        type: Sequelize.STRING(10),
         allowNull: false,
         references: {
           model: 'diagnostico',
-          key: 'id'
+          key: 'codCie10'
         }
       },
       id_establecimiento: {
@@ -113,27 +115,12 @@ module.exports = {
         type: Sequelize.STRING(100),
         allowNull: false
       },
+      observacion: {
+        type: Sequelize.TEXT,
+        allowNull: true
+      },
       total_dias: {
         type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      is_subsidio: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-      },
-      is_acepta_responsabilidad: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-      },
-      is_continuo: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-      },
-      estado_registro: {
-        type: Sequelize.STRING(50),
         allowNull: false
       },
       user_crea: {
@@ -146,6 +133,30 @@ module.exports = {
       },
       user_elimina: {
         type: Sequelize.UUID,
+        allowNull: false
+      },
+      is_subsidio: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
+      is_acepta_responsabilidad: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
+      is_acepta_politica: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
+      is_continuo: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
+      estado_registro: {
+        type: Sequelize.STRING(50),
         allowNull: false
       },
       sistema: {

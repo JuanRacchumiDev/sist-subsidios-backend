@@ -4,17 +4,31 @@ import GetPersonasService from '../services/Persona/GetPersonas'
 import GetPersonaService from '../services/Persona/GetPersona'
 import UpdatePersonaService from '../services/Persona/UpdatePersona'
 import GetInfoApiService from '../services/Persona/GetInfoApi'
+import GetByIdTipoAndNumDocService from '../services/Persona/GetByIdTipoAndNumDoc'
 import { IPersona } from '../interfaces/Persona/IPersona';
 
 class PersonaController {
     async getPersonaByApi(req: Request, res: Response, next: NextFunction) {
         try {
-            const { params } = req
-            const { abreviatura, numeroDocumento } = params
+            const { query: { abreviatura, numeroDocumento } } = req
 
-            const result = await GetInfoApiService.execute(abreviatura, numeroDocumento)
+            if (!abreviatura || !numeroDocumento) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'La abreviatura y número de documento son requeridos como parámetros de consulta',
+                        status: 400
+                    }
+                );
+            }
 
-            res.status(200).json(result)
+            const abreviaturaStr = abreviatura as string
+
+            const numeroDocumentoStr = numeroDocumento as string
+
+            const result = await GetInfoApiService.execute(abreviaturaStr, numeroDocumentoStr)
+
+            res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)
         }
@@ -34,6 +48,33 @@ class PersonaController {
             const { id } = req.params;
             const result = await GetPersonaService.execute(id);
             res.status(result.status || 200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getPersonaByIdTipoDocAndNumDoc(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { query: { idTipoDoc, numDoc } } = req
+
+            if (!idTipoDoc || !numDoc) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'El tipo de documento y número de documento son requeridos como parámetros de consulta'
+                    }
+                );
+            }
+
+            const idTipoDocStr = idTipoDoc as string
+            const numDocStr = numDoc as string
+
+            const result = await GetByIdTipoAndNumDocService.execute(idTipoDocStr, numDocStr)
+
+            if (result.status === 500) {
+                res.status(result.status).json(result)
+            }
+            res.status(200).json(result)
         } catch (error) {
             next(error);
         }

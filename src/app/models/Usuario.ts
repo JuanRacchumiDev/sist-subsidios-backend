@@ -4,9 +4,9 @@ import { IUsuario } from "../interfaces/Usuario/IUsuario";
 import { Colaborador } from './Colaborador';
 import { TrabajadorSocial } from './TrabajadorSocial';
 import { Perfil } from './Perfil';
-import { IPerfil } from '@/interfaces/Perfil/IPerfil';
-import { IColaborador } from '@/interfaces/Colaborador/IColaborador';
-import { ITrabajadorSocial } from '@/interfaces/TrabajadorSocial/ITrabajadorSocial';
+import { IPerfil } from '../interfaces/Perfil/IPerfil';
+import { IColaborador } from '../interfaces/Colaborador/IColaborador';
+import { ITrabajadorSocial } from '../interfaces/TrabajadorSocial/ITrabajadorSocial';
 
 interface UsuarioCreationAttributes extends Optional<IUsuario, 'id'> { }
 
@@ -15,6 +15,7 @@ export class Usuario extends Model<IUsuario, UsuarioCreationAttributes> implemen
     public id_perfil?: string | undefined;
     public id_colaborador?: string | undefined;
     public id_trabajadorsocial?: string | undefined;
+    public username?: string | undefined;
     public email?: string | undefined;
     public password?: string | undefined;
     public remember_token?: string | undefined;
@@ -68,6 +69,11 @@ Usuario.init({
             model: TrabajadorSocial,
             key: 'id'
         }
+    },
+    username: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+        unique: true
     },
     email: {
         type: DataTypes.STRING(60),

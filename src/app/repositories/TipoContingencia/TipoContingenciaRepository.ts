@@ -1,5 +1,5 @@
 import { TipoContingencia } from "../../models/TipoContingencia";
-import HString from "../../../utils/helpers/HString";
+import HString from "../../../helpers/HString";
 import { ITipoContingencia, TipoContingenciaResponse } from '../../interfaces/TipoContingencia/ITipoContingencia';
 import { Op } from 'sequelize'
 
@@ -133,7 +133,7 @@ class TipoContingenciaRepository {
                 return { result: false, message: 'El tipo de contingencia por registrar ya existe', status: 409 }
             }
 
-            const newTipo = await TipoContingencia.create(data as any)
+            const newTipo = await TipoContingencia.create(data as ITipoContingencia)
 
             if (newTipo.id) {
                 return { result: true, message: 'Tipo de contingencia registrado con éxito', data: newTipo, status: 200 }
@@ -228,7 +228,7 @@ class TipoContingenciaRepository {
                 return { result: false, data: [], message: 'Tipo de contingencia no encontrado', status: 404 };
             }
 
-            await TipoContingencia.destroy();
+            await tipo.destroy();
 
             return { result: true, data: tipo, message: 'Tipo de contingencia eliminado correctamente', status: 200 };
         } catch (error) {

@@ -7,6 +7,8 @@ import { Sede } from "../../models/Sede";
 import { TipoDocumento } from "../../models/TipoDocumento";
 import { TrabajadorSocial } from "../../models/TrabajadorSocial";
 import sequelize from '../../../config/database'
+import { TValidateFields } from "../../types/TTypeFields";
+import { Op } from "sequelize";
 
 const TRABAJADOR_SOCIAL_ATTRIBUTES = [
     'id',
@@ -116,9 +118,6 @@ class TrabajadorSocialRepository {
                     AREA_INCLUDE,
                     SEDE_INCLUDE,
                     PAIS_INCLUDE
-                ],
-                order: [
-                    ['apellido_paterno', 'ASC']
                 ]
             })
 
@@ -127,6 +126,41 @@ class TrabajadorSocialRepository {
             }
 
             return { result: true, data: trabajadorSocial, message: 'Trabajador social encontrado', status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    /**
+     * Obtiene un trabajador social por tu tipo y número de documento
+     * @param {string} idTipoDoc - El ID del tipo de documento 
+     * @param {string} numDoc - El número de documento
+     * @returns {Promise<TrabajadorSocialResponse>}
+     */
+    async getByIdTipoDocAndNumDoc(idTipoDoc: string, numDoc: string): Promise<TrabajadorSocialResponse> {
+        try {
+            const trabSocial = await TrabajadorSocial.findOne({
+                where: {
+                    id_tipodocumento: idTipoDoc,
+                    numero_documento: numDoc
+                },
+                attributes: TRABAJADOR_SOCIAL_ATTRIBUTES,
+                include: [
+                    TIPO_DOCUMENTO_INCLUDE,
+                    EMPRESA_INCLUDE,
+                    CARGO_INCLUDE,
+                    AREA_INCLUDE,
+                    SEDE_INCLUDE,
+                    PAIS_INCLUDE
+                ]
+            })
+
+            if (!trabSocial) {
+                return { result: false, data: [], message: 'Trabajador social no encontrado', status: 404 }
+            }
+
+            return { result: true, data: trabSocial, message: 'Trabajador social encontrado', status: 200 }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
@@ -144,11 +178,37 @@ class TrabajadorSocialRepository {
         const t = await sequelize.transaction()
 
         try {
-            const newTrabajadorSocial = await TrabajadorSocial.create(data as any)
+
+            const {
+                id_tipodocumento,
+                id_cargo,
+                id_empresa,
+                numero_documento,
+                correo_personal,
+                correo_institucional
+            } = data
+
+            if (!id_tipodocumento || !id_cargo || !id_empresa || !numero_documento) {
+                return { result: false, message: 'El tipo de documento, cargo, empresa o número de documento son requeridos' }
+            }
+
+            const fields = { numero_documento, correo_personal, correo_institucional }
+
+            const validateFields = await this.validateFieldsRegistered(fields, "crear")
+
+            const { result: resultValidate, message: messageValidate } = validateFields
+
+            if (resultValidate) {
+                return { result: !resultValidate, message: messageValidate, status: 409 }
+            }
+
+            const newTrabajadorSocial = await TrabajadorSocial.create(data)
 
             await t.commit()
 
-            if (newTrabajadorSocial.id) {
+            const { id } = newTrabajadorSocial
+
+            if (id) {
                 return { result: true, message: 'Trabajador social registrado con éxito', data: newTrabajadorSocial, status: 200 }
             }
 
@@ -176,7 +236,19 @@ class TrabajadorSocialRepository {
 
             if (!trabajadorSocial) {
                 await t.rollback();
-                return { result: false, data: [], message: 'Trabajador social no encontrado', status: 200 }
+                return { result: false, data: [], message: 'Trabajador social no encontrado', status: 404 }
+            }
+
+            const { numero_documento, correo_personal, correo_institucional } = data
+
+            const fields = { numero_documento, correo_personal, correo_institucional }
+
+            const validateFields = await this.validateFieldsRegistered(fields, "actualizar")
+
+            const { result: resultValidate, message: messageValidate } = validateFields
+
+            if (resultValidate) {
+                return { result: !resultValidate, message: messageValidate, status: 409 }
             }
 
             const dataUpdateTrabSocial: Partial<ITrabajadorSocial> = data
@@ -207,10 +279,10 @@ class TrabajadorSocialRepository {
 
             if (!trabSocial) {
                 await t.rollback()
-                return { result: false, data: [], message: 'Trabajador social no encontrado', status: 200 };
+                return { result: false, data: [], message: 'Trabajador social no encontrado', status: 404 };
             }
 
-            await TrabajadorSocial.destroy({ transaction: t });
+            await trabSocial.destroy({ transaction: t });
 
             await t.commit()
 
@@ -220,6 +292,48 @@ class TrabajadorSocialRepository {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 };
         }
+    }
+
+    async validateFieldsRegistered(
+        fields: { numero_documento?: string, correo_personal?: string, correo_institucional?: string },
+        accion: string
+    ): Promise<TValidateFields> {
+        const { numero_documento, correo_personal, correo_institucional } = fields
+
+        let returnValidate: TValidateFields = {
+            result: false,
+            message: ""
+        }
+
+        if (numero_documento || correo_personal || correo_institucional) {
+            const whereConditions: any[] = []
+
+            if (numero_documento) {
+                whereConditions.push({ numero_documento })
+            }
+
+            if (correo_personal) {
+                whereConditions.push({ correo_personal })
+            }
+
+            if (correo_institucional) {
+                whereConditions.push({ correo_institucional })
+            }
+
+            const existingTrabSocial = await TrabajadorSocial.findOne({
+                where: {
+                    [Op.or]: whereConditions
+                }
+            })
+
+            if (existingTrabSocial) {
+                const message = `El número de documento, email personal o institucional por ${accion} ya existen`
+                returnValidate.result = true
+                returnValidate.message = message
+            }
+        }
+
+        return returnValidate
     }
 }
 

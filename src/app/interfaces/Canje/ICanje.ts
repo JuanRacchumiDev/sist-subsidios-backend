@@ -32,3 +32,21 @@ export interface CanjeResponse {
     error?: string
     status?: number
 }
+
+export interface ICanjePaginate {
+    currentPage: number
+    limit: number
+    totalPages: number
+    totalItems: number
+    nextPage: number | null
+    previousPage: number | null
+}
+
+export interface CanjeResponsePaginate {
+    result: boolean
+    message?: string
+    data?: ICanje[]
+    pagination?: ICanjePaginate
+    error?: string
+    status?: number
+}

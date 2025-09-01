@@ -11,6 +11,12 @@ const router = Router()
  *   description: API para gestionar colaboradores
  */
 
+router.get('/paginate', authToken, ColaboradorController.getAllColaboradoresPaginated)
+
+router.get('/buscar-por-tipodoc-numdoc', authToken, ColaboradorController.getColaboradorByIdTipoDocAndNumDoc)
+
+router.get('/buscar-por-empresa', authToken, ColaboradorController.getColaboradoresByIdEmpresa)
+
 /**
  * @swagger
  * /api/v1/colaboradores:
@@ -184,7 +190,7 @@ router.post('/', authToken, ColaboradorController.createColaborador)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', authToken, ColaboradorController.updateColaborador)
+router.patch('/:id', authToken, ColaboradorController.updateColaborador)
 
 /**
  * @swagger

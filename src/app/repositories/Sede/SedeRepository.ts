@@ -1,5 +1,5 @@
 import { Sede } from "../../models/Sede";
-import HString from "../../../utils/helpers/HString";
+import HString from "../../../helpers/HString";
 import { ISede, SedeResponse } from '../../interfaces/Sede/ISede';
 import { Op } from 'sequelize'
 
@@ -133,7 +133,7 @@ class SedeRepository {
                 return { result: false, message: 'La sede por registrar ya existe', status: 409 }
             }
 
-            const newSede = await Sede.create(data as any)
+            const newSede = await Sede.create(data as ISede)
 
             if (newSede.id) {
                 return { result: true, message: 'Sede registrada con éxito', data: newSede, status: 200 }

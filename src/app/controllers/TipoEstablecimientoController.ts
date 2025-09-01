@@ -3,7 +3,7 @@ import CreateTipoEstablecimientoService from '../services/TipoEstablecimiento/Cr
 import DeleteTipoEstablecimientoService from '../services/TipoEstablecimiento/DeleteTipo'
 import GetTipoEstablecimientoService from '../services/TipoEstablecimiento/GetTipo'
 import GetTipoEstablecimientosService from '../services/TipoEstablecimiento/GetTipos'
-import GetByNombreService from '../services/TipoEstablecimiento/GetByNombre'
+import GetTipoEstablecimientoByNombreService from '../services/TipoEstablecimiento/GetByNombre'
 import UpdateTipoEstablecimientoService from '../services/TipoEstablecimiento/UpdateTipo'
 import { ITipoEstablecimiento } from '../interfaces/TipoEstablecimiento/ITipoEstablecimiento';
 
@@ -36,11 +36,21 @@ class TipoEstablecimientoController {
 
     async getTipoEstablecimientoByNombre(req: Request, res: Response, next: NextFunction) {
         try {
-            const { nombre } = req.query; // Asumiendo que se pasa como query param
-            if (typeof nombre !== 'string') {
-                return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
+            const { query: { nombre } } = req
+
+            if (!nombre) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'El nombre es requerido como parámetro de consulta',
+                        status: 400
+                    }
+                );
             }
-            const result = await GetByNombreService.execute(nombre);
+
+            const nombreStr = nombre as string
+
+            const result = await GetTipoEstablecimientoByNombreService.execute(nombreStr);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

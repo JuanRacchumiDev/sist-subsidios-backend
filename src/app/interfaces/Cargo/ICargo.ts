@@ -16,3 +16,21 @@ export interface CargoResponse {
     error?: string
     status?: number
 }
+
+export interface ICargoPaginate {
+    currentPage: number
+    limit: number
+    totalPages: number
+    totalItems: number
+    nextPage: number | null
+    previousPage: number | null
+}
+
+export interface CargoResponsePaginate {
+    result: boolean
+    message?: string
+    data?: ICargo[]
+    pagination?: ICargoPaginate
+    error?: string
+    status?: number
+}

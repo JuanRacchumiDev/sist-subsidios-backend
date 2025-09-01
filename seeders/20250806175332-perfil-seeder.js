@@ -34,6 +34,24 @@ module.exports = {
         estado: true,
         created_at: now,
         updated_at: now
+      },
+      {
+        id: uuidv4(),
+        nombre: 'COLABORADOR',
+        nombre_url: 'colaborador',
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
+      },
+      {
+        id: uuidv4(),
+        nombre: 'MÉDICO OCUPACIONAL',
+        nombre_url: 'medico-ocupacional',
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
       }
     ], {})
   },

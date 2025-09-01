@@ -1,5 +1,5 @@
 import { Parentesco } from "../../models/Parentesco";
-import HString from "../../../utils/helpers/HString";
+import HString from "../../../helpers/HString";
 import { IParentesco, ParentescoResponse } from '../../interfaces/Parentesco/IParentesco';
 import { Op } from 'sequelize'
 
@@ -133,7 +133,7 @@ class ParentescoRepository {
                 return { result: false, message: 'El parentesco por registrar ya existe', status: 409 }
             }
 
-            const newParentesco = await Parentesco.create(data as any)
+            const newParentesco = await Parentesco.create(data as IParentesco)
 
             if (newParentesco.id) {
                 return { result: true, message: 'Parentesco registrado con éxito', data: newParentesco, status: 200 }
@@ -228,7 +228,7 @@ class ParentescoRepository {
                 return { result: false, data: [], message: 'Parentesco no encontrado', status: 404 };
             }
 
-            await Parentesco.destroy();
+            await parentesco.destroy();
 
             return { result: true, data: parentesco, message: 'Parentesco eliminado correctamente', status: 200 };
         } catch (error) {

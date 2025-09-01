@@ -3,7 +3,7 @@ import CreateTipoDescansoMedicoService from '../services/TipoDescansoMedico/Crea
 import DeleteTipoDescansoMedicoService from '../services/TipoDescansoMedico/DeleteTipo'
 import GetTipoDescansoMedicoService from '../services/TipoDescansoMedico/GetTipo'
 import GetTipoDescansoMedicosService from '../services/TipoDescansoMedico/GetTipos'
-import GetByNombreService from '../services/TipoDescansoMedico/GetByNombre'
+import GetTipoDescansoMedicoByNombreService from '../services/TipoDescansoMedico/GetByNombre'
 import UpdateTipoDescansoMedicoService from '../services/TipoDescansoMedico/UpdateTipo'
 import { ITipoDescansoMedico } from '../interfaces/TipoDescansoMedico/ITipoDescansoMedico';
 
@@ -36,11 +36,27 @@ class TipoDescansoMedicoController {
 
     async getTipoDescansoMedicoByNombre(req: Request, res: Response, next: NextFunction) {
         try {
-            const { nombre } = req.query; // Asumiendo que se pasa como query param
-            if (typeof nombre !== 'string') {
-                return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
+            // const { nombre } = req.query; // Asumiendo que se pasa como query param
+
+            // if (typeof nombre !== 'string') {
+            //     return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
+            // }
+
+            const { query: { nombre } } = req
+
+            if (!nombre) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'El nombre es requerido como parámetro de consulta',
+                        status: 400
+                    }
+                );
             }
-            const result = await GetByNombreService.execute(nombre);
+
+            const nombreStr = nombre as string
+
+            const result = await GetTipoDescansoMedicoByNombreService.execute(nombreStr);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

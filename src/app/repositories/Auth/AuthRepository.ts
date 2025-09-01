@@ -1,48 +1,31 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Usuario } from "../../models/Usuario";
-import { UsuarioResponse } from '../../interfaces/Usuario/IUsuario';
 import dotenv from "dotenv"
 import { Colaborador } from '../../models/Colaborador';
 import { TrabajadorSocial } from '../../models/TrabajadorSocial';
 import { Perfil } from '../../models/Perfil';
-
-type AuthResponse = {
-    result: boolean
-    message?: string
-    token: string
-    status: number
-    usuario?: {
-        idUsuario?: string,
-        username?: string,
-        nombrePerfil?: string,
-        slugPerfil?: string
-        nombreCompletoUsuario?: string
-    }
-    error?: string
-}
+import { AuthCredenciales, AuthResponse } from '../../types/Auth/TAuth';
 
 class AuthRepository {
     /**
      * Obtiene los datos de inicio de sesión
-     * @param {IAuth} data - Los datos de inicio de sesión
+     * @param {AuthCredenciales} data - Los datos de inicio de sesión
      * @returns {Promise<AuthResponse>} Respuesta con los datos de inicio de sesión
      */
-    async login(data: { username: string, password: string }): Promise<AuthResponse> {
+    async login(data: AuthCredenciales): Promise<AuthResponse> {
         dotenv.config()
 
         try {
-            const { username, password } = data
+            const { email, password } = data
 
-            const getUsername = username as string
+            const getEmail = email as string
             const getPassword = password as string
-
-            console.log('getUsername', getUsername, 'getPassword', getPassword)
 
             const existsUsuario = await Usuario.findOne(
                 {
                     where: {
-                        username: getUsername
+                        email: getEmail
                     },
                     include: [
                         {
@@ -52,8 +35,6 @@ class AuthRepository {
                     ]
                 }
             )
-
-            console.log('existeUsuario', existsUsuario)
 
             if (!existsUsuario) {
                 return {
@@ -68,8 +49,10 @@ class AuthRepository {
                 id: idUsuario,
                 password: passwordUsuario,
                 id_colaborador,
-                id_trabajadorsocial
+                id_trabajadorsocial,
+                username
             } = existsUsuario
+
             const comparePassword = await bcrypt.compare(getPassword, passwordUsuario as string)
 
             if (!comparePassword) {
@@ -77,23 +60,21 @@ class AuthRepository {
                     result: false,
                     message: 'Credenciales inválidas',
                     token: "",
-                    status: 500
+                    status: 401
                 }
             }
 
             const JWT_SECRET = process.env.JWT_SECRET as string
-            const EXPIRE_TOKEN = process.env.EXPIRE_TOKEN as string ?? '1h'
+            const EXPIRE_TOKEN = process.env.EXPIRE_TOKEN as string ?? '5h'
 
             if (!JWT_SECRET || !EXPIRE_TOKEN) {
                 throw new Error("JWT_SECRET o EXPIRE_TOKEN no están definidos como variables de entorno")
             }
 
-            console.log('JWT_SECRET', JWT_SECRET, 'EXPIRE_TOKEN', EXPIRE_TOKEN)
-
             const token = jwt.sign(
-                { id: idUsuario, username: getUsername },
+                { id: idUsuario, email: getEmail, username: username },
                 JWT_SECRET,
-                { expiresIn: '1h' }
+                { expiresIn: '5h' }
             )
 
             if (!token) {
@@ -146,9 +127,9 @@ class AuthRepository {
     /**
      * Obtiene los datos de usuario de cierre de sesión
      * @param {number} usuarioId - El ID del usuario de cierre de sesión 
-     * @returns {Promise<UsuarioResponse>} Respuesta con el usuario de cierre de sesión
+     * @returns {Promise<AuthResponse>} Respuesta con el usuario de cierre de sesión
      */
-    async logout(usuarioId: string): Promise<UsuarioResponse> {
+    async logout(usuarioId: string): Promise<AuthResponse> {
         try {
             const usuario = await Usuario.findOne(
                 {

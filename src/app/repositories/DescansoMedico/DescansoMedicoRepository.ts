@@ -1,4 +1,4 @@
-import { DescansoMedicoResponse, IDescansoMedico } from "../../interfaces/DescansoMedico/IDescansoMedico";
+import { DescansoMedicoResponse, DescansoMedicoResponsePaginate, IDescansoMedico, IDescansoMedicoPaginate } from "../../interfaces/DescansoMedico/IDescansoMedico";
 import { Colaborador } from "../../models/Colaborador";
 import { DescansoMedico } from "../../models/DescansoMedico";
 import { Diagnostico } from "../../models/Diagnostico";
@@ -6,38 +6,8 @@ import { Establecimiento } from "../../models/Establecimiento";
 import { TipoContingencia } from "../../models/TipoContingencia";
 import { TipoDescansoMedico } from "../../models/TipoDescansoMedico";
 import sequelize from "../../../config/database";
-
-const DESCANSOMEDICO_ATTRIBUTES = [
-    'id',
-    'id_colaborador',
-    'id_tipodescansomedico',
-    'id_tipocontingencia',
-    'id_diagnostico',
-    'id_establecimiento',
-    'codigo',
-    'fecha_otorgamiento',
-    'fecha_inicio',
-    'fecha_final',
-    'fecha_registro',
-    'fecha_actualiza',
-    'fecha_elimina',
-    'fecha_maxima_subsanar',
-    'numero_colegiatura',
-    'medico_tratante',
-    'nombre_colaborador',
-    'nombre_tipodescansomedico',
-    'nombre_tipocontingencia',
-    'nombre_diagnostico',
-    'observacion',
-    'total_dias',
-    'is_subsidio',
-    'is_acepta_responsabilidad',
-    'is_acepta_politica',
-    'is_continuo',
-    'estado_registro',
-    'sistema',
-    'estado'
-];
+import { DESCANSOMEDICO_ATTRIBUTES } from "../../../constants/DescansoMedicoConstant";
+import HPagination from "../../../helpers/HPagination";
 
 const COLABORADOR_INCLUDE = {
     model: Colaborador,
@@ -92,6 +62,56 @@ class DescansoMedicoRepository {
             })
 
             return { result: true, data: descansos, status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<DescansoMedicoResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await DescansoMedico.findAndCountAll({
+                attributes: DESCANSOMEDICO_ATTRIBUTES,
+                include: [
+                    COLABORADOR_INCLUDE,
+                    TIPODM_INCLUDE,
+                    TIPOCONTINGENCIA_INCLUDE,
+                    DIAGNOSTICO_INCLUDE,
+                    ESTABLECIMIENTO_INCLUDE
+                ],
+                where: whereClause,
+                order: [
+                    ['fecha_inicio', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IDescansoMedicoPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }

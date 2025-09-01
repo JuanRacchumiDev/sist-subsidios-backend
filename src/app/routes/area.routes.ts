@@ -58,6 +58,53 @@ const router = Router()
  *         status: {type: number, example: 404} 
  */
 
+router.get('/paginate', authToken, AreaController.getAllAreasPaginated)
+
+/**
+ * @swagger
+ * /api/v1/areas/buscar-por-nombre:
+ *   get:
+ *     summary: Obtiene una única área por su nombre.
+ *     tags: [Areas]
+ *     parameters:
+ *       - in: query
+ *         name: nombre
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: Nombre del área a obtener
+ *     responses:
+ *       200:
+ *         description: La descripción del área por nombre
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/AreaResponse'
+ *       400:
+ *         description: Bad request, name parameter is missing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Área no encontrada.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse' 
+ */
+router.get('/buscar-por-nombre', authToken, AreaController.getAreaByNombre)
+
 /**
  * @swagger
  * /api/v1/areas:
@@ -128,51 +175,6 @@ router.get('/', authToken, AreaController.getAllAreas)
  *                 
  */
 router.get('/:id', authToken, AreaController.getAreaById)
-
-/**
- * @swagger
- * /api/v1/areas/by-nombre:
- *   get:
- *     summary: Obtiene una única área por su nombre.
- *     tags: [Areas]
- *     parameters:
- *       - in: query
- *         name: nombre
- *         required: true
- *         schema:
- *           type: string
- *           description: Nombre del área a obtener
- *     responses:
- *       200:
- *         description: La descripción del área por nombre
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/AreaResponse'
- *       400:
- *         description: Bad request, name parameter is missing
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       404:
- *         description: Área no encontrada.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse' 
- */
-router.get('/by-nombre', authToken, AreaController.getAreaByNombre)
 
 /**
  * @swagger
@@ -276,7 +278,7 @@ router.post('/', authToken, AreaController.createArea)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', authToken, AreaController.updateArea)
+router.patch('/:id', authToken, AreaController.updateArea)
 
 /**
  * @swagger

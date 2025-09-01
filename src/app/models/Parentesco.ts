@@ -23,15 +23,6 @@ export class Parentesco extends Model<IParentesco, ParentescoCreationAttributes>
 
     // Asociaciones
     public getColaboradores!: () => Promise<Colaborador[]>
-
-    // // Métodos de asociación
-    // static associate(models: any) {
-    //     Parentesco.hasMany(models.Colaborador, {
-    //         foreignKey: 'id_parentesco',
-    //         as: 'colaboradores',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
 // export default (sequelize: Sequelize) => {

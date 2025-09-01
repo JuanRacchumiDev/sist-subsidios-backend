@@ -1,4 +1,4 @@
-import EmpresaRepository from "../../repositories/Empresa/EmpresaRepository"
+import EmpresaApiRepository from "../../repositories/Empresa/EmpresaApiRepository"
 
 /**
  * @class GetInfoApiService
@@ -11,7 +11,7 @@ class GetInfoApiService {
      * @returns La respuesta de la operación
      */
     async execute(ruc: string) {
-        return await EmpresaRepository.getInfoApi(ruc)
+        return await EmpresaApiRepository.getInfoApi(ruc)
     }
 }
 

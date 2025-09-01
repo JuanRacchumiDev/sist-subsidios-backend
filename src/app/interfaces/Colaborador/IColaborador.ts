@@ -1,5 +1,6 @@
 import { IArea } from "../Area/IArea"
 import { ICargo } from "../Cargo/ICargo"
+import { IEmpresa } from "../Empresa/IEmpresa"
 import { IPais } from "../Pais/IPais"
 import { IParentesco } from "../Parentesco/IParentesco"
 import { ISede } from "../Sede/ISede"
@@ -13,6 +14,7 @@ export interface IColaborador {
     id_area?: string
     id_sede?: string
     id_pais?: string
+    id_empresa?: string
     numero_documento?: string
     apellido_paterno?: string
     apellido_materno?: string
@@ -44,12 +46,31 @@ export interface IColaborador {
     area?: IArea
     sede?: ISede
     pais?: IPais
+    empresa?: IEmpresa
 }
 
 export interface ColaboradorResponse {
     result?: boolean
     message?: string
     data?: IColaborador | IColaborador[],
+    error?: string
+    status?: number
+}
+
+export interface IColaboradorPaginate {
+    currentPage: number
+    limit: number
+    totalPages: number
+    totalItems: number
+    nextPage: number | null
+    previousPage: number | null
+}
+
+export interface ColaboradorResponsePaginate {
+    result: boolean
+    message?: string
+    data?: IColaborador[]
+    pagination?: IColaboradorPaginate
     error?: string
     status?: number
 }

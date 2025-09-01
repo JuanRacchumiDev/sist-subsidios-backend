@@ -10,6 +10,6 @@ router.get('/:id', authToken, UsuarioController.getUsuarioById)
 
 router.post('/', authToken, UsuarioController.createUsuario)
 
-router.put('/:id', authToken, UsuarioController.updateUsuario)
+router.patch('/:id', authToken, UsuarioController.updateUsuario)
 
 export default router

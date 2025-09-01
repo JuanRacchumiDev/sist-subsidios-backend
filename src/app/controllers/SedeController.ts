@@ -3,7 +3,7 @@ import CreateSedeService from '../services/Sede/CreateSede'
 import DeleteSedeService from '../services/Sede/DeleteSede'
 import GetSedeService from '../services/Sede/GetSede'
 import GetSedesService from '../services/Sede/GetSedes'
-import GetByNombreService from '../services/Sede/GetByNombre'
+import GetSedeByNombreService from '../services/Sede/GetByNombre'
 import UpdateSedeService from '../services/Sede/UpdateSede'
 import { ISede } from '../interfaces/Sede/ISede';
 
@@ -36,11 +36,26 @@ class SedeController {
 
     async getSedeByNombre(req: Request, res: Response, next: NextFunction) {
         try {
-            const { nombre } = req.query; // Asumiendo que se pasa como query param
-            if (typeof nombre !== 'string') {
-                return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
+            // const { nombre } = req.query; // Asumiendo que se pasa como query param
+            // if (typeof nombre !== 'string') {
+            //     return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
+            // }
+
+            const { query: { nombre } } = req
+
+            if (!nombre) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'El nombre es requerido como parámetro de consulta',
+                        status: 400
+                    }
+                );
             }
-            const result = await GetByNombreService.execute(nombre);
+
+            const nombreStr = nombre as string
+
+            const result = await GetSedeByNombreService.execute(nombreStr);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

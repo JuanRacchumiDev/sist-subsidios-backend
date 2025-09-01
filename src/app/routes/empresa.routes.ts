@@ -95,31 +95,7 @@ const router = Router()
 
 /**
  * @swagger
- * /api/v1/empresas:
- *   get:
- *     summary: Obtiene un listado de todas las empresas.
- *     tags: [Empresas]
- *     responses:
- *       200:
- *         description: Un listado de empresas
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/EmpresaResponse'
- *       500:
- *         description: Internal Server error
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- */
-router.get('/', authToken, EmpresaController.getAllEmpresas)
-
-/**
- * @swagger
- * /api/v1/empresas/info-api/ruc/{ruc}:
+ * /api/v1/empresas/consulta-api:
  *   get:
  *     summary: Obtiene una única empresa obtenido desde la API
  *     tags: [Empresas]
@@ -155,6 +131,38 @@ router.get('/', authToken, EmpresaController.getAllEmpresas)
  * 
  *                 
  */
-router.get('/ruc/:ruc', authToken, EmpresaController.getEmpresaByApi)
+router.get('/consulta-api', authToken, EmpresaController.getEmpresaByApi)
+
+/**
+ * @swagger
+ * /api/v1/empresas:
+ *   get:
+ *     summary: Obtiene un listado de todas las empresas.
+ *     tags: [Empresas]
+ *     responses:
+ *       200:
+ *         description: Un listado de empresas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/EmpresaResponse'
+ *       500:
+ *         description: Internal Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ */
+router.get('/paginate', authToken, EmpresaController.getAllEmpresasPaginated)
+
+router.get('/', authToken, EmpresaController.getAllEmpresas)
+
+router.get('/:id', authToken, EmpresaController.getEmpresaById)
+
+router.post('/', authToken, EmpresaController.createEmpresa)
+
+router.patch('/:id', authToken, EmpresaController.updateEmpresa)
 
 export default router

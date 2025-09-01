@@ -1,15 +1,9 @@
 import { Cargo } from "../../models/Cargo";
-import HString from "../../../utils/helpers/HString";
-import { ICargo, CargoResponse } from '../../interfaces/Cargo/ICargo';
+import HString from "../../../helpers/HString";
+import { ICargo, CargoResponse, CargoResponsePaginate, ICargoPaginate } from '../../interfaces/Cargo/ICargo';
 import { Op } from 'sequelize'
-
-const CARGO_ATTRIBUTES = [
-    'id',
-    'nombre',
-    'nombre_url',
-    'sistema',
-    'estado'
-];
+import { CARGO_ATTRIBUTES } from "../../../constants/CargoConstant";
+import HPagination from "../../../helpers/HPagination";
 
 class CargoRepository {
     /**
@@ -27,6 +21,49 @@ class CargoRepository {
 
             return { result: true, data: cargos, status: 200 }
         } catch (error: any) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<CargoResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Cargo.findAndCountAll({
+                attributes: CARGO_ATTRIBUTES,
+                where: whereClause,
+                order: [
+                    ['nombre', 'ASC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: ICargoPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -89,10 +126,7 @@ class CargoRepository {
                 where: {
                     nombre
                 },
-                attributes: CARGO_ATTRIBUTES,
-                order: [
-                    ['id', 'DESC']
-                ]
+                attributes: CARGO_ATTRIBUTES
             })
 
             if (!cargo) {
@@ -123,26 +157,28 @@ class CargoRepository {
             data.nombre_url = HString.convertToUrlString(nombre)
 
             // Verificar si el nombre existe antes de crear
-            const existingsCargo = await Cargo.findOne({
+            const existingCargo = await Cargo.findOne({
                 where: {
-                    nombre: data.nombre
+                    nombre
                 }
             })
 
-            if (existingsCargo) {
+            if (existingCargo) {
                 return { result: false, message: 'El cargo por registrar ya existe', status: 409 }
             }
 
-            const newCargo = await Cargo.create(data as any)
+            const newCargo = await Cargo.create(data as ICargo)
 
-            if (newCargo.id) {
+            const { id } = newCargo
+
+            if (id) {
                 return { result: true, message: 'Cargo registrado con éxito', data: newCargo, status: 200 }
             }
 
             return { result: false, message: 'Error al registrar el cargo', status: 500 }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-            return { result: false, error: errorMessage, status: 500 }
+            return { result: false, message: 'No se pudo crear el cargo', error: errorMessage, status: 500 }
         }
     }
 
@@ -154,10 +190,10 @@ class CargoRepository {
      */
     async update(id: string, data: ICargo): Promise<CargoResponse> {
         try {
-            const { nombre } = data
+            const { nombre: newNombre } = data
 
-            if (nombre) {
-                data.nombre_url = HString.convertToUrlString(nombre as String)
+            if (newNombre) {
+                data.nombre_url = HString.convertToUrlString(newNombre as string)
             }
 
             const cargo = await Cargo.findByPk(id)
@@ -166,9 +202,11 @@ class CargoRepository {
                 return { result: false, message: 'Cargo no encontrado', status: 404 }
             }
 
+            const { nombre } = cargo
+
             // Verificar si el nuevo nombre ya existe en otro cargo
-            if (nombre && nombre !== cargo.nombre) {
-                const existingsCargo = await Cargo.findOne({
+            if (newNombre && newNombre !== nombre) {
+                const existingCargo = await Cargo.findOne({
                     where: {
                         nombre,
                         id: {
@@ -177,12 +215,14 @@ class CargoRepository {
                     }
                 })
 
-                if (existingsCargo) {
+                if (existingCargo) {
                     return { result: false, message: 'El cargo por actualizar ya existe', status: 409 }
                 }
             }
 
-            const updatedCargo = await cargo.update(data)
+            const dataCargo: Partial<ICargo> = data
+
+            const updatedCargo = await cargo.update(dataCargo)
 
             return { result: true, message: 'Cargo actualizado con éxito', data: updatedCargo, status: 200 }
         } catch (error) {
@@ -228,7 +268,7 @@ class CargoRepository {
                 return { result: false, data: [], message: 'Cargo no encontrado', status: 404 };
             }
 
-            await Cargo.destroy();
+            await cargo.destroy();
 
             return { result: true, data: cargo, message: 'Cargo eliminada correctamente', status: 200 };
         } catch (error) {

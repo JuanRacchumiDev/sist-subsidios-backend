@@ -25,3 +25,21 @@ export interface EmpresaResponse {
     error?: string
     status?: number
 }
+
+export interface IEmpresaPaginate {
+    currentPage: number
+    limit: number
+    totalPages: number
+    totalItems: number
+    nextPage: number | null
+    previousPage: number | null
+}
+
+export interface EmpresaResponsePaginate {
+    result: boolean
+    message?: string
+    data?: IEmpresa[]
+    pagination?: IEmpresaPaginate
+    error?: string
+    status?: number
+}

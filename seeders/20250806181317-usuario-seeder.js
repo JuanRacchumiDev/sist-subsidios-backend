@@ -17,7 +17,7 @@ module.exports = {
      * }], {});
     */
     // Obtener el ID del perfil administrador
-    const query = `SELECT id FROM perfil WHERE nombre = 'Administrador' LIMIT 1`;
+    const query = `SELECT id FROM perfil WHERE nombre = 'ADMINISTRADOR' LIMIT 1`;
     const perfilAdmin = await queryInterface.sequelize.query(
       query,
       { type: queryInterface.sequelize.QueryTypes.SELECT }
@@ -30,9 +30,24 @@ module.exports = {
       return;
     }
 
+    // Obtener el ID del perfil especialista
+    const queryEsp = `SELECT id FROM perfil WHERE nombre = 'ESPECIALISTA' LIMIT 1`;
+    const perfilEsp = await queryInterface.sequelize.query(
+      queryEsp,
+      { type: queryInterface.sequelize.QueryTypes.SELECT }
+    );
+
+    const perfilEspecialistaId = perfilEsp.length > 0 ? perfilEsp[0].id : null
+
+    if (!perfilEspecialistaId) {
+      console.error('Perfil Especialista no encontrado')
+      return;
+    }
+
     // Hash a password default
     const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash('admin', salt)
+    const hashedPasswordAdmin = await bcrypt.hash('admin', salt)
+    const hashedPasswordEspecialista = await bcrypt.hash('esp', salt)
 
     const now = new Date()
 
@@ -42,7 +57,18 @@ module.exports = {
         id_perfil: perfilAdminId,
         username: 'admin',
         email: 'admin@gmail.com',
-        password: hashedPassword,
+        password: hashedPasswordAdmin,
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
+      },
+      {
+        id: uuidv4(),
+        id_perfil: perfilEspecialistaId,
+        username: 'esp',
+        email: 'esp@sophiahuman.com',
+        password: hashedPasswordEspecialista,
         sistema: true,
         estado: true,
         created_at: now,

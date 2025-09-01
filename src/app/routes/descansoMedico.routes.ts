@@ -4,12 +4,14 @@ import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
+router.get('/paginate', authToken, DescansoMedicoController.getAllDescansosPaginated)
+
 router.get('/', authToken, DescansoMedicoController.getAllDescansos)
 
 router.get('/:id', authToken, DescansoMedicoController.getDescansoById)
 
 router.post('/', authToken, DescansoMedicoController.createDescanso)
 
-router.put('/:id', authToken, DescansoMedicoController.updateDescanso)
+router.patch('/:id', authToken, DescansoMedicoController.updateDescanso)
 
 export default router

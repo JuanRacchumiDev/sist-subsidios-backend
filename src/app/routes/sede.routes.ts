@@ -60,6 +60,51 @@ const router = Router()
 
 /**
  * @swagger
+ * /api/v1/sedes/buscar-por-nombre:
+ *   get:
+ *     summary: Obtiene una única sede por su nombre.
+ *     tags: [Sedes]
+ *     parameters:
+ *       - in: query
+ *         name: nombre
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: Nombre de la sede a obtener
+ *     responses:
+ *       200:
+ *         description: La descripción de la sede por nombre
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/SedeResponse'
+ *       400:
+ *         description: Bad request, name parameter is missing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Sede no encontrada.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse' 
+ */
+router.get('/buscar-por-nombre', authToken, SedeController.getSedeByNombre)
+
+/**
+ * @swagger
  * /api/v1/sedes:
  *   get:
  *     summary: Obtiene un listado de todas las sedes. Opcionalmente filtrado por estado.
@@ -128,51 +173,6 @@ router.get('/', authToken, SedeController.getAllSedes)
  *                 
  */
 router.get('/:id', authToken, SedeController.getSedeById)
-
-/**
- * @swagger
- * /api/v1/sedes/by-nombre:
- *   get:
- *     summary: Obtiene una única sede por su nombre.
- *     tags: [Sedes]
- *     parameters:
- *       - in: query
- *         name: nombre
- *         required: true
- *         schema:
- *           type: string
- *           description: Nombre de la sede a obtener
- *     responses:
- *       200:
- *         description: La descripción de la sede por nombre
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/SedeResponse'
- *       400:
- *         description: Bad request, name parameter is missing
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       404:
- *         description: Sede no encontrada.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse' 
- */
-router.get('/by-nombre', authToken, SedeController.getSedeByNombre)
 
 /**
  * @swagger
@@ -276,7 +276,7 @@ router.post('/', authToken, SedeController.createSede)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', authToken, SedeController.updateSede)
+router.patch('/:id', authToken, SedeController.updateSede)
 
 /**
  * @swagger

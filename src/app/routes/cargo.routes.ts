@@ -58,6 +58,53 @@ const router = Router()
  *         status: {type: number, example: 404} 
  */
 
+router.get('/paginate', authToken, CargoController.getAllCargosPaginated)
+
+/**
+ * @swagger
+ * /api/v1/cargos/buscar-por-nombre:
+ *   get:
+ *     summary: Obtiene un único cargo por su nombre.
+ *     tags: [Cargos]
+ *     parameters:
+ *       - in: query
+ *         name: nombre
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: Nombre del cargo a obtener
+ *     responses:
+ *       200:
+ *         description: La descripción del cargo por nombre
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/CargoResponse'
+ *       400:
+ *         description: Bad request, name parameter is missing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Cargo no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse' 
+ */
+router.get('/buscar-por-nombre', authToken, CargoController.getCargoByNombre)
+
 /**
  * @swagger
  * /api/v1/cargos:
@@ -128,51 +175,6 @@ router.get('/', authToken, CargoController.getAllCargos)
  *                 
  */
 router.get('/:id', authToken, CargoController.getCargoById)
-
-/**
- * @swagger
- * /api/v1/cargos/by-nombre:
- *   get:
- *     summary: Obtiene un único cargo por su nombre.
- *     tags: [Cargos]
- *     parameters:
- *       - in: query
- *         name: nombre
- *         required: true
- *         schema:
- *           type: string
- *           description: Nombre del cargo a obtener
- *     responses:
- *       200:
- *         description: La descripción del cargo por nombre
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/CargoResponse'
- *       400:
- *         description: Bad request, name parameter is missing
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       404:
- *         description: Cargo no encontrado.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse' 
- */
-router.get('/by-nombre', authToken, CargoController.getCargoByNombre)
 
 /**
  * @swagger
@@ -276,7 +278,7 @@ router.post('/', authToken, CargoController.createCargo)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', authToken, CargoController.updateCargo)
+router.patch('/:id', authToken, CargoController.updateCargo)
 
 /**
  * @swagger

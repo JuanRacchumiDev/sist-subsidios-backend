@@ -3,23 +3,19 @@ import CreateTipoDocumentoService from '../services/TipoDocumento/CreateTipo'
 import DeleteTipoDocumentoService from '../services/TipoDocumento/DeleteTipo'
 import GetTipoDocumentoService from '../services/TipoDocumento/GetTipo'
 import GetTipoDocumentosService from '../services/TipoDocumento/GetTipos'
-import GetByNombreService from '../services/TipoDocumento/GetByNombre'
-import GetByAbreviaturaService from '../services/TipoDocumento/GetByAbreviatura'
+// import GetTipoDocumentoByNombreService from '../services/TipoDocumento/GetByNombre'
+// import GetTipoDocumentoByAbreviaturaService from '../services/TipoDocumento/GetByAbreviatura'
+import GetBySearchService from '../services/TipoDocumento/GetBySearch'
 import UpdateTipoDocumentoService from '../services/TipoDocumento/UpdateTipo'
 import { ITipoDocumento } from '../interfaces/TipoDocumento/ITipoDocumento';
+import { TTipoDocumentoSearch } from '../types/TipoDocumento/TTipoDocumentoSearch'
 
 class TipoDocumentoController {
     async getAllTipoDocumentos(req: Request, res: Response, next: NextFunction) {
         try {
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
-
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
-
-            const result = await GetTipoDocumentosService.execute(estado)
-            res.status(result.status || 200).json(result)
+            const response = await GetTipoDocumentosService.execute()
+            const { status } = response
+            res.status(status || 200).json(response)
         } catch (error) {
             next(error) // Pasa al error al middleware de manejo de errores
         }
@@ -35,33 +31,83 @@ class TipoDocumentoController {
         }
     }
 
-    async getTipoDocumentoByNombre(req: Request, res: Response, next: NextFunction) {
+    async getTipoDocumentoBySearch(req: Request, res: Response, next: NextFunction) {
         try {
-            // const { nombre } = req.query; // Asumiendo que se pasa como query param
-            const { nombre } = req.params
-            if (typeof nombre !== 'string') {
-                return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
+            const { query: { nombre, abreviatura } } = req
+
+            const search: TTipoDocumentoSearch = {}
+
+            if (typeof nombre === 'string') {
+                search.nombre = nombre
             }
-            const result = await GetByNombreService.execute(nombre);
+
+            if (typeof abreviatura === 'string') {
+                search.abreviatura = abreviatura
+            }
+
+            if (!search.nombre && !search.abreviatura) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'El nombre o abreviatura son requeridos como parámetro de consulta',
+                        status: 400
+                    }
+                );
+            }
+
+            const result = await GetBySearchService.execute(search);
             res.status(result.status || 200).json(result);
+
         } catch (error) {
             next(error);
         }
     }
 
-    async getTipoDocumentoByAbreviatura(req: Request, res: Response, next: NextFunction) {
-        try {
-            // const { abreviatura } = req.query; // Asumiendo que se pasa como query param
-            const { abreviatura } = req.params
-            if (typeof abreviatura !== 'string') {
-                return res.status(400).json({ result: false, message: 'La abreviatura es requerida como parámetro de consulta', status: 400 });
-            }
-            const result = await GetByAbreviaturaService.execute(abreviatura);
-            res.status(result.status || 200).json(result);
-        } catch (error) {
-            next(error);
-        }
-    }
+    // async getTipoDocumentoByNombre(req: Request, res: Response, next: NextFunction) {
+    //     try {
+    //         const { query: { nombre } } = req
+
+    //         if (!nombre) {
+    //             return res.status(400).json(
+    //                 {
+    //                     result: false,
+    //                     message: 'El nombre es requerido como parámetro de consulta',
+    //                     status: 400
+    //                 }
+    //             );
+    //         }
+
+    //         const nombreStr = nombre as string
+
+    //         const result = await GetTipoDocumentoByNombreService.execute(nombreStr);
+    //         res.status(result.status || 200).json(result);
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
+
+    // async getTipoDocumentoByAbreviatura(req: Request, res: Response, next: NextFunction) {
+    //     try {
+    //         const { query: { abreviatura } } = req
+
+    //         if (!abreviatura) {
+    //             return res.status(400).json(
+    //                 {
+    //                     result: false,
+    //                     message: 'El nombre es requerido como parámetro de consulta',
+    //                     status: 400
+    //                 }
+    //             );
+    //         }
+
+    //         const abreviaturaStr = abreviatura as string
+
+    //         const result = await GetTipoDocumentoByAbreviaturaService.execute(abreviaturaStr);
+    //         res.status(result.status || 200).json(result);
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
 
     async createTipoDocumento(req: Request, res: Response, next: NextFunction) {
         try {

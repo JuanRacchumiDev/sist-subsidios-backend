@@ -4,11 +4,30 @@ import GetCanjeService from '../services/Canje/GetCanje'
 import CreateCanjeService from '../services/Canje/CreateCanje'
 import UpdateCanjeService from '../services/Canje/UpdateCanje'
 import { ICanje } from "../interfaces/Canje/ICanje";
+import GetCanjesPaginateService from "../services/Canje/GetCanjesPaginate";
 
 class CanjeController {
     async getAllCanjes(req: Request, res: Response, next: NextFunction) {
         try {
             const result = await GetCanjesService.execute()
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async getAllCanjesPaginated(req: Request, res: Response, next: NextFunction) {
+        try {
+            const page = parseInt(req.query.page as string) || 1
+            const limit = parseInt(req.query.limit as string) || 10
+            const estadoParam = req.query.estado
+            let estado: boolean | undefined
+
+            if (typeof estadoParam === 'string') {
+                estado = estadoParam.toLowerCase() === 'true'
+            }
+
+            const result = await GetCanjesPaginateService.execute(page, limit, estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

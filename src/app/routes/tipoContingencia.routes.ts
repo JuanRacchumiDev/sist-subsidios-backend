@@ -60,6 +60,51 @@ const router = Router()
 
 /**
  * @swagger
+ * /api/v1/tipo-contingencias/buscar-por-nombre:
+ *   get:
+ *     summary: Obtiene un único tipo de contingencia por su nombre.
+ *     tags: [TipoContingencias]
+ *     parameters:
+ *       - in: query
+ *         name: nombre
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: Nombre del tipo de contingencia a obtener
+ *     responses:
+ *       200:
+ *         description: La descripción del tipo de contingencia por nombre
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/TipoContingenciaResponse'
+ *       400:
+ *         description: Bad request, name parameter is missing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Tipo de contingencia no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse' 
+ */
+router.get('/buscar-por-nombre', authToken, TipoContingenciaController.getTipoContingenciaByNombre)
+
+/**
+ * @swagger
  * /api/v1/tipo-contingencias:
  *   get:
  *     summary: Obtiene un listado de todos los tipo de contingencias. Opcionalmente filtrado por estado.
@@ -128,51 +173,6 @@ router.get('/', authToken, TipoContingenciaController.getAllTipoContingencias)
  *                 
  */
 router.get('/:id', authToken, TipoContingenciaController.getTipoContingenciaById)
-
-/**
- * @swagger
- * /api/v1/tipo-contingencias/by-nombre:
- *   get:
- *     summary: Obtiene un único tipo de contingencia por su nombre.
- *     tags: [TipoContingencias]
- *     parameters:
- *       - in: query
- *         name: nombre
- *         required: true
- *         schema:
- *           type: string
- *           description: Nombre del tipo de contingencia a obtener
- *     responses:
- *       200:
- *         description: La descripción del tipo de contingencia por nombre
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/TipoContingenciaResponse'
- *       400:
- *         description: Bad request, name parameter is missing
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       404:
- *         description: Tipo de contingencia no encontrado.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse' 
- */
-router.get('/by-nombre', authToken, TipoContingenciaController.getTipoContingenciaByNombre)
 
 /**
  * @swagger
@@ -276,7 +276,7 @@ router.post('/', authToken, TipoContingenciaController.createTipoContingencia)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', authToken, TipoContingenciaController.updateTipoContingencia)
+router.patch('/:id', authToken, TipoContingenciaController.updateTipoContingencia)
 
 /**
  * @swagger

@@ -3,7 +3,8 @@ import CreateAreaService from '../services/Area/CreateArea'
 import DeleteAreaService from '../services/Area/DeleteArea'
 import GetAreaService from '../services/Area/GetArea'
 import GetAreasService from '../services/Area/GetAreas'
-import GetByNombreService from '../services/Area/GetByNombre'
+import GetAreasPaginateService from '../services/Area/GetAreasPaginate'
+import GetAreaByNombreService from '../services/Area/GetByNombre'
 import UpdateAreaService from '../services/Area/UpdateArea'
 import { IArea } from '../interfaces/Area/IArea';
 
@@ -24,6 +25,24 @@ class AreaController {
         }
     }
 
+    async getAllAreasPaginated(req: Request, res: Response, next: NextFunction) {
+        try {
+            const page = parseInt(req.query.page as string) || 1
+            const limit = parseInt(req.query.limit as string) || 10
+            const estadoParam = req.query.estado
+            let estado: boolean | undefined
+
+            if (typeof estadoParam === 'string') {
+                estado = estadoParam.toLowerCase() === 'true'
+            }
+
+            const result = await GetAreasPaginateService.execute(page, limit, estado)
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error)
+        }
+    }
+
     async getAreaById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
@@ -36,11 +55,21 @@ class AreaController {
 
     async getAreaByNombre(req: Request, res: Response, next: NextFunction) {
         try {
-            const { nombre } = req.query; // Asumiendo que se pasa como query param
-            if (typeof nombre !== 'string') {
-                return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
+            const { query: { nombre } } = req
+
+            if (!nombre) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'El nombre es requerido como parámetro de consulta',
+                        status: 400
+                    }
+                );
             }
-            const result = await GetByNombreService.execute(nombre);
+
+            const nombreStr = nombre as string
+
+            const result = await GetAreaByNombreService.execute(nombreStr);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

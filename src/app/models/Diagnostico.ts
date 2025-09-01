@@ -4,13 +4,14 @@ import sequelize from '../../config/database'
 import { DescansoMedico } from './DescansoMedico';
 
 // Define los atributos opcionales cuando se crea una instancia del modelo
-interface DiagnosticoCreationAttributes extends Optional<IDiagnostico, 'id'> { }
+interface DiagnosticoCreationAttributes extends Optional<IDiagnostico, 'codCie10'> { }
 
 export class Diagnostico extends Model<IDiagnostico, DiagnosticoCreationAttributes> implements IDiagnostico {
-    public id?: string | undefined;
+    public codCie10?: string | undefined;
     public nombre?: string | undefined;
     public nombre_url?: string | undefined;
     public tiempo?: number | undefined;
+    public sexo?: string | undefined;
     public user_crea?: string | undefined;
     public user_actualiza?: string | undefined;
     public user_elimina?: string | undefined;
@@ -28,7 +29,7 @@ export class Diagnostico extends Model<IDiagnostico, DiagnosticoCreationAttribut
     // Métodos de asociación
     // static associate(models: any) {
     //     Diagnostico.hasMany(models.DescansoMedico, {
-    //         foreignKey: 'id_diagnostico',
+    //         foreignKey: 'codcie10_diagnostico',
     //         as: 'descansosmedicos',
     //         onDelete: 'SET NULL'
     //     });
@@ -37,9 +38,9 @@ export class Diagnostico extends Model<IDiagnostico, DiagnosticoCreationAttribut
 
 // export default (sequelize: Sequelize) => {
 Diagnostico.init({
-    id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+    codCie10: {
+        type: DataTypes.STRING(10),
+        field: 'codCie10',
         primaryKey: true,
         allowNull: false
     },
@@ -62,6 +63,10 @@ Diagnostico.init({
     tiempo: {
         type: DataTypes.NUMBER,
         allowNull: false
+    },
+    sexo: {
+        type: DataTypes.CHAR(1),
+        allowNull: true
     },
     user_crea: {
         type: DataTypes.UUID,

@@ -12,9 +12,9 @@ class GetTiposService {
      * @returns {Promise<TipoDocumentoResponse>} La respuesta de obtener los tipo de documentos
      */
     async execute(estado?: boolean): Promise<TipoDocumentoResponse> {
-        if (typeof estado === 'boolean') {
-            return await TipoDocumentoRepository.getAllByEstado(estado)
-        }
+        // if (typeof estado === 'boolean') {
+        //     return await TipoDocumentoRepository.getAllByEstado(estado)
+        // }
         return await TipoDocumentoRepository.getAll()
     }
 }

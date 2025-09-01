@@ -1,7 +1,9 @@
 import express from 'express'
 import apiRoutes from './app/routes'
 import cors from 'cors';
+
 import sequelize from './config/database'
+
 import { Bitacora } from './app/models/Bitacora'
 import { TipoContingencia } from './app/models/TipoContingencia'
 import { TipoDescansoMedico } from './app/models/TipoDescansoMedico'
@@ -23,6 +25,10 @@ import { DescansoMedico } from './app/models/DescansoMedico'
 import { Canje } from './app/models/Canje'
 import { Reembolso } from './app/models/Reembolso'
 import { Cobro } from './app/models/Cobro'
+import { DocumentoTipoCont } from './app/models/DocumentoTipoCont'
+import { TipoAdjunto } from './app/models/TipoAdjunto'
+import { Adjunto } from './app/models/Adjunto'
+import { RepresentanteLegal } from './app/models/RepresentanteLegal'
 import { Usuario } from './app/models/Usuario'
 
 import swaggerUi from 'swagger-ui-express'
@@ -34,6 +40,8 @@ const app = express();
 
 app.use(express.json());
 
+app.use(express.static('public'))
+
 app.use(cors({
     origin: allowedOrigin,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -44,17 +52,26 @@ app.use(cors({
 const setupDatabase = async () => {
     try {
         // Define associations
-        // User.hasMany(Post, { foreignKey: 'userId', as: 'posts' });
-        // Post.belongsTo(User, { foreignKey: 'userId', as: 'user' });
         Area.hasMany(Colaborador, { foreignKey: 'id_area', as: 'colaboradores' })
         Area.hasMany(TrabajadorSocial, { foreignKey: 'id_area', as: 'trabajadoresSociales' })
 
+        Adjunto.belongsTo(TipoAdjunto, { foreignKey: 'id_tipoadjunto', as: 'tipoAdjunto' })
+        Adjunto.belongsTo(DescansoMedico, { foreignKey: 'id_descansomedico', as: 'descansoMedico' })
+        Adjunto.belongsTo(Canje, { foreignKey: 'id_canje', as: 'canje' })
+        Adjunto.belongsTo(Cobro, { foreignKey: 'id_cobro', as: 'cobro' })
+        Adjunto.belongsTo(Reembolso, { foreignKey: 'id_reembolso', as: 'reembolso' })
+        Adjunto.belongsTo(Colaborador, { foreignKey: 'id_colaborador', as: 'colaborador' })
+        Adjunto.belongsTo(TrabajadorSocial, { foreignKey: 'id_trabajadorsocial', as: 'trabajadorSocial' })
+
         Canje.hasOne(DescansoMedico, { foreignKey: 'id_canje', as: 'descansoMedico' })
         Canje.belongsTo(Reembolso, { foreignKey: 'id_reembolso', as: 'reembolso' })
+        Canje.hasMany(Adjunto, { foreignKey: 'id_canje', as: 'adjuntos' })
 
         Cobro.hasOne(Reembolso, { foreignKey: 'id_cobro', as: 'reembolso' })
+        Cobro.hasMany(Adjunto, { foreignKey: 'id_cobro', as: 'adjuntos' })
 
         Cargo.hasMany(Colaborador, { foreignKey: 'id_cargo', as: 'colaboradores' })
+        Cargo.hasMany(RepresentanteLegal, { foreignKey: 'id_cargo', as: 'representantes' })
 
         Colaborador.belongsTo(Area, { foreignKey: 'id_area', as: 'area' })
         Colaborador.belongsTo(Cargo, { foreignKey: 'id_cargo', as: 'cargo' })
@@ -64,25 +81,22 @@ const setupDatabase = async () => {
         Colaborador.hasMany(DescansoMedico, { foreignKey: 'id_colaborador', as: 'descansosMedicos' })
         Colaborador.belongsTo(Empresa, { foreignKey: 'id_empresa', as: 'empresa' })
         Colaborador.belongsTo(Parentesco, { foreignKey: 'id_parentesco', as: 'parentesco' })
+        Colaborador.hasMany(Adjunto, { foreignKey: 'id_colaborador', as: 'adjuntos' })
 
-        TrabajadorSocial.belongsTo(Area, { foreignKey: 'id_area', as: 'area' })
-        TrabajadorSocial.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })
-        TrabajadorSocial.belongsTo(Pais, { foreignKey: 'id_pais', as: 'pais' })
-        TrabajadorSocial.belongsTo(Sede, { foreignKey: 'id_sede', as: 'sede' })
-        TrabajadorSocial.hasMany(DescansoMedico, { foreignKey: 'id_colaborador', as: 'descansosMedicos' })
-        TrabajadorSocial.belongsTo(Empresa, { foreignKey: 'id_empresa', as: 'empresa' })
-        TrabajadorSocial.belongsTo(Cargo, { foreignKey: 'id_cargo', as: 'cargo' })
-
-        // DescansoMedico.belongsTo(Canje, { foreignKey: 'id_canje', as: 'canje' })
+        DescansoMedico.belongsTo(Canje, { foreignKey: 'id_canje', as: 'canje' })
         DescansoMedico.belongsTo(Colaborador, { foreignKey: 'id_colaborador', as: 'colaborador' })
         DescansoMedico.belongsTo(TipoDescansoMedico, { foreignKey: 'id_tipodescansomedico', as: 'tipoDescansoMedico' })
         DescansoMedico.belongsTo(TipoContingencia, { foreignKey: 'id_tipocontingencia', as: 'tipoContingencia' })
-        DescansoMedico.belongsTo(Diagnostico, { foreignKey: 'id_diagnostico', as: 'diagnostico' })
+        DescansoMedico.belongsTo(Diagnostico, { foreignKey: 'codcie10_diagnostico', as: 'diagnostico' })
         DescansoMedico.belongsTo(Establecimiento, { foreignKey: 'id_establecimiento', as: 'establecimiento' })
+        DescansoMedico.hasMany(Adjunto, { foreignKey: 'id_descansomedico', as: 'adjuntos' })
 
-        Diagnostico.hasMany(DescansoMedico, { foreignKey: 'id_diagnostico', as: 'descansosMedicos' })
+        Diagnostico.hasMany(DescansoMedico, { foreignKey: 'codcie10_diagnostico', as: 'descansosMedicos' })
+
+        DocumentoTipoCont.belongsTo(TipoContingencia, { foreignKey: 'id_tipocontingencia', as: 'tipoContingencia' })
 
         Empresa.hasMany(Colaborador, { foreignKey: 'id_empresa', as: 'colaboradores' })
+        Empresa.hasMany(RepresentanteLegal, { foreignKey: 'id_empresa', as: 'representantes' })
 
         Establecimiento.hasMany(DescansoMedico, { foreignKey: 'id_establecimiento', as: 'descansosMedicos' })
         Establecimiento.belongsTo(TipoEstablecimiento, { foreignKey: 'id_tipoestablecimiento', as: 'tipoEstablecimiento' })
@@ -98,18 +112,36 @@ const setupDatabase = async () => {
 
         Reembolso.hasOne(Canje, { foreignKey: 'id_reembolso', as: 'canje' })
         Reembolso.belongsTo(Cobro, { foreignKey: 'id_cobro', as: 'cobro' })
+        Reembolso.hasMany(Adjunto, { foreignKey: 'id_reembolso', as: 'adjuntos' })
+
+        RepresentanteLegal.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })
+        RepresentanteLegal.belongsTo(Empresa, { foreignKey: 'id_empresa', as: 'empresa' })
+        RepresentanteLegal.belongsTo(Cargo, { foreignKey: 'id_cargo', as: 'cargo' })
 
         Sede.hasMany(Colaborador, { foreignKey: 'id_sede', as: 'colaboradores' })
-        Sede.hasMany(Colaborador, { foreignKey: 'id_sede', as: 'trabajadoresSociales' })
+        Sede.hasMany(TrabajadorSocial, { foreignKey: 'id_sede', as: 'trabajadoresSociales' })
 
         TipoContingencia.hasMany(DescansoMedico, { foreignKey: 'id_tipocontingencia', as: 'descansosMedicos' })
+        TipoContingencia.hasMany(DocumentoTipoCont, { foreignKey: 'id_tipocontingencia', as: 'documentos' })
 
         TipoDescansoMedico.hasMany(DescansoMedico, { foreignKey: 'id_tipodescansomedico', as: 'descansosMedicos' })
 
         TipoDocumento.hasMany(Colaborador, { foreignKey: 'id_tipodocumento', as: 'colaboradores' })
         TipoDocumento.hasMany(Persona, { foreignKey: 'id_tipodocumento', as: 'personas' })
+        TipoDocumento.hasMany(RepresentanteLegal, { foreignKey: 'id_tipodocumento', as: 'representantes' })
 
         TipoEstablecimiento.hasMany(Establecimiento, { foreignKey: 'id_tipoestablecimiento', as: 'establecimiento' })
+
+        TipoAdjunto.hasMany(Adjunto, { foreignKey: 'id_tipoadjunto', as: 'adjuntos' })
+
+        TrabajadorSocial.belongsTo(Area, { foreignKey: 'id_area', as: 'area' })
+        TrabajadorSocial.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })
+        TrabajadorSocial.belongsTo(Pais, { foreignKey: 'id_pais', as: 'pais' })
+        TrabajadorSocial.belongsTo(Sede, { foreignKey: 'id_sede', as: 'sede' })
+        TrabajadorSocial.hasMany(DescansoMedico, { foreignKey: 'id_colaborador', as: 'descansosMedicos' })
+        TrabajadorSocial.belongsTo(Empresa, { foreignKey: 'id_empresa', as: 'empresa' })
+        TrabajadorSocial.belongsTo(Cargo, { foreignKey: 'id_cargo', as: 'cargo' })
+        TrabajadorSocial.hasMany(Adjunto, { foreignKey: 'id_trabajadorsocial', as: 'adjuntos' })
 
         Usuario.belongsTo(Perfil, { foreignKey: 'id_perfil', as: 'perfil' })
         Usuario.belongsTo(Colaborador, { foreignKey: 'id_colaborador', as: 'colaborador' })
@@ -117,8 +149,6 @@ const setupDatabase = async () => {
 
         await sequelize.authenticate();
         console.log('Connection to the database has been established successfully.');
-        // await sequelize.sync({ force: false }); // Use migrations for schema management
-        // console.log('All models were synchronized successfully.');
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }

@@ -32,6 +32,14 @@ module.exports = {
           key: 'id'
         }
       },
+      id_cargo: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model: 'cargo',
+          key: 'id'
+        }
+      },
       id_area: {
         type: Sequelize.UUID,
         allowNull: true,

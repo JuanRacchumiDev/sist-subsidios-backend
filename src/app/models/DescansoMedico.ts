@@ -16,7 +16,7 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public id_colaborador?: string | undefined;
     public id_tipodescansomedico?: string | undefined;
     public id_tipocontingencia?: string | undefined;
-    public id_diagnostico?: string | undefined;
+    public codcie10_diagnostico?: string | undefined;
     public id_establecimiento?: string | undefined;
     public codigo?: string | undefined;
     public fecha_otorgamiento?: string | undefined;
@@ -99,7 +99,7 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     //     });
 
     //     DescansoMedico.belongsTo(models.Diagnostico, {
-    //         foreignKey: 'id_diagnostico',
+    //         foreignKey: 'codcie10_diagnostico',
     //         as: 'diagnostico',
     //         onDelete: 'SET NULL'
     //     });
@@ -256,7 +256,7 @@ DescansoMedico.init({
         defaultValue: true
     }
 }, {
-    tableName: 'descansomedico',
+    tableName: 'descanso_medico',
     modelName: 'DescansoMedico',
     sequelize,
     timestamps: true,

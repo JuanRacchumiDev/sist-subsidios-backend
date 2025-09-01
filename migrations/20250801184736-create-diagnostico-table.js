@@ -10,9 +10,8 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
     await queryInterface.createTable('diagnostico', {
-      id: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+      codCie10: {
+        type: Sequelize.STRING(10),
         primaryKey: true,
         allowNull: false
       },
@@ -23,12 +22,15 @@ module.exports = {
       },
       nombre_url: {
         type: Sequelize.STRING(150),
-        allowNull: false,
-        unique: true
+        allowNull: true
       },
       tiempo: {
         type: Sequelize.INTEGER,
         allowNull: false
+      },
+      sexo: {
+        type: Sequelize.CHAR(1),
+        allowNull: true
       },
       user_crea: {
         type: Sequelize.UUID,

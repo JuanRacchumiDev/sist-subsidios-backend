@@ -128,33 +128,11 @@ const router = Router()
  *         status: {type: number, example: 404} 
  */
 
-/**
- * @swagger
- * /api/v1/personas:
- *   get:
- *     summary: Obtiene un listado de todas las personas.
- *     tags: [Personas]
- *     responses:
- *       200:
- *         description: Un listado de personas
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/PersonaResponse'
- *       500:
- *         description: Internal Server error
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- */
-router.get('/', authToken, PersonaController.getAllPersonas)
+router.get('/buscar-por-tipodoc-numdoc', authToken, PersonaController.getPersonaByIdTipoDocAndNumDoc)
 
 /**
  * @swagger
- * /api/v1/personas/abreviatura/{abreviatura}/numdoc/{numdoc}:
+ * /api/v1/personas/consulta-api:
  *   get:
  *     summary: Obtiene una única persona obtenido desde la API
  *     tags: [Personas]
@@ -190,7 +168,31 @@ router.get('/', authToken, PersonaController.getAllPersonas)
  * 
  *                 
  */
-router.get('/abreviatura/:abreviatura/numdoc/:numeroDocumento', authToken, PersonaController.getPersonaByApi)
+router.get('/consulta-api', authToken, PersonaController.getPersonaByApi)
+
+/**
+ * @swagger
+ * /api/v1/personas:
+ *   get:
+ *     summary: Obtiene un listado de todas las personas.
+ *     tags: [Personas]
+ *     responses:
+ *       200:
+ *         description: Un listado de personas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/PersonaResponse'
+ *       500:
+ *         description: Internal Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ */
+router.get('/', authToken, PersonaController.getAllPersonas)
 
 /**
  * @swagger
@@ -335,6 +337,6 @@ router.post('/', authToken, PersonaController.createPersona)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', authToken, PersonaController.updatePersona)
+router.patch('/:id', authToken, PersonaController.updatePersona)
 
 export default router

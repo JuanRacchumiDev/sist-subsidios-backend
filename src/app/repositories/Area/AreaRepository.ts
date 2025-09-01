@@ -1,15 +1,9 @@
 import { Area } from "../../models/Area";
-import HString from "../../../utils/helpers/HString";
-import { IArea, AreaResponse } from '../../interfaces/Area/IArea';
+import HString from "../../../helpers/HString";
+import { IArea, AreaResponse, AreaResponsePaginate, IAreaPaginate } from '../../interfaces/Area/IArea';
 import { Op } from 'sequelize'
-
-const AREA_ATTRIBUTES = [
-    'id',
-    'nombre',
-    'nombre_url',
-    'sistema',
-    'estado'
-];
+import { AREA_ATTRIBUTES } from "../../../constants/AreaConstant";
+import HPagination from "../../../helpers/HPagination";
 
 class AreaRepository {
     /**
@@ -27,6 +21,49 @@ class AreaRepository {
 
             return { result: true, data: areas, status: 200 }
         } catch (error: any) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<AreaResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Area.findAndCountAll({
+                attributes: AREA_ATTRIBUTES,
+                where: whereClause,
+                order: [
+                    ['nombre', 'ASC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IAreaPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -133,7 +170,7 @@ class AreaRepository {
                 return { result: false, message: 'El área por registrar ya existe', status: 409 }
             }
 
-            const newArea = await Area.create(data as any)
+            const newArea = await Area.create(data as IArea)
 
             if (newArea.id) {
                 return { result: true, message: 'Área registrada con éxito', data: newArea, status: 200 }

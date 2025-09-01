@@ -26,3 +26,21 @@ export interface CobroResponse {
     error?: string
     status?: number
 }
+
+export interface ICobroPaginate {
+    currentPage: number
+    limit: number
+    totalPages: number
+    totalItems: number
+    nextPage: number | null
+    previousPage: number | null
+}
+
+export interface CobroResponsePaginate {
+    result: boolean
+    message?: string
+    data?: ICobro[]
+    pagination?: ICobroPaginate
+    error?: string
+    status?: number
+}

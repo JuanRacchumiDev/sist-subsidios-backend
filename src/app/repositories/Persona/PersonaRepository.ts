@@ -1,12 +1,7 @@
-import axios from 'axios';
 import sequelize from '../../../config/database'
-import { API_DNI, API_CEE } from '../../../helpers/HApi';
 import { IPersona, PersonaResponse } from "../../interfaces/Persona/IPersona";
 import { Persona } from "../../models/Persona";
 import { TipoDocumento } from "../../models/TipoDocumento";
-import { EOrigen } from '../../enums/EOrigen';
-import TipoDocumentoRepository from '../TipoDocumento/TipoDocumentoRepository';
-import { ITipoDocumento } from '../../interfaces/TipoDocumento/ITipoDocumento';
 
 const PERSONA_ATTRIBUTES = [
     'id',
@@ -40,129 +35,6 @@ const TIPO_DOCUMENTO_INCLUDE = {
 
 class PersonaRepository {
     /**
-     * Obtiene una persona por su ID
-     * @param {string} abreviatura - La abreviatura del tipo de documento
-     * @param {string} numeroDocumento - El número de documento de la persona a buscar
-     * @returns {Promise<PersonaResponse>} Respuesta con la persona encontrada/creada o mensaje de error
-     */
-    async getInfoApi(abreviatura: string, numeroDocumento: string): Promise<PersonaResponse> {
-        try {
-            const urlApi = (abreviatura === 'DNI') ? `${API_DNI}${numeroDocumento}` : `${API_CEE}${numeroDocumento}`
-            const { env } = process
-            const { TOKEN_API_DOCS } = env
-
-            const response = await axios.get(`${urlApi}`, {
-                headers: {
-                    Authorization: `Bearer ${TOKEN_API_DOCS}`
-                }
-            })
-
-            const { status, data: apiData } = response
-
-            if (status === 200) {
-                const {
-                    numero,
-                    nombres,
-                    apellido_paterno,
-                    apellido_materno,
-                    nombre_completo,
-                    departamento,
-                    provincia,
-                    distrito,
-                    direccion,
-                    direccion_completa,
-                    ubigeo_reniec,
-                    ubigeo_sunat,
-                    fecha_nacimiento,
-                    estado_civil,
-                    sexo
-                } = apiData.data
-
-                const {
-                    result: tipoDocResult,
-                    data: dataTipoDocumento,
-                    message: tipoDocMessage,
-                    status: tipoDocStatus
-                } = await TipoDocumentoRepository.getByAbreviatura(abreviatura)
-
-                if (!tipoDocResult && !dataTipoDocumento) {
-                    return {
-                        result: tipoDocResult,
-                        message: tipoDocMessage,
-                        status: tipoDocStatus
-                    }
-                }
-
-                const { id: idTipoDocumento } = dataTipoDocumento as ITipoDocumento
-
-                // const dataTipoDocumento = responseTipoDocumento.data as ITipoDocumento
-
-                const personaToCreate: IPersona = {
-                    id_tipodocumento: idTipoDocumento,
-                    numero_documento: numero,
-                    nombres,
-                    apellido_paterno,
-                    apellido_materno,
-                    nombre_completo,
-                    departamento,
-                    provincia,
-                    distrito,
-                    direccion,
-                    direccion_completa,
-                    ubigeo_reniec,
-                    ubigeo_sunat,
-                    fecha_nacimiento,
-                    estado_civil,
-                    sexo,
-                    origen: EOrigen.API,
-                    sistema: true,
-                    estado: true
-                }
-
-                const {
-                    result: createdPersonaResult,
-                    data: createdPersonaData,
-                    message: createdPersonaMessage,
-                    error: createdPersonaError,
-                    status: createdPersonaStatus
-                } = await this.create(personaToCreate)
-
-                if (createdPersonaResult) {
-                    return {
-                        result: createdPersonaResult,
-                        data: createdPersonaData,
-                        message: createdPersonaMessage,
-                        status: createdPersonaStatus
-                    }
-                }
-
-                return {
-                    result: createdPersonaResult,
-                    error: createdPersonaError,
-                    status: createdPersonaStatus
-                }
-            }
-
-            return {
-                result: false,
-                message: "Error al obtener datos de la persona",
-                data: [],
-                status
-            }
-
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-
-            if (errorMessage === 'Request failed with status code 404') {
-                const message = `No se encontró información con el número de documento: ${numeroDocumento}`
-                return { result: false, message, status: 404 }
-            } else {
-                return { result: false, error: errorMessage, status: 500 }
-            }
-        }
-    }
-
-    /**
      * Obtiene todas las personas
      * @returns {Promise<PersonaResponse>}
      */
@@ -184,6 +56,30 @@ class PersonaRepository {
     }
 
     /**
+     * Obtiene todas las personas por estado
+     * @param {boolean} estado - El estado de las personas a buscar
+     * @returns {Promise<PersonaResponse>}>} Respuesta con la lista de personas filtrados
+     */
+    async getAllByEstado(estado: boolean): Promise<PersonaResponse> {
+        try {
+            const personas = await Persona.findAll({
+                where: {
+                    estado
+                },
+                attributes: PERSONA_ATTRIBUTES,
+                order: [
+                    ['apellido_paterno', 'ASC']
+                ]
+            })
+
+            return { result: true, data: personas, status: 200 }
+        } catch (error: any) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    /**
      * Obtiene una persona por su ID
      * @param {string} id - El ID UUID de la persona a buscar
      * @returns {Promise<PersonaResponse>} Respuesta con la persona encontrada o mensaje de no encontrado
@@ -192,10 +88,7 @@ class PersonaRepository {
         try {
             const persona = await Persona.findByPk(id, {
                 attributes: PERSONA_ATTRIBUTES,
-                include: [TIPO_DOCUMENTO_INCLUDE],
-                order: [
-                    ['apellido_paterno', 'ASC']
-                ]
+                include: [TIPO_DOCUMENTO_INCLUDE]
             })
 
             if (!persona) {
@@ -227,7 +120,7 @@ class PersonaRepository {
             })
 
             if (!persona) {
-                return { result: false, data: [], message: 'Persona no encontrada', status: 200 }
+                return { result: false, data: [], message: 'Persona no encontrada', status: 404 }
             }
 
             return { result: true, data: persona, message: 'Persona encontrada', status: 200 }
@@ -248,11 +141,26 @@ class PersonaRepository {
         const t = await sequelize.transaction()
 
         try {
-            const newPersona = await Persona.create(data as any)
+            const { numero_documento } = data
+
+            // Verificar si el número de documento existe en otra persona
+            const existingPersona = await Persona.findOne({
+                where: {
+                    numero_documento
+                }
+            })
+
+            if (existingPersona) {
+                return { result: false, message: 'El número de documento ya existe', status: 409 }
+            }
+
+            const newPersona = await Persona.create(data as IPersona)
 
             await t.commit()
 
-            if (newPersona.id) {
+            const { id } = newPersona
+
+            if (id) {
                 return { result: true, message: 'Persona registrada con éxito', data: newPersona, status: 200 }
             }
 
@@ -276,11 +184,24 @@ class PersonaRepository {
         const t = await sequelize.transaction()
 
         try {
+            const { numero_documento } = data
+
             const persona = await Persona.findByPk(id, { transaction: t })
 
             if (!persona) {
                 await t.rollback();
-                return { result: false, data: [], message: 'Persona no encontrada', status: 200 }
+                return { result: false, data: [], message: 'Persona no encontrada', status: 404 }
+            }
+
+            // Verificar si el número de documento existe en otra persona
+            const existingPersona = await Persona.findOne({
+                where: {
+                    numero_documento
+                }
+            })
+
+            if (existingPersona) {
+                return { result: false, message: 'El número de documento ya existe', status: 409 }
             }
 
             const dataUpdatePersona: Partial<IPersona> = data
@@ -293,6 +214,30 @@ class PersonaRepository {
         } catch (error) {
             await t.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    /**
+     * Actualiza el estado de una persona
+     * @param {string} id - El ID UUID de la persona 
+     * @param {boolean} estado - El nuevo estado de la persona 
+     * @returns {Promise<PersonaResponse>} Respuesta con la persona actualizada
+     */
+    async updateEstado(id: string, estado: boolean): Promise<PersonaResponse> {
+        try {
+            const persona = await Persona.findByPk(id)
+
+            if (!persona) {
+                return { result: false, message: 'Persona no encontrada', status: 404 }
+            }
+
+            persona.estado = estado
+            await persona.save()
+
+            return { result: true, message: 'Estado actualizado con éxito', data: persona, status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
         }
     }
@@ -311,7 +256,7 @@ class PersonaRepository {
 
             if (!persona) {
                 await t.rollback()
-                return { result: false, data: [], message: 'Persona no encontrada', status: 200 };
+                return { result: false, data: [], message: 'Persona no encontrada', status: 404 };
             }
 
             await persona.destroy({ transaction: t });

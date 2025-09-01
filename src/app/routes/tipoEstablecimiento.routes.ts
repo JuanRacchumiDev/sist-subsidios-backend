@@ -60,6 +60,51 @@ const router = Router()
 
 /**
  * @swagger
+ * /api/v1/tipo-establecimientos/buscar-por-nombre:
+ *   get:
+ *     summary: Obtiene un único tipo de establecimiento por su nombre.
+ *     tags: [TipoEstablecimientos]
+ *     parameters:
+ *       - in: query
+ *         name: nombre
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: Nombre del tipo de establecimiento a obtener
+ *     responses:
+ *       200:
+ *         description: La descripción del tipo de establecimiento por nombre
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/TipoEstablecimientoResponse'
+ *       400:
+ *         description: Bad request, name parameter is missing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Tipo de establecimiento no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse' 
+ */
+router.get('/buscar-por-nombre', authToken, TipoEstablecimientoController.getTipoEstablecimientoByNombre)
+
+/**
+ * @swagger
  * /api/v1/tipo-establecimientos:
  *   get:
  *     summary: Obtiene un listado de todos los tipo de establecimientos. Opcionalmente filtrado por estado.
@@ -128,51 +173,6 @@ router.get('/', authToken, TipoEstablecimientoController.getAllTipoEstablecimien
  *                 
  */
 router.get('/:id', authToken, TipoEstablecimientoController.getTipoEstablecimientoById)
-
-/**
- * @swagger
- * /api/v1/tipo-establecimientos/by-nombre:
- *   get:
- *     summary: Obtiene un único tipo de establecimiento por su nombre.
- *     tags: [TipoEstablecimientos]
- *     parameters:
- *       - in: query
- *         name: nombre
- *         required: true
- *         schema:
- *           type: string
- *           description: Nombre del tipo de establecimiento a obtener
- *     responses:
- *       200:
- *         description: La descripción del tipo de establecimiento por nombre
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/TipoEstablecimientoResponse'
- *       400:
- *         description: Bad request, name parameter is missing
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       404:
- *         description: Tipo de establecimiento no encontrado.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse' 
- */
-router.get('/by-nombre', authToken, TipoEstablecimientoController.getTipoEstablecimientoByNombre)
 
 /**
  * @swagger
@@ -276,7 +276,7 @@ router.post('/', authToken, TipoEstablecimientoController.createTipoEstablecimie
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', authToken, TipoEstablecimientoController.updateTipoEstablecimiento)
+router.patch('/:id', authToken, TipoEstablecimientoController.updateTipoEstablecimiento)
 
 /**
  * @swagger

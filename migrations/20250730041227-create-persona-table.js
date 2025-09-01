@@ -23,8 +23,8 @@ module.exports = {
           model: 'tipo_documento', // Nombre de la tabla a la que hace referencia
           key: 'id',
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'RESTRICT', // Coincide con onDelete del modelo TipoDocumento.belongsTo(Persona)
+        // onUpdate: 'CASCADE',
+        // onDelete: 'RESTRICT', // Coincide con onDelete del modelo TipoDocumento.belongsTo(Persona)
       },
       numero_documento: {
         type: Sequelize.STRING(13),

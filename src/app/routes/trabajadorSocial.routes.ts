@@ -11,6 +11,8 @@ const router = Router()
  *   description: API para gestionar trabajadores sociales
  */
 
+router.get('/buscar-por-tipodoc-numdoc', authToken, TrabajadorSocialController.getTrabajadorSocialByIdTipoDocAndNumDoc)
+
 /**
  * @swagger
  * /api/v1/trab-sociales:
@@ -184,7 +186,7 @@ router.post('/', authToken, TrabajadorSocialController.createTrabajadorSocial)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', authToken, TrabajadorSocialController.updateTrabajadorSocial)
+router.patch('/:id', authToken, TrabajadorSocialController.updateTrabajadorSocial)
 
 /**
  * @swagger

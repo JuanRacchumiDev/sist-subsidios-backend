@@ -276,7 +276,7 @@ router.post('/', authToken, PerfilController.createPerfil)
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', authToken, PerfilController.updatePerfil)
+router.patch('/:id', authToken, PerfilController.updatePerfil)
 
 /**
  * @swagger

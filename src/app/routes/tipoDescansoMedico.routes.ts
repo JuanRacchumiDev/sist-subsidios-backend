@@ -60,6 +60,51 @@ const router = Router()
 
 /**
  * @swagger
+ * /api/v1/tipo-descanso-medicos/buscar-por-nombre:
+ *   get:
+ *     summary: Obtiene un único tipo de descanso médico por su nombre.
+ *     tags: [TipoDescansoMedicos]
+ *     parameters:
+ *       - in: query
+ *         name: nombre
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: Nombre del tipo de descanso médico a obtener
+ *     responses:
+ *       200:
+ *         description: La descripción del tipo de descanso médico por nombre
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/TipoDescansoMedicoResponse'
+ *       400:
+ *         description: Bad request, name parameter is missing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Tipo de descanso médico no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               items:
+ *                 $ref: '#/components/schemas/ErrorResponse' 
+ */
+router.get('/buscar-por-nombre', authToken, TipoDescansoMedicoController.getTipoDescansoMedicoByNombre)
+
+/**
+ * @swagger
  * /api/v1/tipo-descanso-medicos:
  *   get:
  *     summary: Obtiene un listado de todos los tipo de descanso médicos. Opcionalmente filtrado por estado.
@@ -128,51 +173,6 @@ router.get('/', authToken, TipoDescansoMedicoController.getAllTipoDescansoMedico
  *                 
  */
 router.get('/:id', authToken, TipoDescansoMedicoController.getTipoDescansoMedicoById)
-
-/**
- * @swagger
- * /api/v1/tipo-descanso-medicos/by-nombre:
- *   get:
- *     summary: Obtiene un único tipo de descanso médico por su nombre.
- *     tags: [TipoDescansoMedicos]
- *     parameters:
- *       - in: query
- *         name: nombre
- *         required: true
- *         schema:
- *           type: string
- *           description: Nombre del tipo de descanso médico a obtener
- *     responses:
- *       200:
- *         description: La descripción del tipo de descanso médico por nombre
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/TipoDescansoMedicoResponse'
- *       400:
- *         description: Bad request, name parameter is missing
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       404:
- *         description: Tipo de descanso médico no encontrado.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Internal server error.
- *         content:
- *           application/json:
- *             schema:
- *               items:
- *                 $ref: '#/components/schemas/ErrorResponse' 
- */
-router.get('/by-nombre', authToken, TipoDescansoMedicoController.getTipoDescansoMedicoByNombre)
 
 /**
  * @swagger
@@ -276,7 +276,7 @@ router.post('/', authToken, TipoDescansoMedicoController.createTipoDescansoMedic
  *               items:
  *                 $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:id', authToken, TipoDescansoMedicoController.updateTipoDescansoMedico)
+router.patch('/:id', authToken, TipoDescansoMedicoController.updateTipoDescansoMedico)
 
 /**
  * @swagger

@@ -1,5 +1,5 @@
 import { Perfil } from "../../models/Perfil";
-import HString from "../../../utils/helpers/HString";
+import HString from "../../../helpers/HString";
 import { IPerfil, PerfilResponse } from '../../interfaces/Perfil/IPerfil';
 import { Op } from 'sequelize'
 
@@ -133,7 +133,7 @@ class PerfilRepository {
                 return { result: false, message: 'El perfil por registrar ya existe', status: 409 }
             }
 
-            const newPerfil = await Perfil.create(data as any)
+            const newPerfil = await Perfil.create(data as IPerfil)
 
             if (newPerfil.id) {
                 return { result: true, message: 'Perfil registrado con éxito', data: newPerfil, status: 200 }
@@ -228,7 +228,7 @@ class PerfilRepository {
                 return { result: false, data: [], message: 'Perfil no encontrado', status: 404 };
             }
 
-            await Perfil.destroy();
+            await perfil.destroy();
 
             return { result: true, data: perfil, message: 'Perfil eliminado correctamente', status: 200 };
         } catch (error) {

@@ -1,16 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import LoginService from '../services/Auth/Login'
 import LogoutService from '../services/Auth/Logout'
-import { IAuth } from "../interfaces/Auth/IAuth";
+import { AuthCredenciales } from '../types/Auth/TAuth'
 
 class AuthController {
     async login(req: Request, res: Response, next: NextFunction) {
         try {
             const { body } = req
-            const { username, password } = body
 
-            const dataAuth: IAuth = {
-                username,
+            const { email, password } = body
+
+            const dataAuth: AuthCredenciales = {
+                email,
                 password
             }
 

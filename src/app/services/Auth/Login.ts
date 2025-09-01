@@ -1,5 +1,5 @@
 import AuthRepository from "../../repositories/Auth/AuthRepository";
-import { AuthResponse, IAuth } from "../../interfaces/Auth/IAuth";
+import { AuthCredenciales, AuthResponse } from '../../types/Auth/TAuth'
 
 /**
  * @class LoginService
@@ -8,10 +8,10 @@ import { AuthResponse, IAuth } from "../../interfaces/Auth/IAuth";
 class LoginService {
     /**
      * Ejecuta la operación para obtener datos de inicio de sesión
-     * @param {IAuth} data - Los datos de inicio de sesión 
+     * @param {AuthCredenciales} data - Los datos de inicio de sesión 
      * @returns {Promise<AuthResponse>} La respuesta de la operación
      */
-    async execute(data: IAuth): Promise<AuthResponse> {
+    async execute(data: AuthCredenciales): Promise<AuthResponse> {
         return await AuthRepository.login(data)
     }
 }

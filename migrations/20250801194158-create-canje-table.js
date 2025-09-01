@@ -73,10 +73,6 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true
       },
-      estado_registro: {
-        type: Sequelize.STRING(30),
-        allowNull: false
-      },
       user_crea: {
         type: Sequelize.UUID,
         allowNull: true
@@ -88,6 +84,10 @@ module.exports = {
       user_elimina: {
         type: Sequelize.UUID,
         allowNull: true
+      },
+      estado_registro: {
+        type: Sequelize.STRING(30),
+        allowNull: false
       },
       sistema: {
         type: Sequelize.BOOLEAN,

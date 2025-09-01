@@ -16,3 +16,21 @@ export interface AreaResponse {
     error?: string
     status?: number
 }
+
+export interface IAreaPaginate {
+    currentPage: number
+    limit: number
+    totalPages: number
+    totalItems: number
+    nextPage: number | null
+    previousPage: number | null
+}
+
+export interface AreaResponsePaginate {
+    result: boolean
+    message?: string
+    data?: IArea[]
+    pagination?: IAreaPaginate
+    error?: string
+    status?: number
+}

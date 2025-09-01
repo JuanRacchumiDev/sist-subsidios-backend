@@ -1,5 +1,5 @@
 import { Pais } from "../../models/Pais";
-import HString from "../../../utils/helpers/HString";
+import HString from "../../../helpers/HString";
 import { IPais, PaisResponse } from '../../interfaces/Pais/IPais';
 import { Op } from 'sequelize'
 
@@ -134,7 +134,7 @@ class PaisRepository {
                 return { result: false, message: 'El país por registrar ya existe', status: 409 }
             }
 
-            const newPais = await Pais.create(data as any)
+            const newPais = await Pais.create(data as IPais)
 
             if (newPais.id) {
                 return { result: true, message: 'País registrado con éxito', data: newPais, status: 200 }
@@ -229,7 +229,7 @@ class PaisRepository {
                 return { result: false, data: [], message: 'País no encontrado', status: 404 };
             }
 
-            await Pais.destroy();
+            await pais.destroy();
 
             return { result: true, data: pais, message: 'País eliminada correctamente', status: 200 };
         } catch (error) {

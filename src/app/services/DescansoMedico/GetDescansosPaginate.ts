@@ -1,0 +1,21 @@
+import DescansoRepository from "../../repositories/DescansoMedico/DescansoMedicoRepository";
+import { DescansoMedicoResponsePaginate } from '../../interfaces/DescansoMedico/IDescansoMedico';
+
+/**
+ * @class GetDescansosPaginateService
+ * @description Servicio para obtener todas los descansos médicos con paginación, opcionalmente filtrados por estado
+ */
+class GetDescansosPaginateService {
+    /**
+     * Ejecuta la operación para obtener descansos médicos paginadas
+     * @param {number} page - El número de la página actual
+     * @param {number} limit - El número de ítems por página
+     * @param {boolean | undefined} estado - Opcional. Filtra los descansos médicos por su estado
+     * @returns {Promise<DescansoMedicoResponsePaginate>} La respuesta de obtener los descansos médicos
+     */
+    async execute(page: number, limit: number, estado?: boolean): Promise<DescansoMedicoResponsePaginate> {
+        return await DescansoRepository.getAllWithPaginate(page, limit, estado)
+    }
+}
+
+export default new GetDescansosPaginateService()

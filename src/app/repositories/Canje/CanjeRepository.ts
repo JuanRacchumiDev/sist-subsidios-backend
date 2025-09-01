@@ -1,15 +1,9 @@
-import { CanjeResponse, ICanje } from "../../interfaces/Canje/ICanje"
+import { CanjeResponse, CanjeResponsePaginate, ICanje, ICanjePaginate } from "../../interfaces/Canje/ICanje"
 import { Canje } from "../../models/Canje"
 import { DescansoMedico } from "../../models/DescansoMedico"
 import sequelize from "../../../config/database"
-
-const CANJE_ATTRIBUTES = [
-    'id',
-    'id_descansomedico',
-    'codigo',
-    'fecha_inicio_subsidio',
-
-]
+import { CANJE_ATTRIBUTES } from "../../../constants/CanjeConstant"
+import HPagination from "../../../helpers/HPagination"
 
 const DESCANSOMEDICO_INCLUDE = {
     model: DescansoMedico,
@@ -18,7 +12,6 @@ const DESCANSOMEDICO_INCLUDE = {
 }
 
 class CanjeRepository {
-
     /**
      * Obtiene todos los canjes
      * @returns {Promise<CanjeResponse>}
@@ -34,6 +27,50 @@ class CanjeRepository {
             })
 
             return { result: true, data: canjes, status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<CanjeResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Canje.findAndCountAll({
+                attributes: CANJE_ATTRIBUTES,
+                include: [DESCANSOMEDICO_INCLUDE],
+                where: whereClause,
+                order: [
+                    ['fecha_inicio_subsidio', 'DESC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: ICanjePaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
