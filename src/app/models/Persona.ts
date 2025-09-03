@@ -4,7 +4,6 @@ import { EOrigen } from '../enums/EOrigen';
 import { TipoDocumento } from './TipoDocumento';
 import sequelize from '../../config/database'
 
-// Define los atributos opcionales cuando se crea una instancia del modelo
 interface PersonaCreationAttributes extends Optional<IPersona, 'id'> { }
 
 export class Persona extends Model<IPersona, PersonaCreationAttributes> implements IPersona {
@@ -41,21 +40,8 @@ export class Persona extends Model<IPersona, PersonaCreationAttributes> implemen
 
     // Asociaciones
     public getTipoDocumento!: () => Promise<TipoDocumento>
-
-    // Asociación con el modelo TipoDocumento
-    // public tipoDocumento?: TipoDocumento;
-
-    // // Métodos de asociación
-    // static associate(models: any) {
-    //     Persona.belongsTo(models.TipoDocumento, {
-    //         foreignKey: 'id_tipodocumento',
-    //         as: 'tipoDocumento',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 Persona.init({
     id: {
         type: DataTypes.UUID,
@@ -221,6 +207,3 @@ Persona.init({
     paranoid: true,
     underscored: true
 })
-
-// return Persona;
-// };

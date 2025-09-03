@@ -4,7 +4,6 @@ import sequelize from '../../config/database'
 import { Colaborador } from './Colaborador';
 import { TrabajadorSocial } from './TrabajadorSocial';
 
-// Define los atributos opcionales cuando se crea una instancia del modelo
 interface PaisCreationAttributes extends Optional<IPais, 'id'> { }
 
 export class Pais extends Model<IPais, PaisCreationAttributes> implements IPais {
@@ -26,18 +25,8 @@ export class Pais extends Model<IPais, PaisCreationAttributes> implements IPais 
     // Asociaciones
     public getColaboradores?: () => Promise<Colaborador[]>
     public getTrabajadoresSociales?: () => Promise<TrabajadorSocial[]>
-
-    // // Métodos de asociación
-    // static associate(models: any) {
-    //     Pais.hasMany(models.Colaborador, {
-    //         foreignKey: 'id_pais',
-    //         as: 'colaboradores',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 Pais.init({
     id: {
         type: DataTypes.UUID,
@@ -98,6 +87,3 @@ Pais.init({
     paranoid: true,
     underscored: true
 })
-
-// return Pais;
-// };

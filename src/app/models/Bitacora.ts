@@ -22,7 +22,6 @@ export class Bitacora extends Model<IBitacora, BitacoraCreationAttributes> imple
     public readonly deleted_at!: Date
 }
 
-// export default (sequelize: Sequelize) => {
 Bitacora.init({
     id: {
         type: DataTypes.UUID,
@@ -79,6 +78,3 @@ Bitacora.init({
     paranoid: true,
     underscored: true
 })
-
-// return Bitacora
-// }

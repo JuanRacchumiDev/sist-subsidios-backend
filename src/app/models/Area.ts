@@ -4,7 +4,6 @@ import sequelize from '../../config/database'
 import { Colaborador } from './Colaborador';
 import { TrabajadorSocial } from './TrabajadorSocial';
 
-// Define los atributos opcionales cuando se crea una instancia del modelo
 interface AreaCreationAttributes extends Optional<IArea, 'id'> { }
 
 export class Area extends Model<IArea, AreaCreationAttributes> implements IArea {
@@ -25,19 +24,8 @@ export class Area extends Model<IArea, AreaCreationAttributes> implements IArea 
     // Asociaciones
     public getColaboradores?: () => Promise<Colaborador[]>
     public getTrabajadoresSociales?: () => Promise<TrabajadorSocial[]>
-
-    // Métodos de asociación
-    // static associate(model: any) {
-    //     // Un área puede tener muchos colaboradores
-    //     Area.hasMany(model.Colaborador, {
-    //         foreignKey: 'id_area',
-    //         as: 'colaboradores',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 Area.init({
     id: {
         type: DataTypes.UUIDV4,
@@ -91,6 +79,3 @@ Area.init({
     paranoid: true,
     underscored: true
 })
-
-// return Area;
-// };

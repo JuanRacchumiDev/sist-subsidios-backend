@@ -28,20 +28,9 @@ export class Cobro extends Model<ICobro, CobroCreationAttributes> implements ICo
     public readonly deleted_at!: Date
 
     // Asociación con el modelo Reembolso
-    // public reembolso?: Reembolso;
     public getReembolso!: () => Promise<Reembolso>
-
-    // Métodos de asociación
-    // static associate(models: any) {
-    //     Cobro.belongsTo(models.Reembolso, {
-    //         foreignKey: 'id_reembolso',
-    //         as: 'reembolso',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 Cobro.init({
     id: {
         type: DataTypes.UUID,
@@ -124,6 +113,3 @@ Cobro.init({
     paranoid: true,
     underscored: true
 })
-
-// return Cobro;
-// }

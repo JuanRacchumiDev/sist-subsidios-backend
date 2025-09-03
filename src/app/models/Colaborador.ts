@@ -62,7 +62,6 @@ export class Colaborador extends Model<IColaborador, ColaboradorCreationAttribut
     public getAdjuntos?: () => Promise<Adjunto>
 }
 
-// export default (sequelize: Sequelize) => {
 Colaborador.init({
     id: {
         type: DataTypes.UUID,
@@ -284,6 +283,3 @@ Colaborador.init({
     paranoid: true,
     underscored: true
 })
-
-// return Colaborador;
-// }

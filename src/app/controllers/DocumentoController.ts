@@ -33,34 +33,6 @@ class DocumentoController {
         }
     }
 
-    // async getDocumentoByNombre(req: Request, res: Response, next: NextFunction) {
-    //     try {
-    //         // const { nombre } = req.query; // Asumiendo que se pasa como query param
-    //         // if (typeof nombre !== 'string') {
-    //         //     return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
-    //         // }
-
-    //         const { query: { nombre } } = req
-
-    //         if (!nombre) {
-    //             return res.status(400).json(
-    //                 {
-    //                     result: false,
-    //                     message: 'El nombre es requerido como parámetro de consulta',
-    //                     status: 400
-    //                 }
-    //             );
-    //         }
-
-    //         const nombreStr = nombre as string
-
-    //         const result = await getDocumentoByNombreService.execute(nombreStr);
-    //         res.status(result.status || 200).json(result);
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // }
-
     async createDocumento(req: Request, res: Response, next: NextFunction) {
         try {
             const documentoData: IDocumentoTipoCont = req.body;

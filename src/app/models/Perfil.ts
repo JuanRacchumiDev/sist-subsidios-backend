@@ -2,7 +2,6 @@ import { DataTypes, Model, Optional } from 'sequelize'
 import { IPerfil } from '../interfaces/Perfil/IPerfil';
 import sequelize from '../../config/database'
 
-// Define los atributos opcionales cuando se crea una instancia del modelo
 interface PerfilCreationAttributes extends Optional<IPerfil, 'id'> { }
 
 export class Perfil extends Model<IPerfil, PerfilCreationAttributes> implements IPerfil {
@@ -19,21 +18,8 @@ export class Perfil extends Model<IPerfil, PerfilCreationAttributes> implements 
     public readonly created_at!: Date
     public readonly updated_at!: Date
     public readonly deleted_at!: Date
-
-    // Asociaciones
-    // public getUsuarios!: () => Promise<Usuario[]>
-
-    // Métodos de asociación
-    // static associate(models: any) {
-    //     Perfil.hasMany(models.Usuario, {
-    //         foreignKey: 'id_perfil',
-    //         as: 'usuarios',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 Perfil.init({
     id: {
         type: DataTypes.UUID,
@@ -87,6 +73,3 @@ Perfil.init({
     paranoid: true,
     underscored: true
 })
-
-// return Perfil;
-// };

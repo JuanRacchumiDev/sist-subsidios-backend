@@ -3,7 +3,6 @@ import { IEstablecimiento } from '../interfaces/Establecimiento/IEstablecimiento
 import { TipoEstablecimiento } from './TipoEstablecimiento';
 import sequelize from '../../config/database'
 
-// Define los atributos opcionales cuando se crea una instancia del modelo
 interface EstablecimientoCreationAttributes extends Optional<IEstablecimiento, 'id'> { }
 
 export class Establecimiento extends Model<IEstablecimiento, EstablecimientoCreationAttributes> implements IEstablecimiento {
@@ -27,21 +26,8 @@ export class Establecimiento extends Model<IEstablecimiento, EstablecimientoCrea
 
     // Asociaciones
     public getTipoEstablecimiento!: () => Promise<TipoEstablecimiento>
-
-    // // Asociación con el modelo TipoEstablecimiento
-    // public tipoEstablecimiento?: TipoEstablecimiento;
-
-    // // Métodos de asociación
-    // static associate(models: any) {
-    //     Establecimiento.belongsTo(models.TipoEstablecimiento, {
-    //         foreignKey: 'id_tipoestablecimiento',
-    //         as: 'tipoestablecimiento',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 Establecimiento.init({
     id: {
         type: DataTypes.UUID,
@@ -120,6 +106,3 @@ Establecimiento.init({
     paranoid: true,
     underscored: true
 })
-
-// return Establecimiento;
-// };

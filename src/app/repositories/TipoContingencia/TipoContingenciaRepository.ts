@@ -2,6 +2,7 @@ import { TipoContingencia } from "../../models/TipoContingencia";
 import HString from "../../../helpers/HString";
 import { ITipoContingencia, TipoContingenciaResponse } from '../../interfaces/TipoContingencia/ITipoContingencia';
 import { Op } from 'sequelize'
+import { DocumentoTipoCont } from "../../models/DocumentoTipoCont";
 
 const TIPO_CONTINGENCIA_ATTRIBUTES = [
     'id',
@@ -10,6 +11,11 @@ const TIPO_CONTINGENCIA_ATTRIBUTES = [
     'sistema',
     'estado'
 ];
+
+const TIPO_DOCUMENTOS_INCLUDE = {
+    model: DocumentoTipoCont,
+    as: 'documentos'
+}
 
 class TipoContingenciaRepository {
     /**
@@ -64,7 +70,10 @@ class TipoContingenciaRepository {
     async getById(id: string): Promise<TipoContingenciaResponse> {
         try {
             const tipo = await TipoContingencia.findByPk(id, {
-                attributes: TIPO_CONTINGENCIA_ATTRIBUTES
+                attributes: TIPO_CONTINGENCIA_ATTRIBUTES,
+                include: [
+                    TIPO_DOCUMENTOS_INCLUDE
+                ]
             })
 
             if (!tipo) {

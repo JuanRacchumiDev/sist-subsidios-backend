@@ -3,7 +3,6 @@ import { IEmpresa } from '../interfaces/Empresa/IEmpresa';
 import sequelize from '../../config/database'
 import { Colaborador } from './Colaborador';
 
-// Define los atributos opcionales cuando se crea una instancia del modelo
 interface EmpresaCreationAttributes extends Optional<IEmpresa, 'id'> { }
 
 export class Empresa extends Model<IEmpresa, EmpresaCreationAttributes> implements IEmpresa {
@@ -31,18 +30,8 @@ export class Empresa extends Model<IEmpresa, EmpresaCreationAttributes> implemen
 
     // Asociaciones
     public getColaboradores!: () => Promise<Colaborador[]>
-
-    // Métodos de asociación
-    // static associate(models: any) {
-    //     Empresa.hasMany(models.Colaborador, {
-    //         foreignKey: 'id_empresa',
-    //         as: 'usuarios',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 Empresa.init({
     id: {
         type: DataTypes.UUID,
@@ -157,6 +146,3 @@ Empresa.init({
     paranoid: true,
     underscored: true
 })
-
-// return Empresa;
-// };

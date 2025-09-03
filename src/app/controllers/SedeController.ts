@@ -36,11 +36,6 @@ class SedeController {
 
     async getSedeByNombre(req: Request, res: Response, next: NextFunction) {
         try {
-            // const { nombre } = req.query; // Asumiendo que se pasa como query param
-            // if (typeof nombre !== 'string') {
-            //     return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
-            // }
-
             const { query: { nombre } } = req
 
             if (!nombre) {

@@ -3,7 +3,6 @@ import CreateTipoAdjuntoService from '../services/TipoAdjunto/CreateTipoAdjunto'
 import DeleteTipoAdjuntoService from '../services/TipoAdjunto/DeleteTipoAdjunto'
 import GetTipoAdjuntoService from '../services/TipoAdjunto/GetTipoAdjunto'
 import GetTipoAdjuntosService from '../services/TipoAdjunto/GetTipoAdjuntos'
-// import getTipoAdjuntoByNombreService from '../services/TipoAdjunto/GetByNombre'
 import UpdateTipoAdjuntoService from '../services/TipoAdjunto/UpdateTipoAdjunto'
 import { ITipoAdjunto } from '../interfaces/TipoAdjunto/ITipoAdjunto';
 
@@ -33,34 +32,6 @@ class TipoAdjuntoController {
             next(error);
         }
     }
-
-    // async getTipoAdjuntoByNombre(req: Request, res: Response, next: NextFunction) {
-    //     try {
-    //         // const { nombre } = req.query; // Asumiendo que se pasa como query param
-    //         // if (typeof nombre !== 'string') {
-    //         //     return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
-    //         // }
-
-    //         const { query: { nombre } } = req
-
-    //         if (!nombre) {
-    //             return res.status(400).json(
-    //                 {
-    //                     result: false,
-    //                     message: 'El nombre es requerido como parámetro de consulta',
-    //                     status: 400
-    //                 }
-    //             );
-    //         }
-
-    //         const nombreStr = nombre as string
-
-    //         const result = await getTipoAdjuntoByNombreService.execute(nombreStr);
-    //         res.status(result.status || 200).json(result);
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // }
 
     async createTipoAjunto(req: Request, res: Response, next: NextFunction) {
         try {

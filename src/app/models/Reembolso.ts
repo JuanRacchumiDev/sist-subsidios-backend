@@ -29,27 +29,8 @@ export class Reembolso extends Model<IReembolso, ReembolsoCreationAttributes> im
 
     // Asociaciones
     public getCanje!: () => Promise<Canje>
-
-    // Asociación con el modelo Canje
-    // public canje?: Canje;
-
-    // // Métodos de asociación
-    // static associate(models: any) {
-    //     Reembolso.hasOne(models.Cobro, {
-    //         foreignKey: 'id_reembolso',
-    //         as: 'cobro',
-    //         onDelete: 'SET NULL'
-    //     });
-
-    //     Reembolso.belongsTo(models.Canje, {
-    //         foreignKey: 'id_canje',
-    //         as: 'canje',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 Reembolso.init({
     id: {
         type: DataTypes.UUID,
@@ -127,6 +108,3 @@ Reembolso.init({
     paranoid: true,
     underscored: true
 })
-
-// return Reembolso
-// }

@@ -3,7 +3,6 @@ import { ITipoEstablecimiento } from '../interfaces/TipoEstablecimiento/ITipoEst
 import sequelize from '../../config/database'
 import { DescansoMedico } from './DescansoMedico';
 
-// Define los atributos opcionales cuando se crea una instancia del modelo
 interface TipoEstablecimientoCreationAttributes extends Optional<ITipoEstablecimiento, 'id'> { }
 
 export class TipoEstablecimiento extends Model<ITipoEstablecimiento, TipoEstablecimientoCreationAttributes> implements ITipoEstablecimiento {
@@ -23,18 +22,8 @@ export class TipoEstablecimiento extends Model<ITipoEstablecimiento, TipoEstable
 
     // Asociaciones
     public getDescansosMedicos!: () => Promise<DescansoMedico[]>
-
-    // Métodos de asociación
-    // static associate(models: any) {
-    //     TipoEstablecimiento.hasMany(models.DescansoMedico, {
-    //         foreignKey: 'id_tipoestablecimiento',
-    //         as: 'descansosmedicos',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 TipoEstablecimiento.init({
     id: {
         type: DataTypes.UUID,
@@ -88,6 +77,3 @@ TipoEstablecimiento.init({
     paranoid: true,
     underscored: true
 })
-
-// return TipoEstablecimiento;
-// };

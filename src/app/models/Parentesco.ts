@@ -3,7 +3,6 @@ import { IParentesco } from '../interfaces/Parentesco/IParentesco';
 import sequelize from '../../config/database'
 import { Colaborador } from './Colaborador';
 
-// Define los atributos opcionales cuando se crea una instancia del modelo
 interface ParentescoCreationAttributes extends Optional<IParentesco, 'id'> { }
 
 export class Parentesco extends Model<IParentesco, ParentescoCreationAttributes> implements IParentesco {
@@ -25,7 +24,6 @@ export class Parentesco extends Model<IParentesco, ParentescoCreationAttributes>
     public getColaboradores!: () => Promise<Colaborador[]>
 }
 
-// export default (sequelize: Sequelize) => {
 Parentesco.init({
     id: {
         type: DataTypes.UUID,
@@ -79,6 +77,3 @@ Parentesco.init({
     paranoid: true,
     underscored: true
 })
-
-// return Parentesco;
-// };

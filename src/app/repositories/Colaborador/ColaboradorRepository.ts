@@ -187,9 +187,9 @@ class ColaboradorRepository {
      * @param {string} idEmpresa - El ID de la empresa 
      * @returns {Promise<ColaboradorResponse>}
      */
-    async getByIdEmpresa(idEmpresa: string): Promise<ColaboradorResponse> {
+    async getAllByIdEmpresa(idEmpresa: string): Promise<ColaboradorResponse> {
         try {
-            const colaboradores = await Colaborador.findOne({
+            const colaboradores = await Colaborador.findAll({
                 where: {
                     id_empresa: idEmpresa
                 },

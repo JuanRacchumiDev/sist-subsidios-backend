@@ -12,7 +12,7 @@ class GetColaboradoresByEmpresaService {
      * @returns {Promise<ColaboradorResponse>}
      */
     async execute(idEmpresa: string): Promise<ColaboradorResponse> {
-        return await ColaboradorRepository.getByIdEmpresa(idEmpresa)
+        return await ColaboradorRepository.getAllByIdEmpresa(idEmpresa)
     }
 }
 

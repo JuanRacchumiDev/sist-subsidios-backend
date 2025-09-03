@@ -4,7 +4,6 @@ import { ITipoDescansoMedico } from '../interfaces/TipoDescansoMedico/ITipoDesca
 import sequelize from '../../config/database'
 import { DescansoMedico } from './DescansoMedico';
 
-// Define los atributos opcionales cuando se crea una instancia del modelo
 interface TipoDescansoMedicoAttributes extends Optional<ITipoDescansoMedico, 'id'> { }
 
 export class TipoDescansoMedico extends Model<ITipoDescansoMedico, TipoDescansoMedicoAttributes> implements ITipoDescansoMedico {
@@ -24,18 +23,8 @@ export class TipoDescansoMedico extends Model<ITipoDescansoMedico, TipoDescansoM
 
     // Asociaciones
     public getDescansosMedicos!: () => Promise<DescansoMedico[]>
-
-    // Métodos de asociación
-    // static associate(models: any) {
-    //     TipoDescansoMedico.hasMany(models.DescansoMedico, {
-    //         foreignKey: 'id_tipodescansomedico',
-    //         as: 'descansosmedicos',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 TipoDescansoMedico.init({
     id: {
         type: DataTypes.UUID,
@@ -89,6 +78,3 @@ TipoDescansoMedico.init({
     paranoid: true,
     underscored: true
 })
-
-// return TipoDescansoMedico;
-// };

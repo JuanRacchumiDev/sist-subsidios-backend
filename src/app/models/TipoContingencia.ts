@@ -2,8 +2,8 @@ import { DataTypes, Model, Optional } from 'sequelize'
 import { ITipoContingencia } from '../interfaces/TipoContingencia/ITipoContingencia';
 import sequelize from '../../config/database'
 import { DescansoMedico } from './DescansoMedico';
+import { DocumentoTipoCont } from './DocumentoTipoCont';
 
-// Define los atributos opcionales cuando se crea una instancia del modelo
 interface TipoContingenciaAttributes extends Optional<ITipoContingencia, 'id'> { }
 
 export class TipoContingencia extends Model<ITipoContingencia, TipoContingenciaAttributes> implements ITipoContingencia {
@@ -22,19 +22,10 @@ export class TipoContingencia extends Model<ITipoContingencia, TipoContingenciaA
     public readonly deleted_at!: Date
 
     // Asociaciones
-    public getDescansosMedicos!: () => Promise<DescansoMedico[]>
-
-    // Métodos de asociación
-    // static associate(models: any) {
-    //     TipoContingencia.hasMany(models.DescansoMedico, {
-    //         foreignKey: 'id_tipocontingencia',
-    //         as: 'descansosmedicos',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
+    public getDescansosMedicos?: () => Promise<DescansoMedico[]>
+    public getDocumentos?: () => Promise<DocumentoTipoCont[]>
 }
 
-// export default (sequelize: Sequelize) => {
 TipoContingencia.init({
     id: {
         type: DataTypes.UUID,
@@ -88,6 +79,3 @@ TipoContingencia.init({
     paranoid: true,
     underscored: true
 })
-
-// return TipoContingencia;
-// };

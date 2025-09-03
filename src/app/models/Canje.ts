@@ -35,27 +35,9 @@ export class Canje extends Model<ICanje, CanjeCreationAttributes> implements ICa
     public readonly deleted_at!: Date
 
     // Asociaciones
-    // public descansoMedico?: DescansoMedico;
     public getDescansoMedico!: () => Promise<DescansoMedico>
-    // public getReembolso!: () => Promise<Reembolso>
-
-    // Métodos de asociación
-    // static associate(models: any) {
-    //     Canje.hasOne(models.Reembolso, {
-    //         foreignKey: 'id_canje',
-    //         as: 'reembolso',
-    //         onDelete: 'SET NULL'
-    //     });
-
-    //     Canje.belongsTo(models.DescansoMedico, {
-    //         foreignKey: 'id_descansomedico',
-    //         as: 'descansomedico',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 Canje.init({
     id: {
         type: DataTypes.UUID,
@@ -160,6 +142,3 @@ Canje.init({
     paranoid: true,
     underscored: true
 })
-
-// return Canje
-// }

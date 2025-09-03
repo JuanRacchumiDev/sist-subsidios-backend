@@ -3,7 +3,6 @@ import { ICargo } from '../interfaces/Cargo/ICargo';
 import sequelize from '../../config/database'
 import { Colaborador } from './Colaborador';
 
-// Define los atributos opcionales cuando se crea una instancia del modelo
 interface CargoCreationAttributes extends Optional<ICargo, 'id'> { }
 
 export class Cargo extends Model<ICargo, CargoCreationAttributes> implements ICargo {
@@ -23,17 +22,8 @@ export class Cargo extends Model<ICargo, CargoCreationAttributes> implements ICa
 
     // Define associations
     public getColaboradores!: () => Promise<Colaborador[]>
-    // static associate(model: any) {
-    //     // Un cargo puede tener muchos colaboradores
-    //     Cargo.hasMany(model.Colaborador, {
-    //         foreignKey: 'id_cargo',
-    //         as: 'colaboradores',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default () => {
 Cargo.init({
     id: {
         type: DataTypes.UUIDV4,
@@ -87,6 +77,3 @@ Cargo.init({
     paranoid: true,
     underscored: true
 })
-
-// return Cargo;
-// };

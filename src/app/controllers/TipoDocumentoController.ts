@@ -3,8 +3,6 @@ import CreateTipoDocumentoService from '../services/TipoDocumento/CreateTipo'
 import DeleteTipoDocumentoService from '../services/TipoDocumento/DeleteTipo'
 import GetTipoDocumentoService from '../services/TipoDocumento/GetTipo'
 import GetTipoDocumentosService from '../services/TipoDocumento/GetTipos'
-// import GetTipoDocumentoByNombreService from '../services/TipoDocumento/GetByNombre'
-// import GetTipoDocumentoByAbreviaturaService from '../services/TipoDocumento/GetByAbreviatura'
 import GetBySearchService from '../services/TipoDocumento/GetBySearch'
 import UpdateTipoDocumentoService from '../services/TipoDocumento/UpdateTipo'
 import { ITipoDocumento } from '../interfaces/TipoDocumento/ITipoDocumento';
@@ -62,52 +60,6 @@ class TipoDocumentoController {
             next(error);
         }
     }
-
-    // async getTipoDocumentoByNombre(req: Request, res: Response, next: NextFunction) {
-    //     try {
-    //         const { query: { nombre } } = req
-
-    //         if (!nombre) {
-    //             return res.status(400).json(
-    //                 {
-    //                     result: false,
-    //                     message: 'El nombre es requerido como parámetro de consulta',
-    //                     status: 400
-    //                 }
-    //             );
-    //         }
-
-    //         const nombreStr = nombre as string
-
-    //         const result = await GetTipoDocumentoByNombreService.execute(nombreStr);
-    //         res.status(result.status || 200).json(result);
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // }
-
-    // async getTipoDocumentoByAbreviatura(req: Request, res: Response, next: NextFunction) {
-    //     try {
-    //         const { query: { abreviatura } } = req
-
-    //         if (!abreviatura) {
-    //             return res.status(400).json(
-    //                 {
-    //                     result: false,
-    //                     message: 'El nombre es requerido como parámetro de consulta',
-    //                     status: 400
-    //                 }
-    //             );
-    //         }
-
-    //         const abreviaturaStr = abreviatura as string
-
-    //         const result = await GetTipoDocumentoByAbreviaturaService.execute(abreviaturaStr);
-    //         res.status(result.status || 200).json(result);
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // }
 
     async createTipoDocumento(req: Request, res: Response, next: NextFunction) {
         try {

@@ -56,63 +56,8 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public getTipoContingencia!: () => Promise<TipoContingencia>
     public getDiagnostico!: () => Promise<Diagnostico>
     public getEstablecimiento?: () => Promise<Establecimiento>
-
-    // // Asociación con el modelo Colaborador
-    // public colaborador?: Colaborador;
-
-    // // Asociación con el modelo TipoDescansoMedico
-    // public tipoDescansoMedico?: TipoDescansoMedico;
-
-    // // Asociación con el modelo TipoContingencia
-    // public tipoContingencia?: TipoContingencia;
-
-    // // Asociación con el modelo Diagnóstico
-    // public diagnostico?: Diagnostico;
-
-    // // Asociación con el modelos Establecimiento
-    // public establecimiento?: Establecimiento;
-
-    // Métodos de asociación
-    // static associate(models: any) {
-    //     DescansoMedico.hasOne(models.Canje, {
-    //         foreignKey: 'id_descansomedico',
-    //         as: 'canje',
-    //         onDelete: 'SET NULL'
-    //     });
-
-    //     DescansoMedico.belongsTo(models.Colaborador, {
-    //         foreignKey: 'id_colaborador',
-    //         as: 'colaborador',
-    //         onDelete: 'SET NULL'
-    //     });
-
-    //     DescansoMedico.belongsTo(models.TipoDescansoMedico, {
-    //         foreignKey: 'id_tipodescansomedico',
-    //         as: 'tipoDescansoMedico',
-    //         onDelete: 'SET NULL'
-    //     });
-
-    //     DescansoMedico.belongsTo(models.TipoContingencia, {
-    //         foreignKey: 'id_tipocontingencia',
-    //         as: 'tipocontingencia',
-    //         onDelete: 'SET NULL'
-    //     });
-
-    //     DescansoMedico.belongsTo(models.Diagnostico, {
-    //         foreignKey: 'codcie10_diagnostico',
-    //         as: 'diagnostico',
-    //         onDelete: 'SET NULL'
-    //     });
-
-    //     DescansoMedico.belongsTo(models.Establecimiento, {
-    //         foreignKey: 'id_establecimiento',
-    //         as: 'establecimiento',
-    //         onDelete: 'SET NULL'
-    //     })
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 DescansoMedico.init({
     id: {
         type: DataTypes.UUID,
@@ -263,6 +208,3 @@ DescansoMedico.init({
     paranoid: true,
     underscored: true
 })
-
-// return DescansoMedico;
-// }

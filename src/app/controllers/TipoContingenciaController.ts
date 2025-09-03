@@ -20,7 +20,7 @@ class TipoContingenciaController {
             const result = await GetTipoContingenciasService.execute(estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
-            next(error) // Pasa al error al middleware de manejo de errores
+            next(error)
         }
     }
 

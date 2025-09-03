@@ -4,7 +4,6 @@ import sequelize from '../../config/database'
 import { Persona } from './Persona';
 import { Colaborador } from './Colaborador';
 
-// Define los atributos opcionales cuando se crea una instancia del modelo
 interface TipoDocumentoCreationAttributes extends Optional<ITipoDocumento, 'id'> { }
 
 export class TipoDocumento extends Model<ITipoDocumento, TipoDocumentoCreationAttributes> implements ITipoDocumento {
@@ -31,24 +30,8 @@ export class TipoDocumento extends Model<ITipoDocumento, TipoDocumentoCreationAt
     // Asociaciones
     public getPersonas!: () => Promise<Persona[]>
     public getColaboradores!: () => Promise<Colaborador[]>
-
-    // Métodos de asociación
-    // static associate(models: any) {
-    //     TipoDocumento.hasMany(models.Persona, {
-    //         foreignKey: 'id_tipodocumento',
-    //         as: 'personas',
-    //         onDelete: 'SET NULL'
-    //     });
-
-    //     TipoDocumento.hasMany(models.Colaborador, {
-    //         foreignKey: 'id_tipodocumento',
-    //         as: 'colaboradores',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 TipoDocumento.init({
     id: {
         type: DataTypes.UUID,
@@ -134,6 +117,3 @@ TipoDocumento.init({
     paranoid: true,
     underscored: true
 })
-
-// return TipoDocumento;
-// };

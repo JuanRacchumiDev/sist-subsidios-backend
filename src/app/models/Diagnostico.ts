@@ -3,7 +3,6 @@ import { IDiagnostico } from '../interfaces/Diagnostico/IDiagnostico';
 import sequelize from '../../config/database'
 import { DescansoMedico } from './DescansoMedico';
 
-// Define los atributos opcionales cuando se crea una instancia del modelo
 interface DiagnosticoCreationAttributes extends Optional<IDiagnostico, 'codCie10'> { }
 
 export class Diagnostico extends Model<IDiagnostico, DiagnosticoCreationAttributes> implements IDiagnostico {
@@ -25,18 +24,8 @@ export class Diagnostico extends Model<IDiagnostico, DiagnosticoCreationAttribut
 
     // Asociaciones
     public getDescansosMedicos!: () => Promise<DescansoMedico[]>
-
-    // Métodos de asociación
-    // static associate(models: any) {
-    //     Diagnostico.hasMany(models.DescansoMedico, {
-    //         foreignKey: 'codcie10_diagnostico',
-    //         as: 'descansosmedicos',
-    //         onDelete: 'SET NULL'
-    //     });
-    // }
 }
 
-// export default (sequelize: Sequelize) => {
 Diagnostico.init({
     codCie10: {
         type: DataTypes.STRING(10),
@@ -98,6 +87,3 @@ Diagnostico.init({
     paranoid: true,
     underscored: true
 })
-
-// return Diagnostico;
-// };
