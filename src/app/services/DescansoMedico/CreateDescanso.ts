@@ -26,7 +26,6 @@ class CreateDescansoService {
             id_tipodescansomedico,
             id_tipocontingencia,
             codcie10_diagnostico,
-            id_establecimiento
         } = data
 
         if (!id_colaborador) {
@@ -43,10 +42,6 @@ class CreateDescansoService {
 
         if (!codcie10_diagnostico) {
             return { result: false, message: "El diagnóstico es requerido para crear un descanso médico", status: 400 }
-        }
-
-        if (!id_establecimiento) {
-            return { result: false, message: "El establecimiento es requerido para crear un descanso médico", status: 400 }
         }
 
         const responseColaborador = await ColaboradorRepository.getById(id_colaborador)
@@ -73,11 +68,11 @@ class CreateDescansoService {
             return { result: false, message: 'Diagnóstico no encontrado', status: 404 }
         }
 
-        const responseEstablecimiento = await EstablecimientoRepository.getById(id_establecimiento)
-        const { result: resultEstablecimiento, data: dataEstablecimiento } = responseEstablecimiento
-        if (!resultEstablecimiento || !dataEstablecimiento) {
-            return { result: false, message: 'Establecimiento no encontrado', status: 404 }
-        }
+        // const responseEstablecimiento = await EstablecimientoRepository.getById(id_establecimiento)
+        // const { result: resultEstablecimiento, data: dataEstablecimiento } = responseEstablecimiento
+        // if (!resultEstablecimiento || !dataEstablecimiento) {
+        //     return { result: false, message: 'Establecimiento no encontrado', status: 404 }
+        // }
 
         const { nombres, apellido_paterno, apellido_materno } = dataColaborador as IColaborador
         const nombreColaborador = `${nombres} ${apellido_paterno} ${apellido_materno}`

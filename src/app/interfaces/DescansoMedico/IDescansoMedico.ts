@@ -11,7 +11,7 @@ export interface IDescansoMedico {
     id_tipodescansomedico?: string
     id_tipocontingencia?: string
     codcie10_diagnostico?: string
-    id_establecimiento?: string
+    // id_establecimiento?: string
     codigo?: string
     fecha_otorgamiento?: string
     fecha_inicio?: string
@@ -26,6 +26,7 @@ export interface IDescansoMedico {
     nombre_tipodescansomedico?: string
     nombre_tipocontingencia?: string
     nombre_diagnostico?: string
+    nombre_establecimiento?: string
     observacion?: string
     total_dias?: number
     user_crea?: string
@@ -42,7 +43,7 @@ export interface IDescansoMedico {
     tipoDescansoMedico?: ITipoDescansoMedico
     tipoContingencia?: ITipoContingencia
     diagnostico?: IDiagnostico
-    establecimiento?: IEstablecimiento
+    // establecimiento?: IEstablecimiento
 }
 
 export interface DescansoMedicoResponse {

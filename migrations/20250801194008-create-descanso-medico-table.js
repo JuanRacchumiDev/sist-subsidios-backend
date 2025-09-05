@@ -50,14 +50,14 @@ module.exports = {
           key: 'codCie10'
         }
       },
-      id_establecimiento: {
-        type: Sequelize.UUID,
-        allowNull: false,
-        references: {
-          model: 'establecimiento',
-          key: 'id'
-        }
-      },
+      // id_establecimiento: {
+      //   type: Sequelize.UUID,
+      //   allowNull: false,
+      //   references: {
+      //     model: 'establecimiento',
+      //     key: 'id'
+      //   }
+      // },
       codigo: {
         type: Sequelize.STRING(12),
         allowNull: false,
@@ -114,6 +114,10 @@ module.exports = {
       nombre_diagnostico: {
         type: Sequelize.STRING(100),
         allowNull: false
+      },
+      nombre_establecimiento: {
+        type: Sequelize.STRING(100),
+        allowNull: true
       },
       observacion: {
         type: Sequelize.TEXT,

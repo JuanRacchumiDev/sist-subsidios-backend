@@ -17,7 +17,7 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public id_tipodescansomedico?: string | undefined;
     public id_tipocontingencia?: string | undefined;
     public codcie10_diagnostico?: string | undefined;
-    public id_establecimiento?: string | undefined;
+    // public id_establecimiento?: string | undefined;
     public codigo?: string | undefined;
     public fecha_otorgamiento?: string | undefined;
     public fecha_inicio?: string | undefined;
@@ -32,6 +32,7 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public nombre_tipodescansomedico?: string | undefined;
     public nombre_tipocontingencia?: string | undefined;
     public nombre_diagnostico?: string | undefined;
+    public nombre_establecimiento?: string | undefined;
     public observacion?: string | undefined;
     public total_dias?: number | undefined;
     public is_subsidio?: boolean | undefined;
@@ -55,7 +56,7 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public getTipoDescansoMedico!: () => Promise<TipoDescansoMedico>
     public getTipoContingencia!: () => Promise<TipoContingencia>
     public getDiagnostico!: () => Promise<Diagnostico>
-    public getEstablecimiento?: () => Promise<Establecimiento>
+    // public getEstablecimiento?: () => Promise<Establecimiento>
 }
 
 DescansoMedico.init({
@@ -146,6 +147,13 @@ DescansoMedico.init({
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_diagnostico', value ? value.trim() : undefined)
+        }
+    },
+    nombre_establecimiento: {
+        type: new DataTypes.STRING(100),
+        allowNull: true,
+        set(value: string) {
+            this.setDataValue('nombre_establecimiento', value ? value.trim() : undefined)
         }
     },
     observacion: {

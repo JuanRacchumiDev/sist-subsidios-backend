@@ -11,6 +11,7 @@ import sequelize from '../../../config/database'
 import fs from 'fs/promises'
 import { ADJUNTO_ATTRIBUTES } from "../../../constants/AjuntoConstant";
 import HPagination from "../../../helpers/HPagination";
+import { DocumentoTipoCont } from "../../models/DocumentoTipoCont";
 
 const TIPO_ADJUNTO_INCLUDE = {
     model: TipoAdjunto,
@@ -54,6 +55,12 @@ const TRABSOCIAL_INCLUDE = {
     attributes: ['id', 'nombres', 'apellido_paterno', 'apellido_materno']
 }
 
+const DOCUMENTO_TIPO_CONT_INCLUDE = {
+    model: DocumentoTipoCont,
+    as: 'documentoTipoCont',
+    attributes: ['id', 'nombre']
+}
+
 class AdjuntoRepository {
     /**
     * Obtiene todos los adjuntos
@@ -70,7 +77,8 @@ class AdjuntoRepository {
                     COBRO_INCLUDE,
                     REEMBOLSO_INCLUDE,
                     COLABORADOR_INCLUDE,
-                    TRABSOCIAL_INCLUDE
+                    TRABSOCIAL_INCLUDE,
+                    DOCUMENTO_TIPO_CONT_INCLUDE
                 ],
                 order: [
                     ['id', 'DESC']
@@ -100,7 +108,8 @@ class AdjuntoRepository {
                     COBRO_INCLUDE,
                     REEMBOLSO_INCLUDE,
                     COLABORADOR_INCLUDE,
-                    TRABSOCIAL_INCLUDE
+                    TRABSOCIAL_INCLUDE,
+                    DOCUMENTO_TIPO_CONT_INCLUDE
                 ],
                 where: whereClause,
                 order: [
@@ -152,7 +161,8 @@ class AdjuntoRepository {
                     COBRO_INCLUDE,
                     REEMBOLSO_INCLUDE,
                     COLABORADOR_INCLUDE,
-                    TRABSOCIAL_INCLUDE
+                    TRABSOCIAL_INCLUDE,
+                    DOCUMENTO_TIPO_CONT_INCLUDE
                 ]
             }) as IAdjunto
 

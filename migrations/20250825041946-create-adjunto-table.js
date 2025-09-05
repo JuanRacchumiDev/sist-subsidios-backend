@@ -72,6 +72,14 @@ module.exports = {
           key: 'id'
         }
       },
+      id_documento: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model: 'documento_tipo_contingencia',
+          key: 'id'
+        }
+      },
       file_name: {
         type: Sequelize.STRING(100),
         allowNull: false
@@ -86,6 +94,10 @@ module.exports = {
       },
       file_path: {
         type: Sequelize.STRING(100),
+        allowNull: true
+      },
+      codigo_temp: {
+        type: Sequelize.STRING(10),
         allowNull: true
       },
       user_crea: {

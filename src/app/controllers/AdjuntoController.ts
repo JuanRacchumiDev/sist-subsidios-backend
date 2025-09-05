@@ -89,7 +89,9 @@ class AdjuntoController {
                 id_cobro,
                 id_reembolso,
                 id_colaborador,
-                id_trabajadorsocial
+                id_trabajadorsocial,
+                id_documento,
+                codigo_temp,
             } = body
 
             const { fieldname, originalname, mimetype, destination, filename, path, size } = file
@@ -102,10 +104,12 @@ class AdjuntoController {
                 id_reembolso,
                 id_colaborador,
                 id_trabajadorsocial,
+                id_documento,
                 file_name: originalname,
                 file_type: mimetype,
                 file_data: file.buffer,
-                file_path: path
+                file_path: path,
+                codigo_temp
             }
 
             const result = await CreateAdjuntoService.execute(fileData);

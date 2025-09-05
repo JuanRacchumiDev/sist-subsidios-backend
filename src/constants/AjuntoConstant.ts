@@ -7,9 +7,11 @@ export const ADJUNTO_ATTRIBUTES = [
     'id_reembolso',
     'id_colaborador',
     'id_trabajadorsocial',
+    'id_documento',
     'file_name',
     'file_type',
     'file_data',
     'file_path',
+    'codigo_temp',
     'estado'
 ];

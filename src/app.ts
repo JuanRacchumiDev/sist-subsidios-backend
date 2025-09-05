@@ -62,6 +62,7 @@ const setupDatabase = async () => {
         Adjunto.belongsTo(Reembolso, { foreignKey: 'id_reembolso', as: 'reembolso' })
         Adjunto.belongsTo(Colaborador, { foreignKey: 'id_colaborador', as: 'colaborador' })
         Adjunto.belongsTo(TrabajadorSocial, { foreignKey: 'id_trabajadorsocial', as: 'trabajadorSocial' })
+        Adjunto.belongsTo(DocumentoTipoCont, { foreignKey: 'id_documento', as: 'documentoTipoCont' })
 
         Canje.hasOne(DescansoMedico, { foreignKey: 'id_canje', as: 'descansoMedico' })
         Canje.belongsTo(Reembolso, { foreignKey: 'id_reembolso', as: 'reembolso' })
@@ -88,17 +89,18 @@ const setupDatabase = async () => {
         DescansoMedico.belongsTo(TipoDescansoMedico, { foreignKey: 'id_tipodescansomedico', as: 'tipoDescansoMedico' })
         DescansoMedico.belongsTo(TipoContingencia, { foreignKey: 'id_tipocontingencia', as: 'tipoContingencia' })
         DescansoMedico.belongsTo(Diagnostico, { foreignKey: 'codcie10_diagnostico', as: 'diagnostico' })
-        DescansoMedico.belongsTo(Establecimiento, { foreignKey: 'id_establecimiento', as: 'establecimiento' })
+        // DescansoMedico.belongsTo(Establecimiento, { foreignKey: 'id_establecimiento', as: 'establecimiento' })
         DescansoMedico.hasMany(Adjunto, { foreignKey: 'id_descansomedico', as: 'adjuntos' })
 
         Diagnostico.hasMany(DescansoMedico, { foreignKey: 'codcie10_diagnostico', as: 'descansosMedicos' })
 
         DocumentoTipoCont.belongsTo(TipoContingencia, { foreignKey: 'id_tipocontingencia', as: 'tipoContingencia' })
+        DocumentoTipoCont.hasMany(Adjunto, { foreignKey: 'id_documento', as: 'adjuntos' })
 
         Empresa.hasMany(Colaborador, { foreignKey: 'id_empresa', as: 'colaboradores' })
         Empresa.hasMany(RepresentanteLegal, { foreignKey: 'id_empresa', as: 'representantes' })
 
-        Establecimiento.hasMany(DescansoMedico, { foreignKey: 'id_establecimiento', as: 'descansosMedicos' })
+        // Establecimiento.hasMany(DescansoMedico, { foreignKey: 'id_establecimiento', as: 'descansosMedicos' })
         Establecimiento.belongsTo(TipoEstablecimiento, { foreignKey: 'id_tipoestablecimiento', as: 'tipoEstablecimiento' })
 
         Pais.hasMany(Colaborador, { foreignKey: 'id_pais', as: 'colaboradores' })

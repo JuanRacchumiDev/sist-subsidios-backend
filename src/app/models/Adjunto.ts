@@ -20,10 +20,12 @@ export class Adjunto extends Model<IAdjunto, AdjuntoCreationAttributes> implemen
     public id_reembolso?: string | undefined;
     public id_colaborador?: string | undefined;
     public id_trabajadorsocial?: string | undefined;
+    public id_documento?: string | undefined;
     public file_name?: string | undefined;
     public file_type?: string | undefined;
     public file_data?: Buffer | undefined;
     public file_path?: string | undefined;
+    public codigo_temp?: string | undefined;
     public user_crea?: string | undefined;
     public user_actualiza?: string | undefined;
     public user_elimina?: string | undefined;
@@ -108,6 +110,14 @@ Adjunto.init({
             key: 'id'
         }
     },
+    id_documento: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'DocumentoTipoCont',
+            key: 'id'
+        }
+    },
     file_name: {
         type: new DataTypes.STRING(100),
         allowNull: false,
@@ -132,6 +142,10 @@ Adjunto.init({
         set(value: string) {
             this.setDataValue('file_path', value ? value.trim() : undefined)
         }
+    },
+    codigo_temp: {
+        type: new DataTypes.STRING(10),
+        allowNull: true
     },
     user_crea: {
         type: DataTypes.UUID,

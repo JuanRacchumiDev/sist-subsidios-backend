@@ -6,6 +6,7 @@ import { Colaborador } from '../../models/Colaborador';
 import { TrabajadorSocial } from '../../models/TrabajadorSocial';
 import { Perfil } from '../../models/Perfil';
 import { AuthCredenciales, AuthResponse } from '../../types/Auth/TAuth';
+import HString from '../../../helpers/HString';
 
 class AuthRepository {
     /**
@@ -39,7 +40,7 @@ class AuthRepository {
             if (!existsUsuario) {
                 return {
                     result: false,
-                    message: 'Usuario no encontrado',
+                    message: 'Email no encontrado',
                     token: "",
                     status: 404
                 }
@@ -100,6 +101,8 @@ class AuthRepository {
                 nombreCompletoUsuario = `${existsTrabSocial.nombres} ${existsTrabSocial.apellido_paterno} ${existsTrabSocial.apellido_materno}`
             }
 
+            const codigoTemp: string = HString.generateRandomString(10)
+
             return {
                 result: true,
                 message: 'Inicio de sesión exitoso',
@@ -112,6 +115,7 @@ class AuthRepository {
                     nombreCompletoUsuario
                 },
                 status: 200,
+                codigoTemp
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
@@ -119,7 +123,8 @@ class AuthRepository {
                 result: false,
                 error: errorMessage,
                 token: "",
-                status: 500
+                status: 500,
+                codigoTemp: ""
             }
         }
     }

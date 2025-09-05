@@ -30,17 +30,16 @@ const TIPOCONTINGENCIA_INCLUDE = {
 const DIAGNOSTICO_INCLUDE = {
     model: Diagnostico,
     as: 'diagnostico',
-    attributes: ['id', 'nombre']
+    attributes: ['codCie10', 'nombre']
 }
 
-const ESTABLECIMIENTO_INCLUDE = {
-    model: Establecimiento,
-    as: 'establecimiento',
-    attributes: ['id', 'nombre']
-}
+// const ESTABLECIMIENTO_INCLUDE = {
+//     model: Establecimiento,
+//     as: 'establecimiento',
+//     attributes: ['id', 'nombre']
+// }
 
 class DescansoMedicoRepository {
-
     /**
      * Obtiene todos los descansos médicos
      * @returns {Promise<DescansoMedicoResponse>}
@@ -53,8 +52,7 @@ class DescansoMedicoRepository {
                     COLABORADOR_INCLUDE,
                     TIPODM_INCLUDE,
                     TIPOCONTINGENCIA_INCLUDE,
-                    DIAGNOSTICO_INCLUDE,
-                    ESTABLECIMIENTO_INCLUDE
+                    DIAGNOSTICO_INCLUDE
                 ],
                 order: [
                     ['fecha_inicio', 'DESC']
@@ -81,8 +79,7 @@ class DescansoMedicoRepository {
                     COLABORADOR_INCLUDE,
                     TIPODM_INCLUDE,
                     TIPOCONTINGENCIA_INCLUDE,
-                    DIAGNOSTICO_INCLUDE,
-                    ESTABLECIMIENTO_INCLUDE
+                    DIAGNOSTICO_INCLUDE
                 ],
                 where: whereClause,
                 order: [
@@ -131,8 +128,7 @@ class DescansoMedicoRepository {
                     COLABORADOR_INCLUDE,
                     TIPODM_INCLUDE,
                     TIPOCONTINGENCIA_INCLUDE,
-                    DIAGNOSTICO_INCLUDE,
-                    ESTABLECIMIENTO_INCLUDE
+                    DIAGNOSTICO_INCLUDE
                 ]
             })
 

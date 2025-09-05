@@ -1,4 +1,6 @@
 import { Router } from 'express'
+const router = Router()
+
 import tipoEstablecimientoRoutes from './tipoEstablecimiento.routes'
 import tipoDocumentoRoutes from './tipoDocumento.routes'
 import tipoDescansoMedicoRoutes from './tipoDescansoMedico.routes'
@@ -22,8 +24,6 @@ import tipoAdjuntoRoutes from './tipoAdjunto.routes'
 import adjuntoRoutes from './adjunto.routes'
 import representanteLegalRoutes from './representanteLegal.routes'
 import authRoutes from './auth.routes'
-
-const router = Router()
 
 // Define rutas para cada módulo
 router.use('/tipo-establecimientos', tipoEstablecimientoRoutes)

@@ -16,7 +16,15 @@ class AuthController {
             }
 
             const result = await LoginService.execute(dataAuth)
-            res.status(result.status || 200).json(result)
+            // res.status(result.status || 200).json(result)
+
+            const { status } = result
+
+            if (status === 500) {
+                res.status(status).json(result)
+            }
+            res.status(200).json(result)
+
         } catch (error) {
             next(error)
         }

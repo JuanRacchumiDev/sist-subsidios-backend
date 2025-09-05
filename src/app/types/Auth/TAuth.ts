@@ -16,5 +16,6 @@ export type AuthResponse = {
         slugPerfil?: string
         nombreCompletoUsuario?: string
     }
-    error?: string
+    error?: string,
+    codigoTemp?: string
 }
