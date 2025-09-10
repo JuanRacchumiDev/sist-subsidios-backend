@@ -2,15 +2,8 @@ import { Diagnostico } from "../../models/Diagnostico";
 import HString from "../../../helpers/HString";
 import { IDiagnostico, DiagnosticoResponse } from '../../interfaces/Diagnostico/IDiagnostico';
 import { Op } from 'sequelize'
+import { DIAGNOSTICO_ATTRIBUTES } from "../../../constants/DiagnosticoConstant";
 
-const DIAGNOSTICO_ATTRIBUTES = [
-    'codCie10',
-    'nombre',
-    'nombre_url',
-    "tiempo",
-    'sistema',
-    'estado'
-];
 
 class DiagnosticoRepository {
     /**

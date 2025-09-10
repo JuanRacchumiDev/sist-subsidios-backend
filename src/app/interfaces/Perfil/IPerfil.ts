@@ -16,3 +16,21 @@ export interface PerfilResponse {
     error?: string
     status?: number
 }
+
+export interface IPerfilPaginate {
+    currentPage: number
+    limit: number
+    totalPages: number
+    totalItems: number
+    nextPage: number | null
+    previousPage: number | null
+}
+
+export interface PerfilResponsePaginate {
+    result: boolean
+    message?: string
+    data?: IPerfil[]
+    pagination?: IPerfilPaginate
+    error?: string
+    status?: number
+}

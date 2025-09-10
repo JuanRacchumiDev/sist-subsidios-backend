@@ -3,19 +3,8 @@ import HString from "../../../helpers/HString";
 import { ITipoContingencia, TipoContingenciaResponse } from '../../interfaces/TipoContingencia/ITipoContingencia';
 import { Op } from 'sequelize'
 import { DocumentoTipoCont } from "../../models/DocumentoTipoCont";
-
-const TIPO_CONTINGENCIA_ATTRIBUTES = [
-    'id',
-    'nombre',
-    'nombre_url',
-    'sistema',
-    'estado'
-];
-
-const TIPO_DOCUMENTOS_INCLUDE = {
-    model: DocumentoTipoCont,
-    as: 'documentos'
-}
+import { TIPO_CONTINGENCIA_ATTRIBUTES } from "../../../constants/TipoContingenciaConstant";
+import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
 
 class TipoContingenciaRepository {
     /**
@@ -72,7 +61,7 @@ class TipoContingenciaRepository {
             const tipo = await TipoContingencia.findByPk(id, {
                 attributes: TIPO_CONTINGENCIA_ATTRIBUTES,
                 include: [
-                    TIPO_DOCUMENTOS_INCLUDE
+                    TIPO_DOCUMENTO_INCLUDE
                 ]
             })
 

@@ -4,6 +4,7 @@ import DeletePerfilService from '../services/Perfil/DeletePerfil'
 import GetPerfilService from '../services/Perfil/GetPerfil'
 import GetPerfilesService from '../services/Perfil/GetPerfiles'
 import GetByNombreService from '../services/Perfil/GetByNombre'
+import GetPerfilesPaginateService from '../services/Perfil/GetPerfilesPaginate'
 import UpdatePerfilService from '../services/Perfil/UpdatePerfil'
 import { IPerfil } from '../interfaces/Perfil/IPerfil';
 
@@ -21,6 +22,24 @@ class PerfilController {
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error) // Pasa al error al middleware de manejo de errores
+        }
+    }
+
+    async getAllPerfilesPaginated(req: Request, res: Response, next: NextFunction) {
+        try {
+            const page = parseInt(req.query.page as string) || 1
+            const limit = parseInt(req.query.limit as string) || 10
+            const estadoParam = req.query.estado
+            let estado: boolean | undefined
+
+            if (typeof estadoParam === 'string') {
+                estado = estadoParam.toLowerCase() === 'true'
+            }
+
+            const result = await GetPerfilesPaginateService.execute(page, limit, estado)
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error)
         }
     }
 

@@ -1,37 +1,10 @@
 import sequelize from '../../../config/database'
+import { PERFIL_ATTRIBUTES } from '../../../constants/PerfilConstant';
+import { PERSONA_ATTRIBUTES } from '../../../constants/PersonaConstant';
+import { TIPO_DOCUMENTO_INCLUDE } from '../../../includes/TipoDocumentoInclude';
 import { IPersona, PersonaResponse } from "../../interfaces/Persona/IPersona";
 import { Persona } from "../../models/Persona";
 import { TipoDocumento } from "../../models/TipoDocumento";
-
-const PERSONA_ATTRIBUTES = [
-    'id',
-    'id_tipodocumento',
-    'numero_documento',
-    'nombres',
-    'apellido_paterno',
-    'apellido_materno',
-    'nombre_completo',
-    'departamento',
-    'provincia',
-    'distrito',
-    'direccion',
-    'direccion_completa',
-    'ubigeo_reniec',
-    'ubigeo_sunat',
-    'ubigeo',
-    'fecha_nacimiento',
-    'estado_civil',
-    'foto',
-    'sexo',
-    'origen',
-    'estado'
-]
-
-const TIPO_DOCUMENTO_INCLUDE = {
-    model: TipoDocumento,
-    as: 'tipoDocumento',
-    attributes: ['id', 'nombre', 'abreviatura']
-}
 
 class PersonaRepository {
     /**

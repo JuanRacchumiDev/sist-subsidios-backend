@@ -2,8 +2,12 @@ import { TValidateFields } from '../../types/TTypeFields';
 import sequelize from '../../../config/database'
 import { IEmpresa, IEmpresaPaginate, EmpresaResponse, EmpresaResponsePaginate } from "../../interfaces/Empresa/IEmpresa"
 import { Empresa } from "../../models/Empresa"
+import { RepresentanteLegal } from "../../models/RepresentanteLegal"
+import { Cargo } from "../../models/Cargo"
 import { Op } from "sequelize";
 import { EMPRESA_ATTRIBUTES } from '../../../constants/EmpresaConstant';
+import { REPRESENTANTE_LEGAL_ATTRIBUTES } from '../../../constants/RepresentanteLegalConstant';
+import { CARGO_ATTRIBUTES } from '../../../constants/CargoConstant';
 import HPagination from '../../../helpers/HPagination';
 
 class EmpresaRepository {
@@ -102,7 +106,17 @@ class EmpresaRepository {
     async getById(id: string): Promise<EmpresaResponse> {
         try {
             const empresa = await Empresa.findByPk(id, {
-                attributes: EMPRESA_ATTRIBUTES
+                attributes: EMPRESA_ATTRIBUTES,
+                include: [{
+                    model: RepresentanteLegal,
+                    as: 'representantes',
+                    attributes: REPRESENTANTE_LEGAL_ATTRIBUTES,
+                    include: [{
+                        model: Cargo,
+                        as: 'cargo',
+                        attributes: CARGO_ATTRIBUTES
+                    }]
+                }]
             })
 
             if (!empresa) {

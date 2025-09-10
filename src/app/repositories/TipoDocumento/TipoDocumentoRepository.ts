@@ -3,20 +3,7 @@ import HString from "../../../helpers/HString";
 import { ITipoDocumento, TipoDocumentoResponse } from '../../interfaces/TipoDocumento/ITipoDocumento';
 import { Op } from 'sequelize'
 import { TTipoDocumentoSearch } from "../../types/TipoDocumento/TTipoDocumentoSearch";
-
-const TIPO_DOCUMENTO_ATTRIBUTES = [
-    'id',
-    'nombre',
-    'nombre_url',
-    'abreviatura',
-    'longitud',
-    'en_persona',
-    'en_empresa',
-    'compra',
-    'venta',
-    'sistema',
-    'estado'
-];
+import { TIPO_DOCUMENTO_ATTRIBUTES } from "../../../constants/TipoDocumentoConstant";
 
 class TipoDocumentoRepository {
     /**

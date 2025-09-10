@@ -1,5 +1,6 @@
 import { NextFunction, Response, Request } from "express";
 import GetUsuariosService from '../services/Usuario/GetUsuarios'
+import GetUsuariosPaginateService from '../services/Usuario/GetUsuariosPaginate'
 import GetUsuarioService from '../services/Usuario/GetUsuario'
 import CreateUsuarioService from '../services/Usuario/CreateUsuario'
 import UpdateUsuarioService from '../services/Usuario/UpdateUsuario'
@@ -9,6 +10,24 @@ class UsuarioController {
     async getAllUsuarios(req: Request, res: Response, next: NextFunction) {
         try {
             const result = await GetUsuariosService.execute()
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async getAllUsuariosPaginated(req: Request, res: Response, next: NextFunction) {
+        try {
+            const page = parseInt(req.query.page as string) || 1
+            const limit = parseInt(req.query.limit as string) || 10
+            const estadoParam = req.query.estado
+            let estado: boolean | undefined
+
+            if (typeof estadoParam === 'string') {
+                estado = estadoParam.toLowerCase() === 'true'
+            }
+
+            const result = await GetUsuariosPaginateService.execute(page, limit, estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

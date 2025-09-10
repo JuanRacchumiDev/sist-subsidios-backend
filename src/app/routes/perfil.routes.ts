@@ -58,6 +58,8 @@ const router = Router()
  *         status: {type: number, example: 404} 
  */
 
+router.get('/paginate', authToken, PerfilController.getAllPerfilesPaginated)
+
 /**
  * @swagger
  * /api/v1/perfiles:

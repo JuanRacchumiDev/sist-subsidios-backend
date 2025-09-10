@@ -1,0 +1,1 @@
+export const TOTAL_DIAS_DESCANSO_MEDICO: number = 20

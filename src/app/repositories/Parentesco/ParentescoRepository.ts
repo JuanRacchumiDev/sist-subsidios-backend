@@ -2,14 +2,7 @@ import { Parentesco } from "../../models/Parentesco";
 import HString from "../../../helpers/HString";
 import { IParentesco, ParentescoResponse } from '../../interfaces/Parentesco/IParentesco';
 import { Op } from 'sequelize'
-
-const PARENTESCO_ATTRIBUTES = [
-    'id',
-    'nombre',
-    'nombre_url',
-    'sistema',
-    'estado'
-];
+import { PARENTESCO_ATTRIBUTES } from "../../../constants/ParentescoConstant";
 
 class ParentescoRepository {
     /**

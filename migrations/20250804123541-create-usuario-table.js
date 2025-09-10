@@ -24,6 +24,14 @@ module.exports = {
           key: 'id'
         }
       },
+      id_persona: {
+        type: Sequelize.UUID,
+        allowNull: true,
+        references: {
+          model: 'persona',
+          key: 'id'
+        }
+      },
       id_colaborador: {
         type: Sequelize.UUID,
         allowNull: true,

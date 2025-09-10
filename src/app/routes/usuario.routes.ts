@@ -4,6 +4,8 @@ import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
+router.get('/paginate', authToken, UsuarioController.getAllUsuariosPaginated)
+
 router.get('/', authToken, UsuarioController.getAllUsuarios)
 
 router.get('/:id', authToken, UsuarioController.getUsuarioById)

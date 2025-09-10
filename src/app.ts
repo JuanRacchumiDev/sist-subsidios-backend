@@ -44,7 +44,7 @@ app.use(express.static('public'))
 
 app.use(cors({
     origin: allowedOrigin,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
@@ -148,6 +148,7 @@ const setupDatabase = async () => {
         Usuario.belongsTo(Perfil, { foreignKey: 'id_perfil', as: 'perfil' })
         Usuario.belongsTo(Colaborador, { foreignKey: 'id_colaborador', as: 'colaborador' })
         Usuario.belongsTo(TrabajadorSocial, { foreignKey: 'id_trabajadorsocial', as: 'trabajadorSocial' })
+        Usuario.belongsTo(Persona, { foreignKey: 'id_persona', as: 'persona' })
 
         await sequelize.authenticate();
         console.log('Connection to the database has been established successfully.');

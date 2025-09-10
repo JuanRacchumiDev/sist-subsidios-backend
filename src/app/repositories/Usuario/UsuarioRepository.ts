@@ -5,33 +5,16 @@ import { Colaborador } from "../../models/Colaborador";
 import { TrabajadorSocial } from "../../models/TrabajadorSocial";
 import bcrypt from 'bcryptjs';
 import { Perfil } from '../../models/Perfil';
-
-const USUARIO_ATTRIBUTES = [
-    'id',
-    'id_colaborador',
-    'id_trabajadorsocial',
-    'email',
-    'password',
-    'estado'
-];
-
-const PERFIL_INCLUDE = {
-    model: Perfil,
-    as: 'perfil',
-    attributes: ['id', 'nombre']
-}
-
-const COLABORADOR_INCLUDE = {
-    model: Colaborador,
-    as: 'colaborador',
-    attributes: ['id', 'nombres', 'apellido_paterno', 'apellido_materno']
-};
-
-const TRABAJADOR_SOCIAL_INCLUDE = {
-    model: TrabajadorSocial,
-    as: 'trabajadorSocial',
-    attributes: ['id', 'nombres', 'apellido_paterno', 'apellido_materno']
-}
+import HPagination from '../../../helpers/HPagination';
+import {
+    IUsuarioPaginate,
+    UsuarioResponsePaginate
+} from '../../interfaces/Usuario/IUsuario';
+import { USUARIO_ATTRIBUTES } from '../../../constants/UsuarioConstant';
+import { PERFIL_INCLUDE } from '../../../includes/PerfilInclude';
+import { COLABORADOR_INCLUDE } from '../../../includes/ColaboradorInclude';
+import { TRABAJADOR_SOCIAL_INCLUDE } from '../../../includes/TrabSocialInclude';
+import { PERSONA_INCLUDE } from '../../../includes/PersonaInclude';
 
 class UsuarioRepository {
     /**
@@ -44,6 +27,7 @@ class UsuarioRepository {
                 attributes: USUARIO_ATTRIBUTES,
                 include: [
                     PERFIL_INCLUDE,
+                    PERSONA_INCLUDE,
                     COLABORADOR_INCLUDE,
                     TRABAJADOR_SOCIAL_INCLUDE
                 ],
@@ -53,6 +37,55 @@ class UsuarioRepository {
             })
 
             return { result: true, data: usuarios, status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<UsuarioResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Usuario.findAndCountAll({
+                attributes: USUARIO_ATTRIBUTES,
+                include: [
+                    PERFIL_INCLUDE,
+                    PERSONA_INCLUDE,
+                    COLABORADOR_INCLUDE,
+                    TRABAJADOR_SOCIAL_INCLUDE
+                ],
+                where: whereClause,
+                order: [
+                    ['email', 'ASC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IUsuarioPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
@@ -70,6 +103,7 @@ class UsuarioRepository {
                 attributes: USUARIO_ATTRIBUTES,
                 include: [
                     PERFIL_INCLUDE,
+                    PERSONA_INCLUDE,
                     COLABORADOR_INCLUDE,
                     TRABAJADOR_SOCIAL_INCLUDE
                 ],

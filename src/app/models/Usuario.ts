@@ -7,12 +7,14 @@ import { Perfil } from './Perfil';
 import { IPerfil } from '../interfaces/Perfil/IPerfil';
 import { IColaborador } from '../interfaces/Colaborador/IColaborador';
 import { ITrabajadorSocial } from '../interfaces/TrabajadorSocial/ITrabajadorSocial';
+import { Persona } from './Persona';
 
 interface UsuarioCreationAttributes extends Optional<IUsuario, 'id'> { }
 
 export class Usuario extends Model<IUsuario, UsuarioCreationAttributes> implements IUsuario {
     public id?: string | undefined;
     public id_perfil?: string | undefined;
+    public id_persona?: string | undefined;
     public id_colaborador?: string | undefined;
     public id_trabajadorsocial?: string | undefined;
     public username?: string | undefined;
@@ -35,6 +37,7 @@ export class Usuario extends Model<IUsuario, UsuarioCreationAttributes> implemen
 
     // Asociaciones
     public getPerfil?: () => Promise<Perfil>
+    public getPersona?: () => Promise<Persona>
     public getColaborador?: () => Promise<Colaborador>
     public getTrabajadorSocial?: () => Promise<TrabajadorSocial>
 }
@@ -52,6 +55,14 @@ Usuario.init({
         references: {
             model: Perfil,
             key: "id"
+        }
+    },
+    id_persona: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: Persona,
+            key: 'id'
         }
     },
     id_colaborador: {

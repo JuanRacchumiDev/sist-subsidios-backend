@@ -3,20 +3,8 @@ import { TipoContingencia } from "../../models/TipoContingencia";
 import { DocumentoTipoContResponse, IDocumentoTipoCont } from '../../interfaces/DocumentoTipoCont/IDocumentoTipoCont';
 import sequelize from '../../../config/database'
 import HString from "../../../helpers/HString";
-
-const DOCUMENTO_ATTRIBUTES = [
-    'id',
-    'id_tipocontingencia',
-    'nombre',
-    'nombre_url',
-    'estado'
-];
-
-const TIPO_CONTINGENCIA_INCLUDE = {
-    model: TipoContingencia,
-    as: 'tipoContingencia',
-    attributes: ['id', 'nombre']
-}
+import { DOCUMENTO_ATTRIBUTES } from "../../../constants/DocumentoConstant";
+import { TIPO_CONTINGENCIA_INCLUDE } from "../../../includes/TipoContingenciaInclude";
 
 class DocumentoRepository {
     /**

@@ -10,36 +10,11 @@ import { TValidateFields } from "../../types/TTypeFields";
 import { Op } from "sequelize";
 import { COLABORADOR_ATTRIBUTES } from "../../../constants/ColaboradorConstant";
 import HPagination from "../../../helpers/HPagination";
-
-const TIPO_DOCUMENTO_INCLUDE = {
-    model: TipoDocumento,
-    as: 'tipoDocumento',
-    attributes: ['id', 'nombre', 'abreviatura']
-}
-
-const EMPRESA_INCLUDE = {
-    model: Empresa,
-    as: 'empresa',
-    attributes: ['id', 'nombre_o_razon_social']
-}
-
-const AREA_INCLUDE = {
-    model: Area,
-    as: 'area',
-    attributes: ['id', 'nombre']
-}
-
-const SEDE_INCLUDE = {
-    model: Sede,
-    as: 'sede',
-    attributes: ['id', 'nombre']
-}
-
-const PAIS_INCLUDE = {
-    model: Pais,
-    as: 'pais',
-    attributes: ['id', 'nombre']
-}
+import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
+import { EMPRESA_INCLUDE } from "../../../includes/EmpresaInclude";
+import { AREA_INCLUDE } from "../../../includes/AreaInclude";
+import { SEDE_INCLUDE } from "../../../includes/SedeInclude";
+import { PAIS_INCLUDE } from "../../../includes/PaisInclude";
 
 class ColaboradorRepository {
     /**

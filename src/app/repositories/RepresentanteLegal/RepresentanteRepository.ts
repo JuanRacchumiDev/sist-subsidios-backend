@@ -6,40 +6,10 @@ import { TipoDocumento } from "../../models/TipoDocumento";
 import sequelize from '../../../config/database'
 import { TValidateFields } from "../../types/TTypeFields";
 import { Op } from "sequelize";
-
-const REPRESENTANTE_LEGAL_ATTRIBUTES = [
-    'id',
-    'id_tipodocumento',
-    'id_empresa',
-    'id_cargo',
-    'numero_documento',
-    'nombres',
-    'apellido_paterno',
-    'apellido_materno',
-    'direccion_fiscal',
-    'partida_registral',
-    'telefono',
-    'correo',
-    'ospe'
-];
-
-const TIPO_DOCUMENTO_INCLUDE = {
-    model: TipoDocumento,
-    as: 'tipoDocumento',
-    attributes: ['id', 'nombre', 'abreviatura']
-}
-
-const EMPRESA_INCLUDE = {
-    model: Empresa,
-    as: 'empresa',
-    attributes: ['id', 'nombre_o_razon_social']
-}
-
-const CARGO_INCLUDE = {
-    model: Cargo,
-    as: 'cargo',
-    attributes: ['id', 'nombre']
-}
+import { REPRESENTANTE_LEGAL_ATTRIBUTES } from "../../../constants/RepresentanteLegalConstant";
+import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
+import { EMPRESA_INCLUDE } from "../../../includes/EmpresaInclude";
+import { CARGO_INCLUDE } from "../../../includes/CargoInclude";
 
 class RepresentanteRepository {
     /**

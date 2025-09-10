@@ -29,7 +29,8 @@ export class Empresa extends Model<IEmpresa, EmpresaCreationAttributes> implemen
     public readonly deleted_at!: Date
 
     // Asociaciones
-    public getColaboradores!: () => Promise<Colaborador[]>
+    public getColaboradores?: () => Promise<Colaborador[]>
+    public getRepresentantes?: () => Promise<RepresentanteLegal[]>
 }
 
 Empresa.init({

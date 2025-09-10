@@ -1,3 +1,6 @@
+import { addDays, subDays, format } from 'date-fns';
+import { es } from 'date-fns/locale';
+
 export default class HDate {
     static validateAndFormatDate(dateString: string): (string | null) {
         // Expresión regular para validar el formato "dd/mm/yyyy"
@@ -23,4 +26,50 @@ export default class HDate {
 
         return null
     }
+
+    /**
+   * Suma días a una fecha en formato string y devuelve un string.
+   * @param {string} dateString - La fecha original en formato 'YYYY-MM-DD'.
+   * @param {number} daysToAdd - El número de días a sumar.
+   * @returns {string} La nueva fecha en formato 'YYYY-MM-DD'.
+   */
+    static addDaysToDate(dateString: string, dias: number): string {
+        const date = new Date(dateString)
+        const newDate = addDays(date, dias)
+        return format(newDate, 'yyyy-MM-dd')
+    }
+
+    /**
+   * Resta días a una fecha en formato string y devuelve un string.
+   * @param {string} dateString - La fecha original en formato 'YYYY-MM-DD'.
+   * @param {number} daysToSubstract - El número de días a restar.
+   * @returns {string} La nueva fecha en formato 'YYYY-MM-DD'.
+   */
+    static subDayFromDate(dateString: string, dias: number): string {
+        const date = new Date(dateString)
+        const newDate = subDays(date, dias)
+        return format(newDate, 'yyyy-MM-dd')
+    }
+
+    /**
+     * Devuelve el nombre del mes de una fecha determinada
+     * @param {string} dateString - La fecha en formato 'YYYY-MM-DD'.
+     * @returns {string} El nombre del mes en mayúsculas (por ejemplo, 'AGOSTO').
+     */
+    static getMonthName(dateString: number): string {
+        const date = new Date(dateString)
+        const monthName = format(date, 'MMMM', { locale: es })
+        return monthName.toUpperCase()
+    }
+
+    /**
+     * Obtiene la fecha actual
+     * @returns {string} La fecha en formato 'YYYY-MM-DD'
+     */
+    static getCurrentDateToString(formatDate: string): string {
+        const fechaActual = new Date()
+        const fechaString = format(fechaActual, formatDate)
+        return fechaString
+    }
+
 }

@@ -1,3 +1,5 @@
+import { IRepresentanteLegal } from "../RepresentanteLegal/IRepresentanteLegal"
+
 export interface IEmpresa {
     id?: string
     numero?: string
@@ -16,6 +18,7 @@ export interface IEmpresa {
     user_elimina?: string
     sistema?: boolean
     estado?: boolean
+    representantes?: IRepresentanteLegal[]
 }
 
 export interface EmpresaResponse {

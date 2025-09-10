@@ -4,12 +4,8 @@ import { DescansoMedico } from "../../models/DescansoMedico"
 import sequelize from "../../../config/database"
 import { CANJE_ATTRIBUTES } from "../../../constants/CanjeConstant"
 import HPagination from "../../../helpers/HPagination"
-
-const DESCANSOMEDICO_INCLUDE = {
-    model: DescansoMedico,
-    as: 'descansoMedico',
-    attributes: ['id', 'codigo', 'fecha_otorgamiento', 'fecha_inicio', 'fecha_final']
-}
+import { Transaction } from "sequelize"
+import { DESCANSOMEDICO_INCLUDE } from "../../../includes/DescansoMedicoInclude"
 
 class CanjeRepository {
     /**
@@ -113,15 +109,12 @@ class CanjeRepository {
     /**
      * Crea un canje
      * @param {ICanje} data - Los datos del canje a crear
+     * @param {Transaction} [t] - Objeto de transacción de Sequelize opcional.
      * @returns {Promise<CanjeResponse>} Respuesta con el canje creado o error
      */
-    async create(data: ICanje): Promise<CanjeResponse> {
-        const t = await sequelize.transaction()
-
+    async create(data: ICanje, t?: Transaction): Promise<CanjeResponse> {
         try {
-            const newCanje = await Canje.create(data)
-
-            await t.commit()
+            const newCanje = await Canje.create(data, { transaction: t })
 
             const { id: idCanje } = newCanje
 
@@ -141,7 +134,6 @@ class CanjeRepository {
                 status: 200
             }
         } catch (error) {
-            await t.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }

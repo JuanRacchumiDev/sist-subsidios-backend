@@ -2,15 +2,7 @@ import { Pais } from "../../models/Pais";
 import HString from "../../../helpers/HString";
 import { IPais, PaisResponse } from '../../interfaces/Pais/IPais';
 import { Op } from 'sequelize'
-
-const PAIS_ATTRIBUTES = [
-    'id',
-    'nombre',
-    'nombre_url',
-    'codigo_postal',
-    'sistema',
-    'estado'
-];
+import { PAIS_ATTRIBUTES } from "../../../constants/PaisConstant";
 
 class PaisRepository {
     /**

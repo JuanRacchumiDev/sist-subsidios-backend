@@ -2,14 +2,7 @@ import { TipoDescansoMedico } from "../../models/TipoDescansoMedico";
 import HString from "../../../helpers/HString";
 import { ITipoDescansoMedico, TipoDescansoMedicoResponse } from '../../interfaces/TipoDescansoMedico/ITipoDescansoMedico';
 import { Op } from 'sequelize'
-
-const TIPO_DESCANSO_MEDICO_ATTRIBUTES = [
-    'id',
-    'nombre',
-    'nombre_url',
-    'sistema',
-    'estado'
-];
+import { TIPO_DESCANSO_MEDICO_ATTRIBUTES } from "../../../constants/TipoDescansoMedicoConstant";
 
 class TipoDescansoMedicoRepository {
     /**

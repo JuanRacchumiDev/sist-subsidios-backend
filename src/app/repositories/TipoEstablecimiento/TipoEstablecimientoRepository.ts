@@ -2,14 +2,7 @@ import { TipoEstablecimiento } from "../../models/TipoEstablecimiento";
 import HString from "../../../helpers/HString";
 import { ITipoEstablecimiento, TipoEstablecimientoResponse } from '../../interfaces/TipoEstablecimiento/ITipoEstablecimiento';
 import { Op } from 'sequelize'
-
-const TIPO_ESTABLECIMIENTO_ATTRIBUTES = [
-    'id',
-    'nombre',
-    'nombre_url',
-    'sistema',
-    'estado'
-];
+import { TIPO_ESTABLECIMIENTO_ATTRIBUTES } from "../../../constants/TipoEstablecimientoConstant";
 
 class TipoEstablecimientoRepository {
     /**

@@ -4,24 +4,8 @@ import { Op } from 'sequelize'
 import { TipoEstablecimiento } from "../../models/TipoEstablecimiento";
 import TipoEstablecimientoRepository from "../TipoEstablecimiento/TipoEstablecimientoRepository";
 import { ITipoEstablecimiento } from "../../interfaces/TipoEstablecimiento/ITipoEstablecimiento";
-
-const ESTABLECIMIENTO_ATTRIBUTES = [
-    'id',
-    'id_tipoestablecimiento',
-    'ruc',
-    "nombre",
-    "direccion",
-    "telefono",
-    "nombre_tipoestablecimiento",
-    'sistema',
-    'estado'
-];
-
-const TIPO_ESTABLECIMIENTO_INCLUDE = {
-    model: TipoEstablecimiento,
-    as: 'tipoEstablecimiento',
-    attributes: ['id', 'nombre']
-}
+import { ESTABLECIMIENTO_ATTRIBUTES } from "../../../constants/EstablecimientoConstant";
+import { TIPO_ESTABLECIMIENTO_INCLUDE } from "../../../includes/TipoEstablecimientoInclude";
 
 class EstablecimientoRepository {
     /**

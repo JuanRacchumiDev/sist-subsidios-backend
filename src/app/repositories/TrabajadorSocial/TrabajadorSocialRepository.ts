@@ -9,69 +9,13 @@ import { TrabajadorSocial } from "../../models/TrabajadorSocial";
 import sequelize from '../../../config/database'
 import { TValidateFields } from "../../types/TTypeFields";
 import { Op } from "sequelize";
-
-const TRABAJADOR_SOCIAL_ATTRIBUTES = [
-    'id',
-    'id_tipodocumento',
-    'id_cargo',
-    'id_empresa',
-    'id_area',
-    'id_sede',
-    'id_pais',
-    'numero_documento',
-    'apellido_paterno',
-    'apellido_materno',
-    'nombres',
-    'nombre_completo',
-    'nombre_area',
-    'nombre_sede',
-    'nombre_pais',
-    'correo_institucional',
-    'correo_personal',
-    'numero_celular',
-    'foto',
-    'fecha_nacimiento',
-    'fecha_ingreso',
-    'fecha_salida',
-    'es_representante_legal',
-    'estado'
-];
-
-const TIPO_DOCUMENTO_INCLUDE = {
-    model: TipoDocumento,
-    as: 'tipoDocumento',
-    attributes: ['id', 'nombre', 'abreviatura']
-}
-
-const CARGO_INCLUDE = {
-    model: Cargo,
-    as: 'cargo',
-    attributes: ['id', 'nombre']
-}
-
-const EMPRESA_INCLUDE = {
-    model: Empresa,
-    as: 'empresa',
-    attributes: ['id', 'nombre_o_razon_social']
-}
-
-const AREA_INCLUDE = {
-    model: Area,
-    as: 'area',
-    attributes: ['id', 'nombre']
-}
-
-const SEDE_INCLUDE = {
-    model: Sede,
-    as: 'sede',
-    attributes: ['id', 'nombre']
-}
-
-const PAIS_INCLUDE = {
-    model: Pais,
-    as: 'pais',
-    attributes: ['id', 'nombre']
-}
+import { TRABAJADOR_SOCIAL_ATTRIBUTES } from "../../../constants/TrabajadorSocialAttributes";
+import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
+import { CARGO_INCLUDE } from "../../../includes/CargoInclude";
+import { EMPRESA_INCLUDE } from "../../../includes/EmpresaInclude";
+import { AREA_INCLUDE } from "../../../includes/AreaInclude";
+import { SEDE_INCLUDE } from "../../../includes/SedeInclude";
+import { PAIS_INCLUDE } from "../../../includes/PaisInclude";
 
 class TrabajadorSocialRepository {
     /**

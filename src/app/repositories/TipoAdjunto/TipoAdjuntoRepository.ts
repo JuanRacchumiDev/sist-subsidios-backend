@@ -2,14 +2,7 @@ import { TipoAdjunto } from "../../models/TipoAdjunto";
 import HString from "../../../helpers/HString";
 import { ITipoAdjunto, TipoAdjuntoResponse } from '../../interfaces/TipoAdjunto/ITipoAdjunto';
 import { Op } from 'sequelize'
-
-const TIPOADJUNTO_ATTRIBUTES = [
-    'id',
-    'nombre',
-    'extensiones',
-    'sistema',
-    'estado'
-];
+import { TIPOADJUNTO_ATTRIBUTES } from "../../../constants/TipoAdjuntoConstant";
 
 class TipoAdjuntoRepository {
     /**

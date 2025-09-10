@@ -2,14 +2,7 @@ import { Sede } from "../../models/Sede";
 import HString from "../../../helpers/HString";
 import { ISede, SedeResponse } from '../../interfaces/Sede/ISede';
 import { Op } from 'sequelize'
-
-const SEDE_ATTRIBUTES = [
-    'id',
-    'nombre',
-    'nombre_url',
-    'sistema',
-    'estado'
-];
+import { SEDE_ATTRIBUTES } from "../../../constants/SedeConstant";
 
 class SedeRepository {
     /**

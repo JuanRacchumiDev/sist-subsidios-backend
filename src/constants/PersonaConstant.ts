@@ -1,0 +1,23 @@
+export const PERSONA_ATTRIBUTES = [
+    'id',
+    'id_tipodocumento',
+    'numero_documento',
+    'nombres',
+    'apellido_paterno',
+    'apellido_materno',
+    'nombre_completo',
+    'departamento',
+    'provincia',
+    'distrito',
+    'direccion',
+    'direccion_completa',
+    'ubigeo_reniec',
+    'ubigeo_sunat',
+    'ubigeo',
+    'fecha_nacimiento',
+    'estado_civil',
+    'foto',
+    'sexo',
+    'origen',
+    'estado'
+]

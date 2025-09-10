@@ -1,15 +1,9 @@
 import { Perfil } from "../../models/Perfil";
 import HString from "../../../helpers/HString";
-import { IPerfil, PerfilResponse } from '../../interfaces/Perfil/IPerfil';
+import { IPerfil, IPerfilPaginate, PerfilResponse, PerfilResponsePaginate } from '../../interfaces/Perfil/IPerfil';
 import { Op } from 'sequelize'
-
-const PERFIL_ATTRIBUTES = [
-    'id',
-    'nombre',
-    'nombre_url',
-    'sistema',
-    'estado'
-];
+import HPagination from "../../../helpers/HPagination";
+import { PERFIL_ATTRIBUTES } from "../../../constants/PerfilConstant";
 
 class PerfilRepository {
     /**
@@ -27,6 +21,49 @@ class PerfilRepository {
 
             return { result: true, data: perfiles, status: 200 }
         } catch (error: any) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<PerfilResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await Perfil.findAndCountAll({
+                attributes: PERFIL_ATTRIBUTES,
+                where: whereClause,
+                order: [
+                    ['nombre', 'ASC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IPerfilPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
         }

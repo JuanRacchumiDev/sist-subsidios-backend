@@ -18,6 +18,7 @@ module.exports = {
     */
     // Obtener el ID del perfil administrador
     const query = `SELECT id FROM perfil WHERE nombre = 'ADMINISTRADOR' LIMIT 1`;
+
     const perfilAdmin = await queryInterface.sequelize.query(
       query,
       { type: queryInterface.sequelize.QueryTypes.SELECT }
@@ -32,6 +33,7 @@ module.exports = {
 
     // Obtener el ID del perfil especialista
     const queryEsp = `SELECT id FROM perfil WHERE nombre = 'ESPECIALISTA' LIMIT 1`;
+
     const perfilEsp = await queryInterface.sequelize.query(
       queryEsp,
       { type: queryInterface.sequelize.QueryTypes.SELECT }

@@ -12,54 +12,14 @@ import fs from 'fs/promises'
 import { ADJUNTO_ATTRIBUTES } from "../../../constants/AjuntoConstant";
 import HPagination from "../../../helpers/HPagination";
 import { DocumentoTipoCont } from "../../models/DocumentoTipoCont";
-
-const TIPO_ADJUNTO_INCLUDE = {
-    model: TipoAdjunto,
-    as: 'tipoAdjunto',
-    attributes: ['id', 'nombre']
-}
-
-const DESCANSO_MEDICO_INCLUDE = {
-    model: DescansoMedico,
-    as: 'descansoMedico',
-    attributes: ['id', 'codigo', 'fecha_inicio', 'fecha_final']
-}
-
-const CANJE_INCLUDE = {
-    model: Canje,
-    as: 'canje',
-    attributes: ['id', 'codigo', 'fecha_inicio_subsidio', 'fecha_final_subsidio']
-}
-
-const COBRO_INCLUDE = {
-    model: Cobro,
-    as: 'cobro',
-    attributes: ['id', 'codigo', 'codigo_cheque', 'codigo_voucher']
-}
-
-const REEMBOLSO_INCLUDE = {
-    model: Reembolso,
-    as: 'reembolso',
-    attributes: ['id', 'codigo']
-}
-
-const COLABORADOR_INCLUDE = {
-    model: Colaborador,
-    as: 'colaborador',
-    attributes: ['id', 'nombres', 'apellido_paterno', 'apellido_materno']
-}
-
-const TRABSOCIAL_INCLUDE = {
-    model: TrabajadorSocial,
-    as: 'trabajadorSocial',
-    attributes: ['id', 'nombres', 'apellido_paterno', 'apellido_materno']
-}
-
-const DOCUMENTO_TIPO_CONT_INCLUDE = {
-    model: DocumentoTipoCont,
-    as: 'documentoTipoCont',
-    attributes: ['id', 'nombre']
-}
+import { TIPO_ADJUNTO_INCLUDE } from "../../../includes/TipoAdjuntoInclude";
+import { DESCANSOMEDICO_INCLUDE } from "../../../includes/DescansoMedicoInclude";
+import { CANJE_INCLUDE } from "../../../includes/CanjeInclude";
+import { COBRO_INCLUDE } from "../../../includes/CobroInclude";
+import { REEMBOLSO_INCLUDE } from "../../../includes/ReembolsoInclude";
+import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude";
+import { TRABAJADOR_SOCIAL_INCLUDE } from "../../../includes/TrabSocialInclude";
+import { DOCUMENTO_TIPO_CONT_INCLUDE } from "../../../includes/DocumentoTipoContInclude";
 
 class AdjuntoRepository {
     /**
@@ -72,12 +32,12 @@ class AdjuntoRepository {
                 attributes: ADJUNTO_ATTRIBUTES,
                 include: [
                     TIPO_ADJUNTO_INCLUDE,
-                    DESCANSO_MEDICO_INCLUDE,
+                    DESCANSOMEDICO_INCLUDE,
                     CANJE_INCLUDE,
                     COBRO_INCLUDE,
                     REEMBOLSO_INCLUDE,
                     COLABORADOR_INCLUDE,
-                    TRABSOCIAL_INCLUDE,
+                    TRABAJADOR_SOCIAL_INCLUDE,
                     DOCUMENTO_TIPO_CONT_INCLUDE
                 ],
                 order: [
@@ -103,12 +63,12 @@ class AdjuntoRepository {
                 attributes: ADJUNTO_ATTRIBUTES,
                 include: [
                     TIPO_ADJUNTO_INCLUDE,
-                    DESCANSO_MEDICO_INCLUDE,
+                    DESCANSOMEDICO_INCLUDE,
                     CANJE_INCLUDE,
                     COBRO_INCLUDE,
                     REEMBOLSO_INCLUDE,
                     COLABORADOR_INCLUDE,
-                    TRABSOCIAL_INCLUDE,
+                    TRABAJADOR_SOCIAL_INCLUDE,
                     DOCUMENTO_TIPO_CONT_INCLUDE
                 ],
                 where: whereClause,
@@ -156,12 +116,12 @@ class AdjuntoRepository {
                 attributes: ADJUNTO_ATTRIBUTES,
                 include: [
                     TIPO_ADJUNTO_INCLUDE,
-                    DESCANSO_MEDICO_INCLUDE,
+                    DESCANSOMEDICO_INCLUDE,
                     CANJE_INCLUDE,
                     COBRO_INCLUDE,
                     REEMBOLSO_INCLUDE,
                     COLABORADOR_INCLUDE,
-                    TRABSOCIAL_INCLUDE,
+                    TRABAJADOR_SOCIAL_INCLUDE,
                     DOCUMENTO_TIPO_CONT_INCLUDE
                 ]
             }) as IAdjunto
