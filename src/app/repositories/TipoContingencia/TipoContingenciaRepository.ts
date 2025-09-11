@@ -5,6 +5,7 @@ import { Op } from 'sequelize'
 import { DocumentoTipoCont } from "../../models/DocumentoTipoCont";
 import { TIPO_CONTINGENCIA_ATTRIBUTES } from "../../../constants/TipoContingenciaConstant";
 import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
+import { DOCUMENTO_TIPO_CONT_INCLUDE } from '../../../includes/DocumentoTipoContInclude';
 
 class TipoContingenciaRepository {
     /**
@@ -61,7 +62,7 @@ class TipoContingenciaRepository {
             const tipo = await TipoContingencia.findByPk(id, {
                 attributes: TIPO_CONTINGENCIA_ATTRIBUTES,
                 include: [
-                    TIPO_DOCUMENTO_INCLUDE
+                    DOCUMENTO_TIPO_CONT_INCLUDE
                 ]
             })
 

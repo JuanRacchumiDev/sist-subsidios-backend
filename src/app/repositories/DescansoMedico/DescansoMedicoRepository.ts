@@ -9,12 +9,13 @@ import sequelize from "../../../config/database";
 import { DESCANSOMEDICO_ATTRIBUTES } from "../../../constants/DescansoMedicoConstant";
 import HPagination from "../../../helpers/HPagination";
 import { TTotalDias } from '../../types/DescansoMedico/TTotalDias';
-import { Transaction } from "sequelize";
+import { Sequelize, Transaction } from "sequelize";
 import { parseISO, addDays } from 'date-fns';
 import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude";
 import { TIPODM_INCLUDE } from "../../../includes/TipoDescansoMedicoInclude";
 import { TIPO_CONTINGENCIA_INCLUDE } from "../../../includes/TipoContingenciaInclude";
 import { DIAGNOSTICO_INCLUDE } from "../../../includes/DiagnosticoInclude";
+import { Op } from 'sequelize';
 
 class DescansoMedicoRepository {
     /**
@@ -190,11 +191,18 @@ class DescansoMedicoRepository {
      */
     async isDescansoConsecutivo(idColaborador: string, fechaInicioNuevo: string): Promise<boolean> {
         try {
+            console.log('obteniendo el último descanso médico')
+
+            console.log('idColaborador in isDescansoConsecutivo', idColaborador)
+            console.log('fechaInicioNuevo in inDescansoConsecutivo', fechaInicioNuevo)
+
             const ultimoDescanso = await DescansoMedico.findOne({
                 where: { id_colaborador: idColaborador },
                 order: [['fecha_final', 'DESC']],
                 limit: 1
             });
+
+            console.log({ ultimoDescanso })
 
             // Si no hay descansos previos, es el primero y se considera continuo.
             if (!ultimoDescanso) {
@@ -234,17 +242,23 @@ class DescansoMedicoRepository {
 
         const esContinuo = await this.isDescansoConsecutivo(id_colaborador!, fecha_inicio!)
 
+        console.log({ esContinuo })
+
         const payload: IDescansoMedico = {
             ...data,
             is_continuo: esContinuo
         }
 
         try {
-            const newDescanso = await DescansoMedico.create(payload, { transaction: t })
+            // const newDescanso = await DescansoMedico.create(payload, { transaction: t })
+            const newDescanso = await DescansoMedico.create(payload)
+
+            console.log({ newDescanso })
 
             const { id: idDescanso } = newDescanso
 
             if (!idDescanso) {
+                console.log('error en el repositorio')
                 return {
                     result: false,
                     error: 'Error al registrar el descanso médico',
@@ -300,6 +314,62 @@ class DescansoMedicoRepository {
             return { result: false, error: errorMessage, status: 500 }
         }
     }
+
+    async generateCorrelativo(): Promise<string> {
+        const transaction = await sequelize.transaction();
+
+        try {
+            const anioActual = new Date().getFullYear()
+            const prefijo = 'DM'
+
+            console.log({ anioActual })
+
+            console.log({ prefijo })
+
+            // 1. Encontrar el último registro para el año actual
+            const ultimoDescanso = await DescansoMedico.findOne({
+                where: {
+                    codigo: {
+                        [Op.like]: `${prefijo}-${anioActual}-%`
+                    }
+                },
+                order: [
+                    ['codigo', 'DESC']
+                ],
+                transaction,
+                lock: transaction.LOCK.UPDATE
+            })
+
+            console.log({ ultimoDescanso })
+
+            let nuevoNumero = 1;
+            if (ultimoDescanso) {
+
+                const { codigo } = ultimoDescanso
+
+                const codigoStr = codigo as string
+
+                // 2. Extraer y aumentar el número correlativo
+                const partes = codigoStr.split('-');
+
+                const ultimoNumero = parseInt(partes[2], 10);
+
+                nuevoNumero = ultimoNumero + 1;
+            }
+
+            // 3. Formatear el nuevo correlativo
+            const numeroFormateado = String(nuevoNumero).padStart(4, '0');
+            const nuevoCorrelativo = `${prefijo}-${anioActual}-${numeroFormateado}`;
+
+            await transaction.commit();
+            return nuevoCorrelativo;
+        } catch (error) {
+            await transaction.rollback();
+            console.error('Error al generar el correlativo:', error);
+            throw new Error('No se pudo generar el correlativo del descanso médico.');
+        }
+    }
+
 }
 
 export default new DescansoMedicoRepository()

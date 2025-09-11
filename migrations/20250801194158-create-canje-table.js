@@ -73,6 +73,10 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true
       },
+      mes_devengado: {
+        type: Sequelize.STRING(12),
+        allowNull: false
+      },
       user_crea: {
         type: Sequelize.UUID,
         allowNull: true

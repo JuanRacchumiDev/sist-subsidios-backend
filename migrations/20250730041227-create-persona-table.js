@@ -66,6 +66,10 @@ module.exports = {
         type: Sequelize.STRING(80),
         allowNull: true,
       },
+      email: {
+        type: Sequelize.STRING(60),
+        allowNull: true
+      },
       ubigeo_reniec: {
         type: Sequelize.STRING(12),
         allowNull: true,

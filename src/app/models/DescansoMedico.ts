@@ -35,6 +35,7 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public nombre_establecimiento?: string | undefined;
     public observacion?: string | undefined;
     public total_dias?: number | undefined;
+    public codigo_temp?: string | undefined;
     public is_subsidio?: boolean | undefined;
     public is_acepta_responsabilidad?: boolean | undefined;
     public is_acepta_politica?: boolean | undefined;
@@ -166,6 +167,13 @@ DescansoMedico.init({
     total_dias: {
         type: DataTypes.NUMBER,
         allowNull: false
+    },
+    codigo_temp: {
+        type: new DataTypes.STRING(10),
+        allowNull: true,
+        set(value: string) {
+            this.setDataValue('codigo_temp', value ? value.trim() : undefined)
+        }
     },
     is_subsidio: {
         type: DataTypes.BOOLEAN,

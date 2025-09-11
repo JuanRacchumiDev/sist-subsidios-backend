@@ -15,6 +15,7 @@ import { ICanje, CanjeResponse } from '../../interfaces/Canje/ICanje';
 import HDate from '../../../helpers/HDate';
 import { ECanje } from '../../enums/ECanje';
 import sequelize from '../../../config/database';
+import AdjuntoRepository from '../../repositories/Adjunto/AdjuntoRepository';
 /**
  * @class CreateDescansoService
  * @description Servicio para crear un descanso médico
@@ -26,6 +27,8 @@ class CreateDescansoService {
      * @returns {Promise<DescansoMedicoResponse | CanjeResponse>} La respuesta de la operación.
      */
     async execute(data: IDescansoMedico): Promise<DescansoMedicoResponse | CanjeResponse> {
+        console.log('data new descanso médico', data)
+
         const {
             id_colaborador,
             id_tipodescansomedico,
@@ -34,6 +37,7 @@ class CreateDescansoService {
             fecha_inicio,
             fecha_final,
             total_dias,
+            codigo_temp
         } = data
 
         if (!id_colaborador) return { result: false, message: "El colaborador es requerido para crear un descanso médico", status: 400 }
@@ -92,11 +96,20 @@ class CreateDescansoService {
         const t = await sequelize.transaction();
 
         try {
-            const responseNewDescanso = await DescansoMedicoRepository.create(payloadData, t);
+            const siguienteCorrelatvo = await DescansoMedicoRepository.generateCorrelativo()
+
+            console.log({ siguienteCorrelatvo })
+
+            payloadData.codigo = siguienteCorrelatvo
+
+            console.log('payloadData newdescanso', payloadData)
+
+            const responseNewDescanso = await DescansoMedicoRepository.create(payloadData);
 
             const { result, data } = responseNewDescanso
 
             if (!result || !data) {
+                console.log('error en el service')
                 await t.rollback();
                 return { result: false, message: 'Error al registrar el descanso médico', status: 500 };
             }
@@ -104,6 +117,11 @@ class CreateDescansoService {
             const dataDescansoMedico = data as IDescansoMedico
 
             const { id: idDescansoMedico } = dataDescansoMedico;
+
+            console.log('id newdescanso', idDescansoMedico)
+
+            // Actualizar los documentos adjuntos, asignándoles el id de descanso médico
+            await AdjuntoRepository.updateForCodeTemp(idDescansoMedico as string, codigo_temp as string)
 
             if (totalDiasWithNuevoDescanso < TOTAL_DIAS_DESCANSO_MEDICO) {
                 await t.commit();

@@ -14,6 +14,7 @@ export interface IPersona {
     distrito?: string
     direccion?: string
     direccion_completa?: string
+    email?: string
     ubigeo_reniec?: string
     ubigeo_sunat?: string
     ubigeo?: string

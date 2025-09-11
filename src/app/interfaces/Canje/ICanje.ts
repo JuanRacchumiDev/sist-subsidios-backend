@@ -16,6 +16,7 @@ export interface ICanje {
     fecha_maxima_subsanar?: string
     is_reembolsable?: boolean
     observacion?: string
+    mes_devengado?: string
     user_crea?: string
     user_actualiza?: string
     user_elimina?: string

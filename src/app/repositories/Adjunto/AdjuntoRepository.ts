@@ -209,6 +209,45 @@ class AdjuntoRepository {
         }
     }
 
+    async updateForCodeTemp(idDescansoMedico: string, codigoTemp: string): Promise<void> {
+
+        try {
+            const [numberOfUpdatedRows] = await Adjunto.update(
+                { id_descansomedico: idDescansoMedico }, // Valores a actualizar
+                { where: { codigo_temp: codigoTemp } } // Condición
+            );
+
+            console.log(`Se actualizaron ${numberOfUpdatedRows} registros.`);
+        } catch (error) {
+            console.error('Error al actualizar los registros:', error);
+        }
+
+        // // Accede a la instancia de Sequelize a travé de db.sequelize
+        // const t = await sequelize.transaction()
+
+        // try {
+        //     const adjunto = await Adjunto.findByPk(id, { transaction: t })
+
+        //     if (!adjunto) {
+        //         await t.rollback();
+        //         return { result: false, data: [], message: 'Adjunto no encontrado', status: 200 }
+        //     }
+
+        //     const dataAdjunto: Partial<IAdjunto> = data
+
+        //     const updatedAdjunto = await adjunto.update(dataAdjunto, { transaction: t })
+
+        //     await t.commit()
+
+        //     return { result: true, message: 'Adjunto actualizado con éxito', data: updatedAdjunto, status: 200 }
+        // } catch (error) {
+        //     await t.rollback()
+        //     const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+        //     return { result: false, error: errorMessage, status: 500 }
+        // }
+    }
+
+
     /**
      * Elimina (lógicamente) un adjunto con su ID
      * @param {string} id - El ID del adjunto a eliminar 

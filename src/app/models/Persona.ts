@@ -19,6 +19,7 @@ export class Persona extends Model<IPersona, PersonaCreationAttributes> implemen
     public distrito?: string | undefined;
     public direccion?: string | undefined;
     public direccion_completa?: string | undefined;
+    public email?: string | undefined;
     public ubigeo_reniec?: string | undefined;
     public ubigeo_sunat?: string | undefined;
     public ubigeo?: string | undefined;
@@ -125,6 +126,13 @@ Persona.init({
         allowNull: true,
         set(value: string) {
             this.setDataValue('direccion_completa', value ? value.trim() : undefined)
+        }
+    },
+    email: {
+        type: new DataTypes.STRING(60),
+        allowNull: true,
+        set(value: string) {
+            this.setDataValue('email', value ? value.trim() : undefined)
         }
     },
     ubigeo_reniec: {

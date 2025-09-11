@@ -6,6 +6,7 @@ export const PERSONA_ATTRIBUTES = [
     'apellido_paterno',
     'apellido_materno',
     'nombre_completo',
+    'email',
     'departamento',
     'provincia',
     'distrito',

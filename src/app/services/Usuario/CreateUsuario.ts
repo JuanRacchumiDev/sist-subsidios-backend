@@ -14,8 +14,10 @@ class CreateUsuarioService {
      * @returns {Promise<UsuarioResponse>} La respuesta de la operación.
      */
     async execute(data: IUsuario): Promise<UsuarioResponse> {
+        let fullName: string = ""
+
         // Generar una contraseña temporal antes de hashearla
-        const tempPassword = generateTemporaryPassword()
+        const tempPassword: string = generateTemporaryPassword()
 
         data.password = tempPassword
 
@@ -24,22 +26,33 @@ class CreateUsuarioService {
         const { result: resultUsuario, data: dataUsuario } = response
 
         if (resultUsuario && dataUsuario) {
-            const { username, email } = dataUsuario as IUsuario
+
+            const usuario = dataUsuario as IUsuario
+
+            const { username, email, persona } = usuario
+
+            if (persona) {
+                const { nombres, apellido_paterno, apellido_materno } = persona
+                fullName = `${nombres} ${apellido_paterno} ${apellido_materno}`
+            }
+
+            const dataEmail = {
+                name: username as string,
+                email: email as string,
+                temporaryPassword: tempPassword,
+                appUrl: process.env.APP_URL || 'http://localhost:3000',
+                fullName: fullName || username
+            }
 
             const mailOptions = {
                 from: process.env.EMAIL_USER_GMAIL,
                 to: email,
                 subject: '¡Bienvenido a la plataforma',
-                html: newUserNotificationTemplate({
-                    name: username as string,
-                    email: email as string,
-                    temporaryPassword: tempPassword,
-                    appUrl: process.env.APP_URL || 'http://localhost:3002'
-                })
+                html: newUserNotificationTemplate(dataEmail)
             }
 
             try {
-                await transporter.sendMail(mailOptions);
+                const responseEmail = await transporter.sendMail(mailOptions);
                 console.log(`Correo de bienvenida enviado a ${username}`);
             } catch (emailError) {
                 console.error(`Error al enviar el correo a ${email}:`, emailError);

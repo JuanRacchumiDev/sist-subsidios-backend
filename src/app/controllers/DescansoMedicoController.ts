@@ -46,6 +46,7 @@ class DescansoMedicoController {
 
     async createDescanso(req: Request, res: Response, next: NextFunction) {
         try {
+            console.log('parámetros new descanso médico', req.body)
             const descansoData: IDescansoMedico = req.body;
             const result = await CreateDescansoService.execute(descansoData);
             res.status(result.status || 201).json(result);

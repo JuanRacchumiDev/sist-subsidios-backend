@@ -1,4 +1,4 @@
-import { addDays, subDays, format } from 'date-fns';
+import { addDays, subDays, format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 export default class HDate {
@@ -70,6 +70,20 @@ export default class HDate {
         const fechaActual = new Date()
         const fechaString = format(fechaActual, formatDate)
         return fechaString
+    }
+
+    static formatDate(dateString: string | null | undefined, dateFormat: string): string {
+        if (!dateString) {
+            return ''
+        }
+
+        try {
+            const date = parseISO(dateString)
+            return format(date, dateFormat, { locale: es })
+        } catch (error) {
+            console.error('Error al formatear la fecha:', error);
+            return '';
+        }
     }
 
 }

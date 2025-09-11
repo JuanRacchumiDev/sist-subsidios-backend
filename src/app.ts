@@ -109,6 +109,7 @@ const setupDatabase = async () => {
         Parentesco.hasMany(Colaborador, { foreignKey: 'id_parentesco', as: 'colaboradores' })
 
         Persona.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })
+        // Persona.hasOne(Usuario, { foreignKey: 'id_usuario', as: 'usuario' })
 
         Perfil.hasMany(Usuario, { foreignKey: 'id_perfil', as: 'usuarios' })
 
@@ -124,7 +125,7 @@ const setupDatabase = async () => {
         Sede.hasMany(TrabajadorSocial, { foreignKey: 'id_sede', as: 'trabajadoresSociales' })
 
         TipoContingencia.hasMany(DescansoMedico, { foreignKey: 'id_tipocontingencia', as: 'descansosMedicos' })
-        TipoContingencia.hasMany(DocumentoTipoCont, { foreignKey: 'id_tipocontingencia', as: 'documentos' })
+        TipoContingencia.hasMany(DocumentoTipoCont, { foreignKey: 'id_tipocontingencia', as: 'documentoTipoCont' })
 
         TipoDescansoMedico.hasMany(DescansoMedico, { foreignKey: 'id_tipodescansomedico', as: 'descansosMedicos' })
 

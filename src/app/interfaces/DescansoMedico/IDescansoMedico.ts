@@ -29,6 +29,7 @@ export interface IDescansoMedico {
     nombre_establecimiento?: string
     observacion?: string
     total_dias?: number
+    codigo_temp?: string
     user_crea?: string
     user_actualiza?: string
     user_elimina?: string

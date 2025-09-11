@@ -22,6 +22,7 @@ export class Canje extends Model<ICanje, CanjeCreationAttributes> implements ICa
     public fecha_maxima_subsanar?: string | undefined;
     public is_reembolsable?: boolean | undefined;
     public observacion?: string | undefined;
+    public mes_devengado?: string | undefined;
     public user_crea?: string | undefined;
     public user_actualiza?: string | undefined;
     public user_elimina?: string | undefined;
@@ -106,6 +107,13 @@ Canje.init({
         allowNull: true,
         set(value: string) {
             this.setDataValue('observacion', value ? value.trim() : undefined)
+        }
+    },
+    mes_devengado: {
+        type: DataTypes.STRING(12),
+        allowNull: false,
+        set(value: string) {
+            this.setDataValue('mes_devengado', value ? value.trim() : undefined)
         }
     },
     user_crea: {

@@ -5,6 +5,7 @@ import { Pais } from "../../models/Pais";
 import { Sede } from "../../models/Sede";
 import { TipoDocumento } from "../../models/TipoDocumento";
 import { Colaborador } from "../../models/Colaborador";
+import { Persona } from "../../models/Persona"
 import sequelize from '../../../config/database'
 import { TValidateFields } from "../../types/TTypeFields";
 import { Op } from "sequelize";
@@ -15,6 +16,8 @@ import { EMPRESA_INCLUDE } from "../../../includes/EmpresaInclude";
 import { AREA_INCLUDE } from "../../../includes/AreaInclude";
 import { SEDE_INCLUDE } from "../../../includes/SedeInclude";
 import { PAIS_INCLUDE } from "../../../includes/PaisInclude";
+import PersonaRepository from "../Persona/PersonaRepository";
+import { IPersona } from "../../interfaces/Persona/IPersona";
 
 class ColaboradorRepository {
     /**
@@ -201,6 +204,7 @@ class ColaboradorRepository {
 
         try {
             const {
+                id_tipodocumento,
                 numero_documento,
                 correo_personal,
                 correo_institucional,
@@ -243,6 +247,23 @@ class ColaboradorRepository {
             const { id } = newColaborador
 
             if (id) {
+                // Actualizamos el email de la persona
+                const responsePersona = await PersonaRepository.getByIdTipoDocAndNumDoc(id_tipodocumento as string, numero_documento)
+
+                console.log({ responsePersona })
+
+                const { result, data } = responsePersona
+
+                if (result && data) {
+                    const payloadUpdate: IPersona = {
+                        email: correo_personal
+                    }
+
+                    const persona = data as Persona
+
+                    await persona.update(payloadUpdate)
+                }
+
                 return { result: true, message: 'Colaborador registrado con éxito', data: newColaborador, status: 200 }
             }
 

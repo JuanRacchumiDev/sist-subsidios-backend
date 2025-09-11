@@ -7,6 +7,10 @@ import { TrabajadorSocial } from '../../models/TrabajadorSocial';
 import { Perfil } from '../../models/Perfil';
 import { AuthCredenciales, AuthResponse } from '../../types/Auth/TAuth';
 import HString from '../../../helpers/HString';
+import { Persona } from '../../models/Persona';
+import { IUsuario } from '../../interfaces/Usuario/IUsuario';
+import { IColaborador } from '../../interfaces/Colaborador/IColaborador';
+import ColaboradorRepository from '../Colaborador/ColaboradorRepository'
 
 class AuthRepository {
     /**
@@ -16,6 +20,12 @@ class AuthRepository {
      */
     async login(data: AuthCredenciales): Promise<AuthResponse> {
         dotenv.config()
+
+        let nombreCompleto: string = ""
+
+        let idEmpresa: string = ""
+
+        let idColaborador: string = ""
 
         try {
             const { email, password } = data
@@ -32,6 +42,10 @@ class AuthRepository {
                         {
                             model: Perfil,
                             as: 'perfil'
+                        },
+                        {
+                            model: Persona,
+                            as: 'persona'
                         }
                     ]
                 }
@@ -48,11 +62,11 @@ class AuthRepository {
 
             const {
                 id: idUsuario,
+                username,
                 password: passwordUsuario,
-                id_colaborador,
-                id_trabajadorsocial,
-                username
-            } = existsUsuario
+                perfil,
+                persona
+            } = existsUsuario as IUsuario
 
             const comparePassword = await bcrypt.compare(getPassword, passwordUsuario as string)
 
@@ -87,35 +101,52 @@ class AuthRepository {
                 }
             }
 
-            const { perfil } = existsUsuario
+            if (persona) {
+                const {
+                    nombres,
+                    apellido_paterno,
+                    apellido_materno,
+                    id_tipodocumento,
+                    numero_documento
+                } = persona
 
-            let nombreCompletoUsuario: string = ""
+                nombreCompleto = `${nombres} ${apellido_paterno} ${apellido_materno}`;
 
-            const existsColaborador = await Colaborador.findByPk(id_colaborador)
+                /// Validando si existe colaborador
+                const responseColaborador = await ColaboradorRepository.getByIdTipoDocAndNumDoc(
+                    id_tipodocumento as string,
+                    numero_documento as string
+                )
 
-            const existsTrabSocial = await TrabajadorSocial.findByPk(id_trabajadorsocial)
+                const { result, data } = responseColaborador
 
-            if (existsColaborador && !existsTrabSocial) {
-                nombreCompletoUsuario = `${existsColaborador.nombres} ${existsColaborador.apellido_paterno} ${existsColaborador.apellido_materno}`
-            } else if (!existsColaborador && existsTrabSocial) {
-                nombreCompletoUsuario = `${existsTrabSocial.nombres} ${existsTrabSocial.apellido_paterno} ${existsTrabSocial.apellido_materno}`
+                if (result && data) {
+                    // console.log('data colaborador', data)
+                    const { id, id_empresa } = data as IColaborador
+
+                    idColaborador = id as string
+                    idEmpresa = id_empresa as string
+                }
             }
 
-            const codigoTemp: string = HString.generateRandomString(10)
+            const codigo_temp: string = HString.generateRandomString(10)
+            console.log({ codigo_temp })
 
             return {
                 result: true,
                 message: 'Inicio de sesión exitoso',
                 token,
                 usuario: {
-                    idUsuario,
+                    id_usuario: idUsuario,
+                    id_empresa: idEmpresa,
+                    id_colaborador: idColaborador,
                     username,
-                    nombrePerfil: perfil?.nombre,
-                    slugPerfil: perfil?.nombre_url,
-                    nombreCompletoUsuario
+                    nombre_perfil: perfil?.nombre,
+                    slug_perfil: perfil?.nombre_url,
+                    nombre_completo: nombreCompleto
                 },
                 status: 200,
-                codigoTemp
+                codigo_temp
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
@@ -124,7 +155,7 @@ class AuthRepository {
                 error: errorMessage,
                 token: "",
                 status: 500,
-                codigoTemp: ""
+                codigo_temp: ""
             }
         }
     }

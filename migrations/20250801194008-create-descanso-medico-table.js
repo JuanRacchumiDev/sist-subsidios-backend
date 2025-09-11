@@ -127,6 +127,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
+      codigo_temp: {
+        type: Sequelize.STRING(10),
+        allowNull: true
+      },
       user_crea: {
         type: Sequelize.UUID,
         allowNull: true

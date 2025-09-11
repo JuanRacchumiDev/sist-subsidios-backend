@@ -22,6 +22,7 @@ export const DESCANSOMEDICO_ATTRIBUTES = [
     'nombre_establecimiento',
     'observacion',
     'total_dias',
+    'codigo_temp',
     'is_subsidio',
     'is_acepta_responsabilidad',
     'is_acepta_politica',

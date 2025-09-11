@@ -10,12 +10,14 @@ export type AuthResponse = {
     token?: string
     status: number
     usuario?: {
-        idUsuario?: string
+        id_usuario?: string
+        id_empresa?: string
+        id_colaborador?: string
         username?: string
-        nombrePerfil?: string
-        slugPerfil?: string
-        nombreCompletoUsuario?: string
+        nombre_perfil?: string
+        slug_perfil?: string
+        nombre_completo?: string
     }
     error?: string,
-    codigoTemp?: string
+    codigo_temp?: string
 }
