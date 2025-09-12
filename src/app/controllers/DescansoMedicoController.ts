@@ -2,9 +2,11 @@ import { NextFunction, Response, Request } from "express";
 import GetDescansosService from '../services/DescansoMedico/GetDescansos'
 import GetDescansoService from '../services/DescansoMedico/GetDescanso'
 import GetDescansosPaginateService from '../services/DescansoMedico/GetDescansosPaginate'
+import GetDescansosByColaboradorPaginate from "../services/DescansoMedico/GetDescansosByColaboradorPaginate"
 import CreateDescansoService from '../services/DescansoMedico/CreateDescanso'
 import UpdateDescansoService from '../services/DescansoMedico/UpdateDescanso'
 import { IDescansoMedico } from "../interfaces/DescansoMedico/IDescansoMedico";
+import { ResponseTransaction } from '../types/DescansoMedico/TResponseTransaction';
 
 class DescansoMedicoController {
     async getAllDescansos(req: Request, res: Response, next: NextFunction) {
@@ -34,6 +36,25 @@ class DescansoMedicoController {
         }
     }
 
+    async getAllDescansosByColaboradorPaginated(req: Request, res: Response, next: NextFunction) {
+        try {
+            const idColaborador = req.query.idColaborador as string
+            const page = parseInt(req.query.page as string) || 1
+            const limit = parseInt(req.query.limit as string) || 10
+
+            // let estado: boolean | undefined
+
+            // if (typeof estadoParam === 'string') {
+            //     estado = estadoParam.toLowerCase() === 'true'
+            // }
+
+            const result = await GetDescansosByColaboradorPaginate.execute(idColaborador, page, limit)
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error)
+        }
+    }
+
     async getDescansoById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
@@ -48,9 +69,14 @@ class DescansoMedicoController {
         try {
             console.log('parámetros new descanso médico', req.body)
             const descansoData: IDescansoMedico = req.body;
-            const result = await CreateDescansoService.execute(descansoData);
-            console.log('result descanso médico', result)
-            res.status(result.status || 201).json(result);
+
+            const response = await CreateDescansoService.execute(descansoData);
+            console.log('response createDescanso', response)
+
+            const dataResponse = response as ResponseTransaction
+            console.log('dataResponse createDescanso', dataResponse)
+
+            res.status(dataResponse.status || 201).json(dataResponse);
         } catch (error) {
             next(error);
         }

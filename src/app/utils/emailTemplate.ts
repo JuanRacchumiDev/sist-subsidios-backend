@@ -32,3 +32,32 @@ export function newUserNotificationTemplate(
     </div>
   `;
 }
+
+export function newNotificationDescansoMedico(
+  data: {
+    nombreCompleto: string;
+    appUrl: string
+  }): string {
+  return `
+    <div style="font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); overflow: hidden;">
+        <div style="background-color: #4a5568; padding: 24px;">
+          <h1 style="color: #ffffff; font-size: 24px; font-weight: bold; text-align: center; margin: 0;">¡Bienvenido(a) a la plataforma!</h1>
+        </div>
+        <div style="padding: 24px;">
+          <p style="font-size: 16px; color: #4a5568;">Estimado colaborador, <strong>${data.nombreCompleto}</strong>,</p>
+          <p style="font-size: 16px; color: #4a5568;">Hemos recibido su documentación, la estaremos revisando y enviaremos la respuesta en los próximos días.</p>
+          <p style="font-size: 16px; color: #4a5568;">Gracias</p>
+          <p style="font-size: 16px; color: #4a5568;">Saludos,</p>
+          <p style="font-size: 16px; color: #4a5568;">Equipo de Subsidios</p>
+          
+          <div style="text-align: center; margin-top: 32px;">
+            <a href="${data.appUrl}" style="background-color: #48bb78; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Acceder a la plataforma</a>
+          </div>
+          
+          <p style="font-size: 14px; color: #718096; margin-top: 32px;">Por favor, cambia tu contraseña después del primer inicio de sesión por seguridad.</p>
+        </div>
+      </div>
+    </div>
+  `;
+}

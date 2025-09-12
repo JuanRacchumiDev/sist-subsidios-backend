@@ -9,9 +9,9 @@ export const generateTemporaryPassword = (): string => {
     return generate.generate({
         length: 12,
         numbers: true,
-        symbols: true,
-        uppercase: true,
+        symbols: false,
+        uppercase: false,
         lowercase: true,
-        strict: true // Garantiza que incluya al menos un carácter de cada tipo
+        strict: false // Garantiza que incluya al menos un carácter de cada tipo
     });
 };

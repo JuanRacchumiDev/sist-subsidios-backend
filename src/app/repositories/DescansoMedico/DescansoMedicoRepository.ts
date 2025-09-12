@@ -120,6 +120,60 @@ class DescansoMedicoRepository {
     }
 
     /**
+     * Obtiene todos los descansos médicos por colaborador con paginación
+     * @param {string} idColaborador - El ID del colaborador a buscar
+     * @param {number} page - El número de página actual
+     * @param {number} limit - El número de elementos por página
+     * @returns {Promise<DescansoMedicoResponsePaginate>}
+     */
+    async getAllByColaboradorPaginate(idColaborador: string, page: number, limit: number): Promise<DescansoMedicoResponsePaginate> {
+        try {
+            const offset = HPagination.getOffset(page, limit);
+
+            const { count, rows } = await DescansoMedico.findAndCountAll({
+                attributes: DESCANSOMEDICO_ATTRIBUTES,
+                include: [
+                    COLABORADOR_INCLUDE,
+                    TIPODM_INCLUDE,
+                    TIPO_CONTINGENCIA_INCLUDE,
+                    DIAGNOSTICO_INCLUDE
+                ],
+                where: {
+                    id_colaborador: idColaborador
+                },
+                order: [
+                    ['fecha_inicio', 'DESC']
+                ],
+                limit,
+                offset
+            });
+
+            const totalPages = Math.ceil(count / limit);
+            const nextPage = HPagination.getNextPage(page, limit, count);
+            const previousPage = HPagination.getPreviousPage(page);
+
+            const pagination: IDescansoMedicoPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            };
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            };
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    /**
      * Calcula el total de días de descansos médicos para un colaborador
      * @param {string} idColaborador - El ID del colaborador a buscar
      * @return {Promise<TTotalDias>} La suma de días acumulados

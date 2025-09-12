@@ -16,13 +16,9 @@ import HDate from '../../../helpers/HDate';
 import { ECanje } from '../../enums/ECanje';
 import sequelize from '../../../config/database';
 import AdjuntoRepository from '../../repositories/Adjunto/AdjuntoRepository';
-
-type ResponseTransaction = {
-    result?: boolean
-    message?: string,
-    error?: string
-    status?: number
-}
+import { ResponseTransaction } from '../../types/DescansoMedico/TResponseTransaction';
+import { newNotificationDescansoMedico } from '../../utils/emailTemplate';
+import transporter from '../../../config/mailer';
 
 /**
  * @class CreateDescansoService
@@ -72,7 +68,7 @@ class CreateDescansoService {
         const { result: resultDiagnostico, data: dataDiagnostico } = responseDiagnostico
         if (!resultDiagnostico || !dataDiagnostico) return { result: false, message: 'Diagnóstico no encontrado', status: 404 }
 
-        const { nombres, apellido_paterno, apellido_materno } = dataColaborador as IColaborador
+        const { nombres, apellido_paterno, apellido_materno, correo_personal } = dataColaborador as IColaborador
 
         const nombreColaborador = `${nombres} ${apellido_paterno} ${apellido_materno}`
 
@@ -127,6 +123,8 @@ class CreateDescansoService {
 
             const responseNewDescanso = await DescansoMedicoRepository.create(payloadData);
 
+            console.log({ responseNewDescanso })
+
             const { result, data } = responseNewDescanso
 
             if (!result || !data) {
@@ -148,15 +146,34 @@ class CreateDescansoService {
             // Actualizar los documentos adjuntos, asignándoles el id de descanso médico
             await AdjuntoRepository.updateForCodeTemp(idDescansoMedico as string, codigo_temp as string)
 
-            if (totalDiasWithNuevoDescanso < TOTAL_DIAS_DESCANSO_MEDICO) {
-                console.log('no genera subsidio')
-                // await transaction.commit();
-                return {
-                    result: true,
-                    message: "Descanso médico registrado correctamente",
-                    status: 201
-                };
+            // if (totalDiasWithNuevoDescanso < TOTAL_DIAS_DESCANSO_MEDICO) {
+            // console.log('no genera subsidio')
+            // await transaction.commit();
+
+            // Envío correo de notificación
+            const dataEmail = {
+                nombreCompleto: nombreColaborador,
+                appUrl: process.env.APP_URL || 'http://localhost:3000',
             }
+
+            const mailOptions = {
+                from: process.env.EMAIL_USER_GMAIL,
+                to: correo_personal,
+                subject: '¡REGISTRO DE NUEVO DESCANSO MÉDICO',
+                html: newNotificationDescansoMedico(dataEmail)
+            }
+
+            const responseEmail = await transporter.sendMail(mailOptions);
+            console.log(`Correo de bienvenida enviado a ${nombreColaborador}`);
+
+            console.log({ responseEmail })
+
+            return {
+                result: true,
+                message: "Descanso médico registrado correctamente",
+                status: 201
+            };
+            // }
 
             if (totalDiasWithNuevoDescanso >= TOTAL_DIAS_DESCANSO_MEDICO) {
                 console.log('preparando payload para nuevos canjes')
@@ -252,7 +269,11 @@ class CreateDescansoService {
 
                 if (!resultWithSubsidio) {
                     // await transaction.rollback();
-                    return { result: false, message: 'Error al registrar el canje con subsidio', status: 500 };
+                    return {
+                        result: false,
+                        message: 'Error al registrar el canje con subsidio',
+                        status: 500
+                    };
                 }
 
                 // await transaction.commit();
@@ -266,7 +287,11 @@ class CreateDescansoService {
         } catch (error) {
             // await transaction.rollback();
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-            return { result: false, error: errorMessage, status: 500 };
+            return {
+                result: false,
+                error: errorMessage,
+                status: 500
+            };
         }
     }
 }
