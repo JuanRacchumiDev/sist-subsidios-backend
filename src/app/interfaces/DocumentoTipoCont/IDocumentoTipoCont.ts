@@ -20,3 +20,21 @@ export interface DocumentoTipoContResponse {
     error?: string
     status?: number
 }
+
+export interface IDocumentoTipoContPaginate {
+    currentPage: number
+    limit: number
+    totalPages: number
+    totalItems: number
+    nextPage: number | null
+    previousPage: number | null
+}
+
+export interface DocumentoTipoContResponsePaginate {
+    result: boolean
+    message?: string
+    data?: IDocumentoTipoCont[]
+    pagination?: IDocumentoTipoContPaginate
+    error?: string
+    status?: number
+}

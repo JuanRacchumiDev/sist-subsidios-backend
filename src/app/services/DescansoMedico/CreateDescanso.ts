@@ -16,6 +16,14 @@ import HDate from '../../../helpers/HDate';
 import { ECanje } from '../../enums/ECanje';
 import sequelize from '../../../config/database';
 import AdjuntoRepository from '../../repositories/Adjunto/AdjuntoRepository';
+
+type ResponseTransaction = {
+    result?: boolean
+    message?: string,
+    error?: string
+    status?: number
+}
+
 /**
  * @class CreateDescansoService
  * @description Servicio para crear un descanso médico
@@ -24,9 +32,9 @@ class CreateDescansoService {
     /**
      * Ejecuta la operación para crear un descanso médico.
      * @param {IDescansoMedico} data - Los datos del descanso médico a crear.
-     * @returns {Promise<DescansoMedicoResponse | CanjeResponse>} La respuesta de la operación.
+     * @returns {Promise<ResponseTransaction>} La respuesta de la operación.
      */
-    async execute(data: IDescansoMedico): Promise<DescansoMedicoResponse | CanjeResponse> {
+    async execute(data: IDescansoMedico): Promise<ResponseTransaction | undefined> {
         console.log('data new descanso médico', data)
 
         const {
@@ -84,23 +92,36 @@ class CreateDescansoService {
 
         // Lógica para obtener y validar el total de días acumulados
         const totalDiasResponse = await DescansoMedicoRepository.getTotalDiasByColaborador(id_colaborador)
+
+        console.log({ totalDiasResponse })
+
         const { result: resultTotalDias, data: totalDiasAcumulados } = totalDiasResponse
 
         if (!resultTotalDias) {
-            return { result: false, message: 'Error al obtener los días de descanso acumulados', status: 500 };
+            return {
+                result: false,
+                message: 'Error al obtener los días de descanso acumulados',
+                status: 422
+            };
         }
 
         const totalDiasWithNuevoDescanso = (totalDiasAcumulados || 0) + (total_dias as number)
 
+        console.log({ totalDiasWithNuevoDescanso })
+
         // Manejo de la lógica de canje dentro de una transacción
-        const t = await sequelize.transaction();
+        // const transaction = await sequelize.transaction();
 
         try {
-            const siguienteCorrelatvo = await DescansoMedicoRepository.generateCorrelativo()
+            console.log('antes de generar correlativo')
 
-            console.log({ siguienteCorrelatvo })
+            const siguienteCorrelatvoDM = await DescansoMedicoRepository.generateCorrelativo()
 
-            payloadData.codigo = siguienteCorrelatvo
+            console.log('después generar siguiente correlativo')
+
+            console.log({ siguienteCorrelatvoDM })
+
+            payloadData.codigo = siguienteCorrelatvoDM
 
             console.log('payloadData newdescanso', payloadData)
 
@@ -110,8 +131,12 @@ class CreateDescansoService {
 
             if (!result || !data) {
                 console.log('error en el service')
-                await t.rollback();
-                return { result: false, message: 'Error al registrar el descanso médico', status: 500 };
+                // await transaction.rollback();
+                return {
+                    result: false,
+                    message: 'Error al registrar el descanso médico',
+                    status: 422
+                };
             }
 
             const dataDescansoMedico = data as IDescansoMedico
@@ -124,71 +149,122 @@ class CreateDescansoService {
             await AdjuntoRepository.updateForCodeTemp(idDescansoMedico as string, codigo_temp as string)
 
             if (totalDiasWithNuevoDescanso < TOTAL_DIAS_DESCANSO_MEDICO) {
-                await t.commit();
-                return responseNewDescanso;
+                console.log('no genera subsidio')
+                // await transaction.commit();
+                return {
+                    result: true,
+                    message: "Descanso médico registrado correctamente",
+                    status: 201
+                };
             }
 
-            // Crear nuevo canje primera parte
-            const diasMaximo: number = TOTAL_DIAS_DESCANSO_MEDICO - (totalDiasWithNuevoDescanso || 0)
+            if (totalDiasWithNuevoDescanso >= TOTAL_DIAS_DESCANSO_MEDICO) {
+                console.log('preparando payload para nuevos canjes')
 
-            const fechaFinalFirstSubsidio: string = HDate.addDaysToDate(fecha_inicio as string, diasMaximo)
+                // Crear nuevo canje primera parte
+                const diasMaximo: number = TOTAL_DIAS_DESCANSO_MEDICO - (totalDiasWithNuevoDescanso || 0)
+                console.log({ diasMaximo })
 
-            const fechaInicioLastSubsidio = HDate.addDaysToDate(fechaFinalFirstSubsidio, 1)
+                const fechaFinalFirstSubsidio: string = HDate.addDaysToDate(fecha_inicio as string, diasMaximo)
+                console.log({ fechaFinalFirstSubsidio })
 
-            const fechaMaximaCanje: string = HDate.addDaysToDate(fechaFinalFirstSubsidio, 10)
+                const fechaInicioLastSubsidio = HDate.addDaysToDate(fechaFinalFirstSubsidio, 1)
+                console.log({ fechaInicioLastSubsidio })
 
-            const fechaActual: string = HDate.getCurrentDateToString('yyyy-MM-dd')
+                const fechaMaximaCanje: string = HDate.addDaysToDate(fechaFinalFirstSubsidio, 10)
+                console.log({ fechaMaximaCanje })
 
-            // Crear el primer canje (no reembolsable, hasta el día 20)
-            const payloadCanjeWithoutSubsidio: ICanje = {
-                id_descansomedico: idDescansoMedico,
-                codigo: 'CANJ-0001-2025',
-                fecha_inicio_subsidio: fecha_inicio,
-                fecha_final_subsidio: fechaFinalFirstSubsidio,
-                fecha_inicio_dm: fecha_inicio,
-                fecha_final_dm: fecha_final,
-                fecha_maxima_canje: fechaMaximaCanje,
-                fecha_registro: fechaActual,
-                is_reembolsable: false,
-                estado_registro: ECanje.CANJE_REGISTRADO
+                const fechaActual: string = HDate.getCurrentDateToString('yyyy-MM-dd')
+                console.log({ fechaActual })
+
+                // Crear el primer canje (no reembolsable, hasta el día 20)
+                const payloadCanjeWithoutSubsidio: ICanje = {
+                    id_descansomedico: idDescansoMedico,
+                    fecha_inicio_subsidio: fecha_inicio,
+                    fecha_final_subsidio: fechaFinalFirstSubsidio,
+                    fecha_inicio_dm: fecha_inicio,
+                    fecha_final_dm: fecha_final,
+                    fecha_maxima_canje: fechaMaximaCanje,
+                    fecha_registro: fechaActual,
+                    is_reembolsable: false,
+                    estado_registro: ECanje.CANJE_REGISTRADO
+                }
+
+                console.log({ payloadCanjeWithoutSubsidio })
+
+                const siguienteCorrelatvoCanjeSinSubsidio = await CanjeRepository.generateCorrelativo();
+
+                console.log('generar siguiente correlativo de canje sin subsidio')
+
+                console.log({ siguienteCorrelatvoCanjeSinSubsidio })
+
+                // Agregando código generadp
+                payloadCanjeWithoutSubsidio.codigo = siguienteCorrelatvoCanjeSinSubsidio
+
+                // Agregando mes de devengado
+                payloadCanjeWithoutSubsidio.mes_devengado = HDate.getMonthName(fecha_inicio as string)
+
+                // const responseCanjeWithoutSubsidio = await CanjeRepository.create(payloadCanjeWithoutSubsidio);
+                const responseCanjeWithoutSubsidio = await CanjeRepository.create(payloadCanjeWithoutSubsidio);
+                console.log({ responseCanjeWithoutSubsidio })
+
+                const { result: resultWithoutSubsidio } = responseCanjeWithoutSubsidio
+
+                if (!resultWithoutSubsidio) {
+                    // await transaction.rollback();
+                    return {
+                        result: false,
+                        message: 'Error al registrar el canje sin subsidio',
+                        status: 422
+                    };
+                }
+
+                // Crear nuevo canje segunda parte
+                const payloadCanjeWithSubsidio: ICanje = {
+                    id_descansomedico: idDescansoMedico,
+                    fecha_inicio_subsidio: fechaInicioLastSubsidio,
+                    fecha_final_subsidio: fecha_final,
+                    fecha_inicio_dm: fecha_inicio,
+                    fecha_final_dm: fecha_final,
+                    fecha_maxima_canje: fechaMaximaCanje,
+                    fecha_registro: fechaActual,
+                    is_reembolsable: false,
+                    estado_registro: ECanje.CANJE_REGISTRADO
+                }
+
+                console.log({ payloadCanjeWithSubsidio })
+
+                const siguienteCorrelatvoCanjeConSubsidio = await CanjeRepository.generateCorrelativo();
+
+                console.log('generar siguiente correlativo de canje con subsidio')
+
+                console.log({ siguienteCorrelatvoCanjeConSubsidio })
+
+                payloadCanjeWithSubsidio.codigo = siguienteCorrelatvoCanjeConSubsidio
+
+                // Agregando mes de devengado
+                payloadCanjeWithSubsidio.mes_devengado = HDate.getMonthName(fechaInicioLastSubsidio as string)
+
+                // const responseCanjeWithSubsidio = await CanjeRepository.create(payloadCanjeWithSubsidio, t)
+                const responseCanjeWithSubsidio = await CanjeRepository.create(payloadCanjeWithSubsidio)
+
+                const { result: resultWithSubsidio } = responseCanjeWithSubsidio
+
+                if (!resultWithSubsidio) {
+                    // await transaction.rollback();
+                    return { result: false, message: 'Error al registrar el canje con subsidio', status: 500 };
+                }
+
+                // await transaction.commit();
+                return {
+                    result: true,
+                    message: "Canjes registrados correctamente",
+                    error: "",
+                    status: 201
+                };
             }
-
-            const responseCanjeWithoutSubsidio = await CanjeRepository.create(payloadCanjeWithoutSubsidio, t);
-
-            const { result: resultWithoutSubsidio } = responseCanjeWithoutSubsidio
-
-            if (!resultWithoutSubsidio) {
-                await t.rollback();
-                return { result: false, message: 'Error al registrar el canje sin subsidio', status: 500 };
-            }
-
-            // Crear nuevo canje segunda parte
-            const payloadCanjeWithSubsidio: ICanje = {
-                id_descansomedico: idDescansoMedico,
-                codigo: 'CANJ-0001-2025',
-                fecha_inicio_subsidio: fechaInicioLastSubsidio,
-                fecha_final_subsidio: fecha_final,
-                fecha_inicio_dm: fecha_inicio,
-                fecha_final_dm: fecha_final,
-                fecha_maxima_canje: fechaMaximaCanje,
-                fecha_registro: fechaActual,
-                is_reembolsable: false,
-                estado_registro: ECanje.CANJE_REGISTRADO
-            }
-
-            const responseCanjeWithSubsidio = await CanjeRepository.create(payloadCanjeWithSubsidio, t)
-
-            const { result: resultWithSubsidio } = responseCanjeWithSubsidio
-
-            if (!resultWithSubsidio) {
-                await t.rollback();
-                return { result: false, message: 'Error al registrar el canje con subsidio', status: 500 };
-            }
-
-            await t.commit();
-            return responseNewDescanso;
         } catch (error) {
-            await t.rollback();
+            // await transaction.rollback();
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 };
         }

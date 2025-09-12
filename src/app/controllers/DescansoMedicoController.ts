@@ -49,6 +49,7 @@ class DescansoMedicoController {
             console.log('parámetros new descanso médico', req.body)
             const descansoData: IDescansoMedico = req.body;
             const result = await CreateDescansoService.execute(descansoData);
+            console.log('result descanso médico', result)
             res.status(result.status || 201).json(result);
         } catch (error) {
             next(error);

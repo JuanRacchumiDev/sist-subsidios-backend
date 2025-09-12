@@ -25,7 +25,7 @@ module.exports = {
         }
       },
       codigo: {
-        type: Sequelize.STRING(30),
+        type: Sequelize.STRING(20),
         allowNull: false
       },
       codigo_cheque: {
@@ -37,11 +37,11 @@ module.exports = {
         allowNull: true
       },
       fecha_registro: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: false
       },
       fecha_maxima_cobro: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: false
       },
       observacion: {

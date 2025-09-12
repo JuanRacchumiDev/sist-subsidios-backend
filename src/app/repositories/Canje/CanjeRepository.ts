@@ -4,7 +4,7 @@ import { DescansoMedico } from "../../models/DescansoMedico"
 import sequelize from "../../../config/database"
 import { CANJE_ATTRIBUTES } from "../../../constants/CanjeConstant"
 import HPagination from "../../../helpers/HPagination"
-import { Transaction } from "sequelize"
+import { Op, Transaction } from "sequelize"
 import { DESCANSOMEDICO_INCLUDE } from "../../../includes/DescansoMedicoInclude"
 
 class CanjeRepository {
@@ -109,12 +109,12 @@ class CanjeRepository {
     /**
      * Crea un canje
      * @param {ICanje} data - Los datos del canje a crear
-     * @param {Transaction} [t] - Objeto de transacción de Sequelize opcional.
      * @returns {Promise<CanjeResponse>} Respuesta con el canje creado o error
      */
-    async create(data: ICanje, t?: Transaction): Promise<CanjeResponse> {
+    async create(data: ICanje): Promise<CanjeResponse> {
         try {
-            const newCanje = await Canje.create(data, { transaction: t })
+            // const newCanje = await Canje.create(data, { transaction })
+            const newCanje = await Canje.create(data)
 
             const { id: idCanje } = newCanje
 
@@ -146,13 +146,14 @@ class CanjeRepository {
      * @returns {Promise<CanjeResponse>} Respuesta con el canje actualizado o error
      */
     async update(id: string, data: ICanje): Promise<CanjeResponse> {
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
-            const canje = await Canje.findByPk(id, { transaction: t })
+            // const canje = await Canje.findByPk(id, { transaction })
+            const canje = await Canje.findByPk(id)
 
             if (!canje) {
-                await t.rollback();
+                // await transaction.rollback();
                 return {
                     result: false,
                     data: [],
@@ -163,15 +164,69 @@ class CanjeRepository {
 
             const dataUpdateCanje: Partial<ICanje> = data
 
-            const updatedCanje = await canje.update(dataUpdateCanje, { transaction: t })
+            // const updatedCanje = await canje.update(dataUpdateCanje, { transaction })
+            const updatedCanje = await canje.update(dataUpdateCanje)
 
-            await t.commit()
+            // await transaction.commit()
 
             return { result: true, message: 'Canje actualizado con éxito', data: updatedCanje, status: 200 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async generateCorrelativo(): Promise<string> {
+        // const transaction = await sequelize.transaction();
+        try {
+            const anioActual = new Date().getFullYear()
+
+            const prefijo = 'CANJ'
+
+            const formatoCodigo = `${prefijo}-${anioActual}-%`
+
+            // 1. Encontrar el último registro para el año actual
+            const ultimoCanje = await Canje.findOne({
+                where: {
+                    codigo: {
+                        [Op.like]: formatoCodigo
+                    }
+                },
+                order: [
+                    ['codigo', 'DESC']
+                ],
+                // transaction,
+                // lock: transaction.LOCK.UPDATE
+            })
+
+            let nuevoNumero = 1;
+
+            if (ultimoCanje) {
+
+                const { codigo } = ultimoCanje
+
+                const codigoStr = codigo as string
+
+                // 2. Extraer y aumentar el número correlativo
+                const partes = codigoStr.split('-');
+
+                const ultimoNumero = parseInt(partes[2], 10);
+
+                nuevoNumero = ultimoNumero + 1;
+            }
+
+            // 3. Formatear el nuevo correlativo
+            const numeroFormateado = String(nuevoNumero).padStart(4, '0');
+
+            const nuevoCorrelativo = `${prefijo}-${anioActual}-${numeroFormateado}`;
+
+            // await transaction.commit();
+            return nuevoCorrelativo;
+        } catch (error) {
+            // await transaction.rollback();
+            console.error('Error al generar el correlativo:', error);
+            throw new Error('No se pudo generar el correlativo del canje');
         }
     }
 }

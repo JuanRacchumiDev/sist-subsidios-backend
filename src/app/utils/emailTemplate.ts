@@ -1,9 +1,15 @@
-export function newUserNotificationTemplate(data: { name: string; email: string; temporaryPassword: string; appUrl: string }): string {
-    return `
+export function newUserNotificationTemplate(
+  data: {
+    name: string;
+    email: string;
+    temporaryPassword: string;
+    appUrl: string
+  }): string {
+  return `
     <div style="font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px;">
       <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); overflow: hidden;">
         <div style="background-color: #4a5568; padding: 24px;">
-          <h1 style="color: #ffffff; font-size: 24px; font-weight: bold; text-align: center; margin: 0;">¡Bienvenido/a a la plataforma!</h1>
+          <h1 style="color: #ffffff; font-size: 24px; font-weight: bold; text-align: center; margin: 0;">¡Bienvenido(a) a la plataforma!</h1>
         </div>
         <div style="padding: 24px;">
           <p style="font-size: 16px; color: #4a5568;">Hola, <strong>${data.name}</strong>,</p>

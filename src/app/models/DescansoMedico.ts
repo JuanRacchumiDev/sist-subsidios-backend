@@ -5,8 +5,6 @@ import { Colaborador } from './Colaborador';
 import { TipoDescansoMedico } from './TipoDescansoMedico';
 import { TipoContingencia } from './TipoContingencia';
 import { Diagnostico } from './Diagnostico';
-import { Establecimiento } from './Establecimiento';
-import { Canje } from './Canje';
 import sequelize from '../../config/database'
 
 interface DescansoMedicoCreationAttributes extends Optional<IDescansoMedico, 'id'> { }

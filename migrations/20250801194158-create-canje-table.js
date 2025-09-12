@@ -25,43 +25,43 @@ module.exports = {
         }
       },
       codigo: {
-        type: Sequelize.STRING(12),
+        type: Sequelize.STRING(20),
         allowNull: false
       },
       fecha_inicio_subsidio: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: false
       },
       fecha_final_subsidio: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: false
       },
       fecha_inicio_dm: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: false
       },
       fecha_final_dm: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: false
       },
       fecha_maxima_canje: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: false
       },
       fecha_registro: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: true
       },
       fecha_actualiza: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: true
       },
       fecha_elimina: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: true
       },
       fecha_maxima_subsanar: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: true
       },
       is_reembolsable: {

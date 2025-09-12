@@ -19,7 +19,7 @@ import usuarioRoutes from './usuario.routes'
 import descansoMedicoRoutes from './descansoMedico.routes'
 import canjeRoutes from './canje.routes'
 import cobroRoutes from './cobro.routes'
-import documentoRoutes from './documento.routes'
+import documentoTipoContRoutes from './documentoTipoCont.routes'
 import tipoAdjuntoRoutes from './tipoAdjunto.routes'
 import adjuntoRoutes from './adjunto.routes'
 import representanteLegalRoutes from './representanteLegal.routes'
@@ -44,7 +44,7 @@ router.use('/usuarios', usuarioRoutes)
 router.use('/descansos', descansoMedicoRoutes)
 router.use('/canjes', canjeRoutes)
 router.use('/cobros', cobroRoutes)
-router.use('/documentos-tipo-contingencia', documentoRoutes)
+router.use('/documentos-tipo-contingencia', documentoTipoContRoutes)
 router.use('/tipo-adjuntos', tipoAdjuntoRoutes)
 router.use('/adjuntos', adjuntoRoutes)
 router.use('/representantes', representanteLegalRoutes)

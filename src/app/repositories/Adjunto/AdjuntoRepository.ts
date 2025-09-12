@@ -157,12 +157,13 @@ class AdjuntoRepository {
     async create(data: IAdjunto): Promise<AdjuntoResponse> {
 
         // Accede a la instancia de Sequelize a través de db.sequelize
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
-            const newAdjunto = await Adjunto.create(data as IAdjunto, { transaction: t })
+            // const newAdjunto = await Adjunto.create(data as IAdjunto, { transaction })
+            const newAdjunto = await Adjunto.create(data as IAdjunto)
 
-            await t.commit()
+            // await transaction.commit()
 
             if (newAdjunto.id) {
                 return { result: true, message: 'Adjunto registrado con éxito', data: newAdjunto, status: 200 }
@@ -170,7 +171,7 @@ class AdjuntoRepository {
 
             return { result: false, error: 'Error al registrar el adjunto', data: [], status: 500 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -185,25 +186,30 @@ class AdjuntoRepository {
     async update(id: string, data: IAdjunto): Promise<AdjuntoResponse> {
 
         // Accede a la instancia de Sequelize a travé de db.sequelize
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
-            const adjunto = await Adjunto.findByPk(id, { transaction: t })
+            // const adjunto = await Adjunto.findByPk(id, { transaction })
+            const adjunto = await Adjunto.findByPk(id)
 
             if (!adjunto) {
-                await t.rollback();
+                // await transaction.rollback();
                 return { result: false, data: [], message: 'Adjunto no encontrado', status: 200 }
             }
 
             const dataAdjunto: Partial<IAdjunto> = data
 
-            const updatedAdjunto = await adjunto.update(dataAdjunto, { transaction: t })
+            // const updatedAdjunto = await adjunto.update(dataAdjunto, { transaction })
 
-            await t.commit()
+            // await transaction.commit()
+
+            const updatedAdjunto = await adjunto.update(dataAdjunto)
+
+            // await transaction.commit()
 
             return { result: true, message: 'Adjunto actualizado con éxito', data: updatedAdjunto, status: 200 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -223,25 +229,25 @@ class AdjuntoRepository {
         }
 
         // // Accede a la instancia de Sequelize a travé de db.sequelize
-        // const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         // try {
-        //     const adjunto = await Adjunto.findByPk(id, { transaction: t })
+        //     const adjunto = await Adjunto.findByPk(id, { transaction })
 
         //     if (!adjunto) {
-        //         await t.rollback();
+        //         await transaction.rollback();
         //         return { result: false, data: [], message: 'Adjunto no encontrado', status: 200 }
         //     }
 
         //     const dataAdjunto: Partial<IAdjunto> = data
 
-        //     const updatedAdjunto = await adjunto.update(dataAdjunto, { transaction: t })
+        //     const updatedAdjunto = await adjunto.update(dataAdjunto, { transaction })
 
-        //     await t.commit()
+        //     await transaction.commit()
 
         //     return { result: true, message: 'Adjunto actualizado con éxito', data: updatedAdjunto, status: 200 }
         // } catch (error) {
-        //     await t.rollback()
+        //     await transaction.rollback()
         //     const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
         //     return { result: false, error: errorMessage, status: 500 }
         // }
@@ -255,23 +261,25 @@ class AdjuntoRepository {
      */
     async delete(id: string): Promise<AdjuntoResponse> {
         // Inicia la transacción
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
-            const adjunto = await Adjunto.findByPk(id, { transaction: t });
+            // const adjunto = await Adjunto.findByPk(id, { transaction });
+            const adjunto = await Adjunto.findByPk(id);
 
             if (!adjunto) {
-                await t.rollback()
+                // await transaction.rollback()
                 return { result: false, data: [], message: 'Adjunto no encontrado', status: 200 };
             }
 
-            await adjunto.destroy({ transaction: t });
+            // await adjunto.destroy({ transaction });
+            await adjunto.destroy();
 
-            await t.commit()
+            // await transaction.commit()
 
             return { result: true, data: adjunto, message: 'Adjunto eliminado correctamente', status: 200 };
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 };
         }

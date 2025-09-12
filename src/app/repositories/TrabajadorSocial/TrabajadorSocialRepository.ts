@@ -119,7 +119,7 @@ class TrabajadorSocialRepository {
     async create(data: ITrabajadorSocial): Promise<TrabajadorSocialResponse> {
 
         // Accede a la instancia de Sequelize a través de db.sequelize
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
 
@@ -148,7 +148,7 @@ class TrabajadorSocialRepository {
 
             const newTrabajadorSocial = await TrabajadorSocial.create(data)
 
-            await t.commit()
+            // await transaction.commit()
 
             const { id } = newTrabajadorSocial
 
@@ -158,7 +158,7 @@ class TrabajadorSocialRepository {
 
             return { result: false, error: 'Error al registrar al trabajador social', data: [], status: 500 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -173,13 +173,14 @@ class TrabajadorSocialRepository {
     async update(id: string, data: ITrabajadorSocial): Promise<TrabajadorSocialResponse> {
 
         // Accede a la instancia de Sequelize a travé de db.sequelize
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
-            const trabajadorSocial = await TrabajadorSocial.findByPk(id, { transaction: t })
+            // const trabajadorSocial = await TrabajadorSocial.findByPk(id, { transaction })
+            const trabajadorSocial = await TrabajadorSocial.findByPk(id)
 
             if (!trabajadorSocial) {
-                await t.rollback();
+                // await transaction.rollback();
                 return { result: false, data: [], message: 'Trabajador social no encontrado', status: 404 }
             }
 
@@ -197,13 +198,14 @@ class TrabajadorSocialRepository {
 
             const dataUpdateTrabSocial: Partial<ITrabajadorSocial> = data
 
-            const updatedTrabSocial = await trabajadorSocial.update(dataUpdateTrabSocial, { transaction: t })
+            // const updatedTrabSocial = await trabajadorSocial.update(dataUpdateTrabSocial, { transaction })
+            const updatedTrabSocial = await trabajadorSocial.update(dataUpdateTrabSocial)
 
-            await t.commit()
+            // await transaction.commit()
 
             return { result: true, message: 'Trabajador social actualizado con éxito', data: updatedTrabSocial, status: 200 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -216,23 +218,25 @@ class TrabajadorSocialRepository {
      */
     async delete(id: string): Promise<TrabajadorSocialResponse> {
         // Inicia la transacción
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
-            const trabSocial = await TrabajadorSocial.findByPk(id, { transaction: t });
+            // const trabSocial = await TrabajadorSocial.findByPk(id, { transaction });
+            const trabSocial = await TrabajadorSocial.findByPk(id);
 
             if (!trabSocial) {
-                await t.rollback()
+                // await transaction.rollback()
                 return { result: false, data: [], message: 'Trabajador social no encontrado', status: 404 };
             }
 
-            await trabSocial.destroy({ transaction: t });
+            // await trabSocial.destroy({ transaction });
+            await trabSocial.destroy();
 
-            await t.commit()
+            // await transaction.commit()
 
             return { result: true, data: trabSocial, message: 'Trabajador social eliminado correctamente', status: 200 };
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 };
         }

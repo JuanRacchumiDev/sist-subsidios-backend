@@ -56,7 +56,7 @@ export default class HDate {
      * @param {string} dateString - La fecha en formato 'YYYY-MM-DD'.
      * @returns {string} El nombre del mes en mayúsculas (por ejemplo, 'AGOSTO').
      */
-    static getMonthName(dateString: number): string {
+    static getMonthName(dateString: string): string {
         const date = new Date(dateString)
         const monthName = format(date, 'MMMM', { locale: es })
         return monthName.toUpperCase()

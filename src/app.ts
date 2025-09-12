@@ -64,8 +64,8 @@ const setupDatabase = async () => {
         Adjunto.belongsTo(TrabajadorSocial, { foreignKey: 'id_trabajadorsocial', as: 'trabajadorSocial' })
         Adjunto.belongsTo(DocumentoTipoCont, { foreignKey: 'id_documento', as: 'documentoTipoCont' })
 
-        Canje.hasOne(DescansoMedico, { foreignKey: 'id_canje', as: 'descansoMedico' })
-        Canje.belongsTo(Reembolso, { foreignKey: 'id_reembolso', as: 'reembolso' })
+        // Canje.hasOne(DescansoMedico, { foreignKey: 'id_canje', as: 'descansoMedico' })
+        // Canje.belongsTo(Reembolso, { foreignKey: 'id_reembolso', as: 'reembolso' })
         Canje.hasMany(Adjunto, { foreignKey: 'id_canje', as: 'adjuntos' })
 
         Cobro.hasOne(Reembolso, { foreignKey: 'id_cobro', as: 'reembolso' })
@@ -84,7 +84,7 @@ const setupDatabase = async () => {
         Colaborador.belongsTo(Parentesco, { foreignKey: 'id_parentesco', as: 'parentesco' })
         Colaborador.hasMany(Adjunto, { foreignKey: 'id_colaborador', as: 'adjuntos' })
 
-        DescansoMedico.belongsTo(Canje, { foreignKey: 'id_canje', as: 'canje' })
+        // DescansoMedico.belongsTo(Canje, { foreignKey: 'id_canje', as: 'canje' })
         DescansoMedico.belongsTo(Colaborador, { foreignKey: 'id_colaborador', as: 'colaborador' })
         DescansoMedico.belongsTo(TipoDescansoMedico, { foreignKey: 'id_tipodescansomedico', as: 'tipoDescansoMedico' })
         DescansoMedico.belongsTo(TipoContingencia, { foreignKey: 'id_tipocontingencia', as: 'tipoContingencia' })
@@ -113,7 +113,7 @@ const setupDatabase = async () => {
 
         Perfil.hasMany(Usuario, { foreignKey: 'id_perfil', as: 'usuarios' })
 
-        Reembolso.hasOne(Canje, { foreignKey: 'id_reembolso', as: 'canje' })
+        // Reembolso.hasOne(Canje, { foreignKey: 'id_reembolso', as: 'canje' })
         Reembolso.belongsTo(Cobro, { foreignKey: 'id_cobro', as: 'cobro' })
         Reembolso.hasMany(Adjunto, { foreignKey: 'id_reembolso', as: 'adjuntos' })
 

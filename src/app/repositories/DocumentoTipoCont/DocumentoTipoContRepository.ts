@@ -1,12 +1,13 @@
 import { DocumentoTipoCont } from "../../models/DocumentoTipoCont";
 import { TipoContingencia } from "../../models/TipoContingencia";
-import { DocumentoTipoContResponse, IDocumentoTipoCont } from '../../interfaces/DocumentoTipoCont/IDocumentoTipoCont';
+import { DocumentoTipoContResponse, DocumentoTipoContResponsePaginate, IDocumentoTipoCont, IDocumentoTipoContPaginate } from '../../interfaces/DocumentoTipoCont/IDocumentoTipoCont';
 import sequelize from '../../../config/database'
 import HString from "../../../helpers/HString";
-import { DOCUMENTO_ATTRIBUTES } from "../../../constants/DocumentoConstant";
+import { DOCUMENTO_TIPO_CONT_ATTRIBUTES } from "../../../constants/DocumentoConstant";
 import { TIPO_CONTINGENCIA_INCLUDE } from "../../../includes/TipoContingenciaInclude";
+import HPagination from "../../../helpers/HPagination";
 
-class DocumentoRepository {
+class DocumentoTipoContRepository {
     /**
     * Obtiene todos los documentos por tipo de contingencia
     * @returns {Promise<DocumentoTipoContResponse>}
@@ -14,7 +15,7 @@ class DocumentoRepository {
     async getAll(): Promise<DocumentoTipoContResponse> {
         try {
             const documentos = await DocumentoTipoCont.findAll({
-                attributes: DOCUMENTO_ATTRIBUTES,
+                attributes: DOCUMENTO_TIPO_CONT_ATTRIBUTES,
                 include: [
                     TIPO_CONTINGENCIA_INCLUDE
                 ],
@@ -30,6 +31,52 @@ class DocumentoRepository {
         }
     }
 
+    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<DocumentoTipoContResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const whereClause = typeof estado === 'boolean' ? { estado } : {}
+
+            const { count, rows } = await DocumentoTipoCont.findAndCountAll({
+                attributes: DOCUMENTO_TIPO_CONT_ATTRIBUTES,
+                include: [
+                    TIPO_CONTINGENCIA_INCLUDE
+                ],
+                where: whereClause,
+                order: [
+                    ['nombre', 'ASC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IDocumentoTipoContPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     /**
     * Obtiene un documento por su ID
     * @param {string} id - El ID UUID del documento a buscar
@@ -38,7 +85,7 @@ class DocumentoRepository {
     async getById(id: string): Promise<DocumentoTipoContResponse> {
         try {
             const documento = await DocumentoTipoCont.findByPk(id, {
-                attributes: DOCUMENTO_ATTRIBUTES,
+                attributes: DOCUMENTO_TIPO_CONT_ATTRIBUTES,
                 include: [
                     TIPO_CONTINGENCIA_INCLUDE
                 ]
@@ -63,12 +110,21 @@ class DocumentoRepository {
     async create(data: IDocumentoTipoCont): Promise<DocumentoTipoContResponse> {
 
         // Accede a la instancia de Sequelize a través de db.sequelize
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
+            const { nombre } = data
+
+            // Nos aseguramos que el nombre exista
+            if (!nombre) {
+                return { result: false, message: 'El nombre es requerido para crear un cargo', status: 400 }
+            }
+
+            data.nombre_url = HString.convertToUrlString(nombre)
+
             const newDocumento = await DocumentoTipoCont.create(data as IDocumentoTipoCont)
 
-            await t.commit()
+            // await transaction.commit()
 
             if (newDocumento.id) {
                 return { result: true, message: 'Documento registrado con éxito', data: newDocumento, status: 200 }
@@ -76,7 +132,7 @@ class DocumentoRepository {
 
             return { result: false, error: 'Error al registrar el documento', data: [], status: 500 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -91,26 +147,28 @@ class DocumentoRepository {
     async update(id: string, data: IDocumentoTipoCont): Promise<DocumentoTipoContResponse> {
 
         // Accede a la instancia de Sequelize a travé de db.sequelize
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
-            const documento = await DocumentoTipoCont.findByPk(id, { transaction: t })
+            // const documento = await DocumentoTipoCont.findByPk(id, { transaction })
+            const documento = await DocumentoTipoCont.findByPk(id)
 
             if (!documento) {
-                await t.rollback();
+                // await transaction.rollback();
                 return { result: false, data: [], message: 'Documento no encontrado', status: 200 }
             }
 
             const dataDocumento: Partial<IDocumentoTipoCont> = data
             dataDocumento.nombre_url = HString.convertToUrlString(data.nombre as string)
 
-            const updatedDocumento = await documento.update(dataDocumento, { transaction: t })
+            // const updatedDocumento = await documento.update(dataDocumento, { transaction })
+            const updatedDocumento = await documento.update(dataDocumento)
 
-            await t.commit()
+            // await transaction.commit()
 
             return { result: true, message: 'Documento actualizado con éxito', data: updatedDocumento, status: 200 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -123,27 +181,30 @@ class DocumentoRepository {
      */
     async delete(id: string): Promise<DocumentoTipoContResponse> {
         // Inicia la transacción
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
-            const documento = await DocumentoTipoCont.findByPk(id, { transaction: t });
+            // const documento = await DocumentoTipoCont.findByPk(id, { transaction });
+
+            const documento = await DocumentoTipoCont.findByPk(id);
 
             if (!documento) {
-                await t.rollback()
+                // await transaction.rollback()
                 return { result: false, data: [], message: 'Documento no encontrado', status: 200 };
             }
 
-            await documento.destroy({ transaction: t });
+            // await documento.destroy({ transaction });
+            await documento.destroy();
 
-            await t.commit()
+            // await transaction.commit()
 
             return { result: true, data: documento, message: 'Documento eliminado correctamente', status: 200 };
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 };
         }
     }
 }
 
-export default new DocumentoRepository()
+export default new DocumentoTipoContRepository()

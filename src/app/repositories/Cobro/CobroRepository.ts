@@ -122,7 +122,7 @@ class CobroRepository {
      * @returns {Promise<CobroResponse>} Respuesta con el cobro creada o error
      */
     async create(data: ICobro): Promise<CobroResponse> {
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
             const { codigo } = data
@@ -143,7 +143,7 @@ class CobroRepository {
 
             const newCobro = await Cobro.create(data)
 
-            await t.commit()
+            // await transaction.commit()
 
             if (newCobro.id) {
                 return { result: true, message: 'Cobro registrado con éxito', data: newCobro, status: 200 }
@@ -151,7 +151,7 @@ class CobroRepository {
 
             return { result: false, error: 'Error al registrar el cobro', data: [], status: 500 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }

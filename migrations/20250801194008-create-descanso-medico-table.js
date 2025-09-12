@@ -59,7 +59,7 @@ module.exports = {
       //   }
       // },
       codigo: {
-        type: Sequelize.STRING(12),
+        type: Sequelize.STRING(20),
         allowNull: false,
         unique: true
       },

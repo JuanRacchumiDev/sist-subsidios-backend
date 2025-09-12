@@ -121,7 +121,6 @@ class AuthRepository {
                 const { result, data } = responseColaborador
 
                 if (result && data) {
-                    // console.log('data colaborador', data)
                     const { id, id_empresa } = data as IColaborador
 
                     idColaborador = id as string
@@ -130,7 +129,6 @@ class AuthRepository {
             }
 
             const codigo_temp: string = HString.generateRandomString(10)
-            console.log({ codigo_temp })
 
             return {
                 result: true,

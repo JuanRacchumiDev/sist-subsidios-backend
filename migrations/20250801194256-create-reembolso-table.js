@@ -25,19 +25,19 @@ module.exports = {
         }
       },
       codigo: {
-        type: Sequelize.STRING(12),
+        type: Sequelize.STRING(20),
         allowNull: false
       },
       fecha_registro: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: false
       },
       fecha_maxima_reembolso: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: false
       },
       fecha_maxima_subsanar: {
-        type: Sequelize.STRING(10),
+        type: Sequelize.STRING(12),
         allowNull: true
       },
       is_cobrable: {

@@ -1,8 +1,10 @@
 import UsuarioRepository from '../../repositories/Usuario/UsuarioRepository';
+import PersonaRepository from '../../repositories/Persona/PersonaRepository'
 import { IUsuario, UsuarioResponse } from '../../interfaces/Usuario/IUsuario';
 import { newUserNotificationTemplate } from '../../utils/emailTemplate';
 import transporter from '../../../config/mailer';
 import { generateTemporaryPassword } from '../../utils/generatePassword';
+import { IPersona } from '../../interfaces/Persona/IPersona';
 /**
  * @class CreateUsuarioService
  * @description Servicio para crear un nuevo usuario.
@@ -29,19 +31,27 @@ class CreateUsuarioService {
 
             const usuario = dataUsuario as IUsuario
 
-            const { username, email, persona } = usuario
+            const { username, email, id_persona } = usuario
 
-            if (persona) {
-                const { nombres, apellido_paterno, apellido_materno } = persona
+            // Obteniendo la persona registrada
+            if (id_persona) {
+                const responsePersona = await PersonaRepository.getById(id_persona)
+
+                const { data } = responsePersona
+
+                const dataPersona = data as IPersona
+
+                const { nombres, apellido_paterno, apellido_materno } = dataPersona
                 fullName = `${nombres} ${apellido_paterno} ${apellido_materno}`
+            } else {
+                fullName = username as string
             }
 
             const dataEmail = {
-                name: username as string,
+                name: fullName,
                 email: email as string,
                 temporaryPassword: tempPassword,
                 appUrl: process.env.APP_URL || 'http://localhost:3000',
-                fullName: fullName || username
             }
 
             const mailOptions = {

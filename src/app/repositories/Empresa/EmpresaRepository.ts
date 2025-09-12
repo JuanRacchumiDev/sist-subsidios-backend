@@ -161,7 +161,7 @@ class EmpresaRepository {
      * @returns {Promise<EmpresaResponse>} Respuesta con la empresa creada o error
      */
     async create(data: IEmpresa): Promise<EmpresaResponse> {
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
             const { nombre_o_razon_social, numero } = data
@@ -182,7 +182,7 @@ class EmpresaRepository {
 
             const newEmpresa = await Empresa.create(data)
 
-            await t.commit()
+            // await transaction.commit()
 
             if (newEmpresa.id) {
                 return { result: true, message: 'Empresa registrada con éxito', data: newEmpresa, status: 200 }
@@ -190,7 +190,7 @@ class EmpresaRepository {
 
             return { result: false, error: 'Error al registrar la empresa', data: [], status: 500 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }

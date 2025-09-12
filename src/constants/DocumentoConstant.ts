@@ -1,4 +1,4 @@
-export const DOCUMENTO_ATTRIBUTES = [
+export const DOCUMENTO_TIPO_CONT_ATTRIBUTES = [
     'id',
     'id_tipocontingencia',
     'nombre',

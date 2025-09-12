@@ -162,7 +162,7 @@ class RepresentanteRepository {
     */
     async create(data: IRepresentanteLegal): Promise<RepresentanteLegalResponse> {
         // Accede a la instancia de Sequelize a través de db.sequelize
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
             const {
@@ -199,7 +199,7 @@ class RepresentanteRepository {
 
             const newRepresentante = await RepresentanteLegal.create(data as IRepresentanteLegal)
 
-            await t.commit()
+            // await transaction.commit()
 
             const { id } = newRepresentante
 
@@ -209,7 +209,7 @@ class RepresentanteRepository {
 
             return { result: false, error: 'Error al registrar al representante legal', data: [], status: 500 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -224,13 +224,14 @@ class RepresentanteRepository {
     async update(id: string, data: IRepresentanteLegal): Promise<RepresentanteLegalResponse> {
 
         // Accede a la instancia de Sequelize a travé de db.sequelize
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
-            const representante = await RepresentanteLegal.findByPk(id, { transaction: t })
+            // const representante = await RepresentanteLegal.findByPk(id, { transaction })
+            const representante = await RepresentanteLegal.findByPk(id)
 
             if (!representante) {
-                await t.rollback();
+                // await transaction.rollback();
                 return { result: false, data: [], message: 'Representante legal no encontrado', status: 404 }
             }
 
@@ -248,13 +249,14 @@ class RepresentanteRepository {
 
             const dataRepresentante: Partial<IRepresentanteLegal> = data
 
-            const updatedRepresentante = await representante.update(dataRepresentante, { transaction: t })
+            // const updatedRepresentante = await representante.update(dataRepresentante, { transaction })
+            const updatedRepresentante = await representante.update(dataRepresentante)
 
-            await t.commit()
+            // await transaction.commit()
 
             return { result: true, message: 'Representante legal actualizado con éxito', data: updatedRepresentante, status: 200 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -267,23 +269,25 @@ class RepresentanteRepository {
      */
     async delete(id: string): Promise<RepresentanteLegalResponse> {
         // Inicia la transacción
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
-            const representante = await RepresentanteLegal.findByPk(id, { transaction: t });
+            // const representante = await RepresentanteLegal.findByPk(id, { transaction });
+            const representante = await RepresentanteLegal.findByPk(id);
 
             if (!representante) {
-                await t.rollback()
+                // await transaction.rollback()
                 return { result: false, data: [], message: 'Representante legal no encontrado', status: 200 };
             }
 
-            await representante.destroy({ transaction: t });
+            // await representante.destroy({ transaction });
+            await representante.destroy();
 
-            await t.commit()
+            // await transaction.commit()
 
             return { result: true, data: representante, message: 'Representante legal eliminado correctamente', status: 200 };
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 };
         }

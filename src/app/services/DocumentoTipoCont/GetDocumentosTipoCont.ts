@@ -1,11 +1,11 @@
-import DocumentoRepository from "../../repositories/Documento/DocumentoRepository";
+import DocumentoTipoContRepository from "../../repositories/DocumentoTipoCont/DocumentoTipoContRepository";
 import { DocumentoTipoContResponse } from '../../interfaces/DocumentoTipoCont/IDocumentoTipoCont';
 
 /**
- * @class GetDocumentosService
+ * @class GetDocumentosTipoContService
  * @description Servicio para obtener todos los documentos, opcionalmente filtrados por estado
  */
-class GetDocumentosService {
+class GetDocumentosTipoContService {
     /**
      * Ejecuta la operación para obtener documentos
      * @param {boolean | undefined} estado - Opcional. Filtra los documentos por su estado
@@ -13,10 +13,10 @@ class GetDocumentosService {
      */
     async execute(estado?: boolean): Promise<DocumentoTipoContResponse> {
         // if (typeof estado === 'boolean') {
-        //     return await DocumentoRepository.getal(estado)
+        //     return await DocumentoTipoContRepository.getal(estado)
         // }
-        return await DocumentoRepository.getAll()
+        return await DocumentoTipoContRepository.getAll()
     }
 }
 
-export default new GetDocumentosService()
+export default new GetDocumentosTipoContService()

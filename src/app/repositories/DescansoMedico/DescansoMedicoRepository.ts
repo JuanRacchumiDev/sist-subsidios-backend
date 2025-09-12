@@ -9,7 +9,6 @@ import sequelize from "../../../config/database";
 import { DESCANSOMEDICO_ATTRIBUTES } from "../../../constants/DescansoMedicoConstant";
 import HPagination from "../../../helpers/HPagination";
 import { TTotalDias } from '../../types/DescansoMedico/TTotalDias';
-import { Sequelize, Transaction } from "sequelize";
 import { parseISO, addDays } from 'date-fns';
 import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude";
 import { TIPODM_INCLUDE } from "../../../includes/TipoDescansoMedicoInclude";
@@ -133,7 +132,10 @@ class DescansoMedicoRepository {
                 }
             })
 
+            console.log('result días registrados', result)
+
             const totalDias = result || 0
+
             return { result: true, data: totalDias, status: 200 }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
@@ -234,10 +236,9 @@ class DescansoMedicoRepository {
     /**
      * Crea un descanso médico
      * @param {IDescansoMedico} data - Los datos del descanso médico a crear
-     * @param {Transaction} [t] - Objeto de transacción de Sequelize opcional.
      * @returns {Promise<DescansoMedicoResponse>} Respuesta con el descanso médico creado o error
      */
-    async create(data: IDescansoMedico, t?: Transaction): Promise<DescansoMedicoResponse> {
+    async create(data: IDescansoMedico): Promise<DescansoMedicoResponse> {
         const { id_colaborador, fecha_inicio } = data
 
         const esContinuo = await this.isDescansoConsecutivo(id_colaborador!, fecha_inicio!)
@@ -250,7 +251,7 @@ class DescansoMedicoRepository {
         }
 
         try {
-            // const newDescanso = await DescansoMedico.create(payload, { transaction: t })
+            // const newDescanso = await DescansoMedico.create(payload, { transaction })
             const newDescanso = await DescansoMedico.create(payload)
 
             console.log({ newDescanso })
@@ -286,13 +287,14 @@ class DescansoMedicoRepository {
      * @returns {Promise<DescansoMedicoResponse>} Respuesta con el descanso médico actualizado o error
      */
     async update(id: string, data: IDescansoMedico): Promise<DescansoMedicoResponse> {
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
-            const descanso = await DescansoMedico.findByPk(id, { transaction: t })
+            // const descanso = await DescansoMedico.findByPk(id, { transaction })
+            const descanso = await DescansoMedico.findByPk(id)
 
             if (!descanso) {
-                await t.rollback();
+                // await transaction.rollback();
                 return {
                     result: false,
                     data: [],
@@ -303,46 +305,53 @@ class DescansoMedicoRepository {
 
             const dataUpdateDescanso: Partial<IDescansoMedico> = data
 
-            const updatedDescanso = await descanso.update(dataUpdateDescanso, { transaction: t })
+            // const updatedDescanso = await descanso.update(dataUpdateDescanso, { transaction })
+            const updatedDescanso = await descanso.update(dataUpdateDescanso)
 
-            await t.commit()
+            // await transaction.commit()
 
             return { result: true, message: 'Descanso médico actualizado con éxito', data: updatedDescanso, status: 200 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
     }
 
     async generateCorrelativo(): Promise<string> {
-        const transaction = await sequelize.transaction();
+        // const transaction = await sequelize.transaction();
 
         try {
             const anioActual = new Date().getFullYear()
+
             const prefijo = 'DM'
+
+            const formatoCodigo = `${prefijo}-${anioActual}-%`
 
             console.log({ anioActual })
 
             console.log({ prefijo })
 
+            console.log({ formatoCodigo })
+
             // 1. Encontrar el último registro para el año actual
             const ultimoDescanso = await DescansoMedico.findOne({
                 where: {
                     codigo: {
-                        [Op.like]: `${prefijo}-${anioActual}-%`
+                        [Op.like]: formatoCodigo
                     }
                 },
                 order: [
                     ['codigo', 'DESC']
                 ],
-                transaction,
-                lock: transaction.LOCK.UPDATE
+                // transaction,
+                // lock: transaction.LOCK.UPDATE
             })
 
             console.log({ ultimoDescanso })
 
             let nuevoNumero = 1;
+
             if (ultimoDescanso) {
 
                 const { codigo } = ultimoDescanso
@@ -359,17 +368,17 @@ class DescansoMedicoRepository {
 
             // 3. Formatear el nuevo correlativo
             const numeroFormateado = String(nuevoNumero).padStart(4, '0');
+
             const nuevoCorrelativo = `${prefijo}-${anioActual}-${numeroFormateado}`;
 
-            await transaction.commit();
+            // await transaction.commit();
             return nuevoCorrelativo;
         } catch (error) {
-            await transaction.rollback();
+            // await transaction.rollback();
             console.error('Error al generar el correlativo:', error);
-            throw new Error('No se pudo generar el correlativo del descanso médico.');
+            throw new Error('No se pudo generar el correlativo del descanso médico');
         }
     }
-
 }
 
 export default new DescansoMedicoRepository()

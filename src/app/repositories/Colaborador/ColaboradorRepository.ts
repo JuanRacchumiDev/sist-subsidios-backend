@@ -200,7 +200,7 @@ class ColaboradorRepository {
     async create(data: IColaborador): Promise<ColaboradorResponse> {
 
         // Accede a la instancia de Sequelize a través de db.sequelize
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
             const {
@@ -242,15 +242,13 @@ class ColaboradorRepository {
 
             const newColaborador = await Colaborador.create(data as IColaborador)
 
-            await t.commit()
+            // await transaction.commit()
 
             const { id } = newColaborador
 
             if (id) {
                 // Actualizamos el email de la persona
                 const responsePersona = await PersonaRepository.getByIdTipoDocAndNumDoc(id_tipodocumento as string, numero_documento)
-
-                console.log({ responsePersona })
 
                 const { result, data } = responsePersona
 
@@ -269,7 +267,7 @@ class ColaboradorRepository {
 
             return { result: false, error: 'Error al registrar al colaborador', data: [], status: 500 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -284,13 +282,14 @@ class ColaboradorRepository {
     async update(id: string, data: IColaborador): Promise<ColaboradorResponse> {
 
         // Accede a la instancia de Sequelize a travé de db.sequelize
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
-            const colaborador = await Colaborador.findByPk(id, { transaction: t })
+            // const colaborador = await Colaborador.findByPk(id, { transaction })
+            const colaborador = await Colaborador.findByPk(id)
 
             if (!colaborador) {
-                await t.rollback();
+                // await transaction.rollback();
                 return { result: false, data: [], message: 'Colaborador no encontrado', status: 404 }
             }
 
@@ -308,13 +307,14 @@ class ColaboradorRepository {
 
             const dataColaborador: Partial<IColaborador> = data
 
-            const updatedColaborador = await colaborador.update(dataColaborador, { transaction: t })
+            // const updatedColaborador = await colaborador.update(dataColaborador, { transaction })
+            const updatedColaborador = await colaborador.update(dataColaborador)
 
-            await t.commit()
+            // await transaction.commit()
 
             return { result: true, message: 'Colaborador actualizado con éxito', data: updatedColaborador, status: 200 }
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -327,23 +327,25 @@ class ColaboradorRepository {
      */
     async delete(id: string): Promise<ColaboradorResponse> {
         // Inicia la transacción
-        const t = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
-            const colaborador = await Colaborador.findByPk(id, { transaction: t });
+            // const colaborador = await Colaborador.findByPk(id, { transaction });
+            const colaborador = await Colaborador.findByPk(id);
 
             if (!colaborador) {
-                await t.rollback()
+                // await transaction.rollback()
                 return { result: false, data: [], message: 'Colaborador no encontrado', status: 200 };
             }
 
-            await colaborador.destroy({ transaction: t });
+            // await colaborador.destroy({ transaction });
+            await colaborador.destroy();
 
-            await t.commit()
+            // await transaction.commit()
 
             return { result: true, data: colaborador, message: 'Colaborador eliminado correctamente', status: 200 };
         } catch (error) {
-            await t.rollback()
+            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 };
         }
