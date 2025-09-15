@@ -6,6 +6,12 @@ import { TipoDocumentoResponse } from '../../interfaces/TipoDocumento/ITipoDocum
  * @description Servicio para obtener todos los tipo de documentos, opcionalmente filtrados por estado
  */
 class GetTiposService {
+    protected tipoDocumentoRepository: TipoDocumentoRepository
+
+    constructor() {
+        this.tipoDocumentoRepository = new TipoDocumentoRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener tipo de documentos
      * @param {boolean | undefined} estado - Opcional. Filtra los tipo de documentos por su estado
@@ -15,7 +21,7 @@ class GetTiposService {
         // if (typeof estado === 'boolean') {
         //     return await TipoDocumentoRepository.getAllByEstado(estado)
         // }
-        return await TipoDocumentoRepository.getAll()
+        return await this.tipoDocumentoRepository.getAll()
     }
 }
 

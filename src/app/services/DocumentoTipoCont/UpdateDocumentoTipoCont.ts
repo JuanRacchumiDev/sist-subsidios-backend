@@ -6,6 +6,12 @@ import { IDocumentoTipoCont, DocumentoTipoContResponse } from '../../interfaces/
  * @description Servicio para actualizar un documento existente, incluyendo el cambio de estado.
  */
 class UpdateDocumentoTipoContService {
+    protected documentoTipoContRepository: DocumentoTipoContRepository
+
+    constructor() {
+        this.documentoTipoContRepository = new DocumentoTipoContRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar un documento.
      * Puede actualizar cualquier campo definido en IDocumentoTipoCont, incluyendo el nombre y el estado.
@@ -19,7 +25,7 @@ class UpdateDocumentoTipoContService {
         // if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
         //     return await DocumentoTipoContRepository.updateEstado(id, data.estado);
         // }
-        return await DocumentoTipoContRepository.update(id, data);
+        return await this.documentoTipoContRepository.update(id, data);
     }
 }
 

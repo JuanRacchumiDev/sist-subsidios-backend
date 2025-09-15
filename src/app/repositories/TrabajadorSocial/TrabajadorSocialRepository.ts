@@ -285,4 +285,6 @@ class TrabajadorSocialRepository {
     }
 }
 
-export default new TrabajadorSocialRepository()
+// export default new TrabajadorSocialRepository()
+
+export default TrabajadorSocialRepository

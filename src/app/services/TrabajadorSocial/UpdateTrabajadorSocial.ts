@@ -6,6 +6,12 @@ import { ITrabajadorSocial, TrabajadorSocialResponse } from '../../interfaces/Tr
  * @description Servicio para actualizar un trabajador social existente, incluyendo el cambio de estado.
  */
 class UpdateTrabajadorSocialService {
+    protected trabajadorSocialRepository: TrabajadorSocialRepository
+
+    constructor() {
+        this.trabajadorSocialRepository = new TrabajadorSocialRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar un trabajador social.
      * Puede actualizar cualquier campo definido en ITrabajadorSocial, incluyendo el nombre y el estado.
@@ -14,7 +20,7 @@ class UpdateTrabajadorSocialService {
      * @returns {Promise<TrabajadorSocialResponse>} La respuesta de la operación.
      */
     async execute(id: string, data: ITrabajadorSocial): Promise<TrabajadorSocialResponse> {
-        return await TrabajadorSocialRepository.update(id, data);
+        return await this.trabajadorSocialRepository.update(id, data);
     }
 }
 

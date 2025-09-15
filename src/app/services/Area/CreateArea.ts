@@ -6,13 +6,18 @@ import { IArea, AreaResponse } from '../../interfaces/Area/IArea';
  * @description Servicio para crear una nueva área.
  */
 class CreateAreaService {
+    private areaRepository: AreaRepository
+
+    constructor() {
+        this.areaRepository = new AreaRepository()
+    }
     /**
      * Ejecuta la operación para crear un área.
      * @param {IArea} data - Los datos del área a crear.
      * @returns {Promise<AreaResponse>} La respuesta de la operación.
      */
     async execute(data: IArea): Promise<AreaResponse> {
-        return await AreaRepository.create(data);
+        return await this.areaRepository.create(data);
     }
 }
 

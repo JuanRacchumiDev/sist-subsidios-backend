@@ -20,6 +20,12 @@ import PersonaRepository from "../Persona/PersonaRepository";
 import { IPersona } from "../../interfaces/Persona/IPersona";
 
 class ColaboradorRepository {
+    protected personaRepository: PersonaRepository
+
+    constructor() {
+        this.personaRepository = new PersonaRepository()
+    }
+
     /**
     * Obtiene todos los colaboradores
     * @returns {Promise<ColaboradorResponse>}
@@ -248,7 +254,7 @@ class ColaboradorRepository {
 
             if (id) {
                 // Actualizamos el email de la persona
-                const responsePersona = await PersonaRepository.getByIdTipoDocAndNumDoc(id_tipodocumento as string, numero_documento)
+                const responsePersona = await this.personaRepository.getByIdTipoDocAndNumDoc(id_tipodocumento as string, numero_documento)
 
                 const { result, data } = responsePersona
 
@@ -398,4 +404,6 @@ class ColaboradorRepository {
     }
 }
 
-export default new ColaboradorRepository()
+// export default new ColaboradorRepository()
+
+export default ColaboradorRepository

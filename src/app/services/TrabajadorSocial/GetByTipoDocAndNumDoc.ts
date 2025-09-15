@@ -6,6 +6,12 @@ import { TrabajadorSocialResponse } from '../../interfaces/TrabajadorSocial/ITra
  * @description Servicio para obtener un trabajador social por ID tipo y número de documento
  */
 class GetTrabajadorSocialByIdTipoDocAndNumDocService {
+    protected trabajadorSocialRepository: TrabajadorSocialRepository
+
+    constructor() {
+        this.trabajadorSocialRepository = new TrabajadorSocialRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener un trabajador social por ID
      * @param {string} idTipoDoc - El ID del tipo de documento del trabajador social a buscar
@@ -13,7 +19,7 @@ class GetTrabajadorSocialByIdTipoDocAndNumDocService {
      * @returns {Promise<TrabajadorSocialResponse>} La respuesta de la operación
      */
     async execute(idTipoDoc: string, numDoc: string): Promise<TrabajadorSocialResponse> {
-        return await TrabajadorSocialRepository.getByIdTipoDocAndNumDoc(idTipoDoc, numDoc)
+        return await this.trabajadorSocialRepository.getByIdTipoDocAndNumDoc(idTipoDoc, numDoc)
     }
 }
 

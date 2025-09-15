@@ -7,13 +7,19 @@ import { TTipoDocumentoSearch } from '../../types/TipoDocumento/TTipoDocumentoSe
  * @description Servicio para obtener un tipo de documento por su búsqueda.
  */
 class GetBySearchService {
+    protected tipoDocumentoRepository: TipoDocumentoRepository
+
+    constructor() {
+        this.tipoDocumentoRepository = new TipoDocumentoRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener un tipo de documento por búsqueda.
      * @param {object} search - Objeto de búsqueda que puede contener 'nombre' y/o 'abreviatura'.
      * @returns {Promise<TipoDocumentoResponse>} La respuesta de la operación.
      */
     async execute(search: TTipoDocumentoSearch): Promise<TipoDocumentoResponse> {
-        return await TipoDocumentoRepository.getBySearch(search);
+        return await this.tipoDocumentoRepository.getBySearch(search);
     }
 }
 

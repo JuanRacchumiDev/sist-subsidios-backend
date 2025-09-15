@@ -275,4 +275,6 @@ class PerfilRepository {
     }
 }
 
-export default new PerfilRepository()
+// export default new PerfilRepository()
+
+export default PerfilRepository

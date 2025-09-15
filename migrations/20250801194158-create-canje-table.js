@@ -24,9 +24,15 @@ module.exports = {
           key: 'id'
         }
       },
+      correlativo: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        unique: true
+      },
       codigo: {
         type: Sequelize.STRING(20),
-        allowNull: false
+        allowNull: true
       },
       fecha_inicio_subsidio: {
         type: Sequelize.STRING(12),
@@ -63,6 +69,30 @@ module.exports = {
       fecha_maxima_subsanar: {
         type: Sequelize.STRING(12),
         allowNull: true
+      },
+      dia_fecha_inicio_subsidio: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      mes_fecha_inicio_subsidio: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      anio_fecha_inicio_subsidio: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      dia_fecha_final_subsidio: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      mes_fecha_final_subsidio: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      anio_fecha_final_subsidio: {
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       is_reembolsable: {
         type: Sequelize.BOOLEAN,

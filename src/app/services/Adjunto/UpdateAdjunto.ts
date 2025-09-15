@@ -6,6 +6,11 @@ import { IAdjunto, AdjuntoResponse } from '../../interfaces/Adjunto/IAdjunto';
  * @description Servicio para actualizar un adjunto existente, incluyendo el cambio de estado.
  */
 class UpdateAdjuntoService {
+    private adjuntoRepository: AdjuntoRepository
+
+    constructor() {
+        this.adjuntoRepository = new AdjuntoRepository()
+    }
     /**
      * Ejecuta la operación para actualizar un adjunto.
      * Puede actualizar cualquier campo definido en IAdjunto, incluyendo el nombre y el estado.
@@ -19,7 +24,7 @@ class UpdateAdjuntoService {
         // if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
         //     return await AdjuntoRepository.updateEstado(id, data.estado);
         // }
-        return await AdjuntoRepository.update(id, data);
+        return await this.adjuntoRepository.update(id, data);
     }
 }
 

@@ -6,13 +6,19 @@ import { ICargo, CargoResponse } from '../../interfaces/Cargo/ICargo';
  * @description Servicio para crear un nuevo cargo.
  */
 class CreateCargoService {
+    private cargoRepository: CargoRepository
+
+    constructor() {
+        this.cargoRepository = new CargoRepository()
+    }
+
     /**
      * Ejecuta la operación para crear un cargo.
      * @param {ICargo} data - Los datos del cargo a crear.
      * @returns {Promise<CargoResponse>} La respuesta de la operación.
      */
     async execute(data: ICargo): Promise<CargoResponse> {
-        return await CargoRepository.create(data);
+        return await this.cargoRepository.create(data);
     }
 }
 

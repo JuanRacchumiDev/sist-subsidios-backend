@@ -231,4 +231,6 @@ class ParentescoRepository {
     }
 }
 
-export default new ParentescoRepository()
+// export default new ParentescoRepository()
+
+export default ParentescoRepository

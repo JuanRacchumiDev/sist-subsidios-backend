@@ -6,13 +6,19 @@ import { IEmpresa, EmpresaResponse } from '../../interfaces/Empresa/IEmpresa';
  * @description Servicio para crear una nueva empresa.
  */
 class CreateEmpresaService {
+    protected empresaRepository: EmpresaRepository
+
+    constructor() {
+        this.empresaRepository = new EmpresaRepository()
+    }
+
     /**
      * Ejecuta la operación para crear una empresa.
      * @param {IEmpresa} data - Los datos de la empresa a crear.
      * @returns {Promise<EmpresaResponse>} La respuesta de la operación.
      */
     async execute(data: IEmpresa): Promise<EmpresaResponse> {
-        return await EmpresaRepository.create(data);
+        return await this.empresaRepository.create(data);
     }
 }
 

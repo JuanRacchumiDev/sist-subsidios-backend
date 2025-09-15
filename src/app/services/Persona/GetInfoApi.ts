@@ -8,6 +8,14 @@ import { TTipoDocumentoSearch } from "../../types/TipoDocumento/TTipoDocumentoSe
  * @description Servicio para obtener datos de una persona desde la API
  */
 class GetInfoApiService {
+    protected tipoDocumentoRepository: TipoDocumentoRepository
+    protected personaApiRepository: PersonaApiRepository
+
+    constructor() {
+        this.tipoDocumentoRepository = new TipoDocumentoRepository()
+        this.personaApiRepository = new PersonaApiRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener una persona desde la API
      * @param {string} abreviatura - La abreviatura del tipo de documento
@@ -21,7 +29,7 @@ class GetInfoApiService {
             abreviatura
         }
 
-        const responseTipoDocumento = await TipoDocumentoRepository.getBySearch(paramSearch);
+        const responseTipoDocumento = await this.tipoDocumentoRepository.getBySearch(paramSearch);
 
         const { result, data } = responseTipoDocumento
 
@@ -37,7 +45,7 @@ class GetInfoApiService {
 
         // const idStr = id as string
 
-        return await PersonaApiRepository.getInfoApi(abreviatura, numeroDocumento)
+        return await this.personaApiRepository.getInfoApi(abreviatura, numeroDocumento)
 
         // Validamos si la persona se encuentra registrada
         // const responsePersona = await PersonaRepository.getByIdTipoDocAndNumDoc(idStr, numeroDocumento)

@@ -6,6 +6,12 @@ import { PerfilResponsePaginate } from '../../interfaces/Perfil/IPerfil';
  * @description Servicio para obtener todas los perfiles con paginación, opcionalmente filtrados por estado
  */
 class GetPerfilesPaginateService {
+    protected perfilRepository: PerfilRepository
+
+    constructor() {
+        this.perfilRepository = new PerfilRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener perfiles paginados
      * @param {number} page - El número de la página actual
@@ -14,7 +20,7 @@ class GetPerfilesPaginateService {
      * @returns {Promise<PerfilResponsePaginate>} La respuesta de obtener los perfiles
      */
     async execute(page: number, limit: number, estado?: boolean): Promise<PerfilResponsePaginate> {
-        return await PerfilRepository.getAllWithPaginate(page, limit, estado)
+        return await this.perfilRepository.getAllWithPaginate(page, limit, estado)
     }
 }
 

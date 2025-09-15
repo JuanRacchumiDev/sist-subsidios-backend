@@ -6,13 +6,19 @@ import { ITipoContingencia, TipoContingenciaResponse } from '../../interfaces/Ti
  * @description Servicio para crear un nuevo tipo de contingencia.
  */
 class CreateTipoService {
+    protected tipoContingenciaRepository: TipoContingenciaRepository
+
+    constructor() {
+        this.tipoContingenciaRepository = new TipoContingenciaRepository()
+    }
+
     /**
      * Ejecuta la operación para crear un tipo de contingencia.
      * @param {ITipoContingencia} data - Los datos del tipo de contingencia a crear.
      * @returns {Promise<TipoContingenciaResponse>} La respuesta de la operación.
      */
     async execute(data: ITipoContingencia): Promise<TipoContingenciaResponse> {
-        return await TipoContingenciaRepository.create(data);
+        return await this.tipoContingenciaRepository.create(data);
     }
 }
 

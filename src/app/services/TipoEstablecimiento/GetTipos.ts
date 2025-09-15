@@ -6,16 +6,23 @@ import { TipoEstablecimientoResponse } from '../../interfaces/TipoEstablecimient
  * @description Servicio para obtener todos los tipo de establecimientos, opcionalmente filtrados por estado
  */
 class GetTiposService {
+    protected tipoEstablecimientoRepository: TipoEstablecimientoRepository
+
+    constructor() {
+        this.tipoEstablecimientoRepository = new TipoEstablecimientoRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener tipo de establecimientos
      * @param {boolean | undefined} estado - Opcional. Filtra los tipo de establecimientos por su estado
      * @returns {Promise<TipoEstablecimientoResponse>} La respuesta de obtener los tipo de establecimientos
      */
     async execute(estado?: boolean): Promise<TipoEstablecimientoResponse> {
-        if (typeof estado === 'boolean') {
-            return await TipoEstablecimientoRepository.getAllByEstado(estado)
-        }
-        return await TipoEstablecimientoRepository.getAll()
+        // if (typeof estado === 'boolean') {
+        //     return await TipoEstablecimientoRepository.getAllByEstado(estado)
+        // }
+
+        return await this.tipoEstablecimientoRepository.getAll()
     }
 }
 

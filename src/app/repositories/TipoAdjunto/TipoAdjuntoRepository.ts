@@ -225,4 +225,6 @@ class TipoAdjuntoRepository {
     }
 }
 
-export default new TipoAdjuntoRepository()
+// export default new TipoAdjuntoRepository()
+
+export default TipoAdjuntoRepository

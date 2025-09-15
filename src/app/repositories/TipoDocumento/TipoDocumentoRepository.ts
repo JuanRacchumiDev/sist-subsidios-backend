@@ -306,4 +306,6 @@ class TipoDocumentoRepository {
     }
 }
 
-export default new TipoDocumentoRepository()
+// export default new TipoDocumentoRepository()
+
+export default TipoDocumentoRepository

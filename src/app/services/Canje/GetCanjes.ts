@@ -6,12 +6,18 @@ import { CanjeResponse } from '../../interfaces/Canje/ICanje';
  * @description Servicio para obtener todos los canjes, opcionalmente filtrados por estado
  */
 class GetCanjesService {
+    private canjeRepository: CanjeRepository
+
+    constructor() {
+        this.canjeRepository = new CanjeRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener canjes
      * @returns {Promise<CanjeResponse>} La respuesta de obtener los canjes
      */
     async execute(): Promise<CanjeResponse> {
-        return await CanjeRepository.getAll()
+        return await this.canjeRepository.getAll()
     }
 }
 

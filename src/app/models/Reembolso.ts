@@ -9,6 +9,7 @@ interface ReembolsoCreationAttributes extends Optional<IReembolso, 'id'> { }
 export class Reembolso extends Model<IReembolso, ReembolsoCreationAttributes> implements IReembolso {
     public id?: string | undefined;
     public id_canje?: string | undefined;
+    public correlativo?: number | undefined;
     public codigo?: string | undefined;
     public fecha_registro?: string | undefined;
     public fecha_maxima_reembolso?: string | undefined;
@@ -45,6 +46,10 @@ Reembolso.init({
             model: Canje,
             key: 'id'
         }
+    },
+    correlativo: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     codigo: {
         type: new DataTypes.STRING(12),

@@ -6,6 +6,12 @@ import { RepresentanteLegalResponse } from '../../interfaces/RepresentanteLegal/
  * @description Servicio para obtener un representante legal por ID tipo y número de documento
  */
 class GetRepresentanteByIdTipoDocAndNumDocServicelegal {
+    protected representanteRepository: RepresentanteRepository
+
+    constructor() {
+        this.representanteRepository = new RepresentanteRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener un representante legal por ID
      * @param {string} idTipoDoc - El ID del tipo de documento del representante legal a buscar
@@ -13,7 +19,7 @@ class GetRepresentanteByIdTipoDocAndNumDocServicelegal {
      * @returns {Promise<RepresentanteLegalResponse>} La respuesta de la operación
      */
     async execute(idTipoDoc: string, numDoc: string): Promise<RepresentanteLegalResponse> {
-        return await RepresentanteRepository.getByIdTipoDocAndNumDoc(idTipoDoc, numDoc)
+        return await this.representanteRepository.getByIdTipoDocAndNumDoc(idTipoDoc, numDoc)
     }
 }
 

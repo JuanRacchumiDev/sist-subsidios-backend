@@ -13,6 +13,11 @@ import { IColaborador } from '../../interfaces/Colaborador/IColaborador';
 import ColaboradorRepository from '../Colaborador/ColaboradorRepository'
 
 class AuthRepository {
+    private colaboradorRepository: ColaboradorRepository
+
+    constructor() {
+        this.colaboradorRepository = new ColaboradorRepository()
+    }
     /**
      * Obtiene los datos de inicio de sesión
      * @param {AuthCredenciales} data - Los datos de inicio de sesión
@@ -113,7 +118,7 @@ class AuthRepository {
                 nombreCompleto = `${nombres} ${apellido_paterno} ${apellido_materno}`;
 
                 /// Validando si existe colaborador
-                const responseColaborador = await ColaboradorRepository.getByIdTipoDocAndNumDoc(
+                const responseColaborador = await this.colaboradorRepository.getByIdTipoDocAndNumDoc(
                     id_tipodocumento as string,
                     numero_documento as string
                 )
@@ -193,4 +198,6 @@ class AuthRepository {
     }
 }
 
-export default new AuthRepository()
+// export default new AuthRepository()
+
+export default AuthRepository

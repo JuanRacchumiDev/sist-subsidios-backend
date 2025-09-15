@@ -1,4 +1,4 @@
-import DescansoRepository from "../../repositories/DescansoMedico/DescansoMedicoRepository";
+import DescansoMedicoRepository from "../../repositories/DescansoMedico/DescansoMedicoRepository";
 import { DescansoMedicoResponsePaginate } from '../../interfaces/DescansoMedico/IDescansoMedico';
 
 /**
@@ -6,6 +6,12 @@ import { DescansoMedicoResponsePaginate } from '../../interfaces/DescansoMedico/
  * @description Servicio para obtener todas los descansos médicos por colaborador con paginación, opcionalmente filtrados por estado
  */
 class GetDescansosByColaboradorPaginate {
+    protected descansoMedicoRepository: DescansoMedicoRepository
+
+    constructor() {
+        this.descansoMedicoRepository = new DescansoMedicoRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener descansos médicos por colaborador paginadas
      * @param {string} idColaborador - Identificador único del colaborador
@@ -14,7 +20,7 @@ class GetDescansosByColaboradorPaginate {
      * @returns {Promise<DescansoMedicoResponsePaginate>} La respuesta de obtener los descansos médicos por colaborador paginado
      */
     async execute(idColaborador: string, page: number, limit: number): Promise<DescansoMedicoResponsePaginate> {
-        return await DescansoRepository.getAllByColaboradorPaginate(idColaborador, page, limit)
+        return await this.descansoMedicoRepository.getAllByColaboradorPaginate(idColaborador, page, limit)
     }
 }
 

@@ -20,6 +20,7 @@ import { REEMBOLSO_INCLUDE } from "../../../includes/ReembolsoInclude";
 import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude";
 import { TRABAJADOR_SOCIAL_INCLUDE } from "../../../includes/TrabSocialInclude";
 import { DOCUMENTO_TIPO_CONT_INCLUDE } from "../../../includes/DocumentoTipoContInclude";
+import { Op } from "sequelize";
 
 class AdjuntoRepository {
     /**
@@ -217,10 +218,20 @@ class AdjuntoRepository {
 
     async updateForCodeTemp(idDescansoMedico: string, codigoTemp: string): Promise<void> {
 
+        console.log('updateForCodeTemp')
+        console.log({ idDescansoMedico })
+        console.log({ codigoTemp })
+
         try {
             const [numberOfUpdatedRows] = await Adjunto.update(
                 { id_descansomedico: idDescansoMedico }, // Valores a actualizar
-                { where: { codigo_temp: codigoTemp } } // Condición
+                // { where: { codigo_temp: codigoTemp, id_descansomedico: null } } // Condición
+                {
+                    where: {
+                        codigo_temp: codigoTemp,
+                        // id_descansomedico: undefined
+                    }
+                }
             );
 
             console.log(`Se actualizaron ${numberOfUpdatedRows} registros.`);
@@ -286,4 +297,6 @@ class AdjuntoRepository {
     }
 }
 
-export default new AdjuntoRepository()
+// export default new AdjuntoRepository()
+
+export default AdjuntoRepository

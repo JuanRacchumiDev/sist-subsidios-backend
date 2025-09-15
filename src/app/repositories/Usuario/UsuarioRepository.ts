@@ -222,4 +222,4 @@ class UsuarioRepository {
     }
 }
 
-export default new UsuarioRepository()
+export default UsuarioRepository

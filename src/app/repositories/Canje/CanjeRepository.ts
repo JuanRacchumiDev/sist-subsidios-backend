@@ -209,9 +209,9 @@ class CanjeRepository {
                 const codigoStr = codigo as string
 
                 // 2. Extraer y aumentar el número correlativo
-                const partes = codigoStr.split('-');
+                const [, , numero] = codigoStr.split('-') as string[];
 
-                const ultimoNumero = parseInt(partes[2], 10);
+                const ultimoNumero = parseInt(numero, 10);
 
                 nuevoNumero = ultimoNumero + 1;
             }
@@ -231,4 +231,6 @@ class CanjeRepository {
     }
 }
 
-export default new CanjeRepository()
+// export default new CanjeRepository()
+
+export default CanjeRepository

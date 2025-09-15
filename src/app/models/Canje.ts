@@ -10,6 +10,7 @@ interface CanjeCreationAttributes extends Optional<ICanje, 'id'> { }
 export class Canje extends Model<ICanje, CanjeCreationAttributes> implements ICanje {
     public id?: string | undefined;
     public id_descansomedico?: string | undefined;
+    public correlativo?: number | undefined;
     public codigo?: string | undefined;
     public fecha_inicio_subsidio?: string | undefined;
     public fecha_final_subsidio?: string | undefined;
@@ -20,6 +21,12 @@ export class Canje extends Model<ICanje, CanjeCreationAttributes> implements ICa
     public fecha_actualiza?: string | undefined;
     public fecha_elimina?: string | undefined;
     public fecha_maxima_subsanar?: string | undefined;
+    public dia_fecha_inicio_subsidio?: number | undefined;
+    public mes_fecha_inicio_subsidio?: number | undefined;
+    public anio_fecha_inicio_subsidio?: number | undefined;
+    public dia_fecha_final_subsidio?: number | undefined;
+    public mes_fecha_final_subsidio?: number | undefined;
+    public anio_fecha_final_subsidio?: number | undefined;
     public is_reembolsable?: boolean | undefined;
     public observacion?: string | undefined;
     public mes_devengado?: string | undefined;
@@ -54,8 +61,13 @@ Canje.init({
             key: 'id'
         }
     },
+    correlativo: {
+        type: DataTypes.NUMBER,
+        allowNull: false,
+        autoIncrement: true
+    },
     codigo: {
-        type: new DataTypes.STRING(12),
+        type: new DataTypes.STRING(20),
         allowNull: false,
         set(value: string) {
             this.setDataValue('codigo', value ? value.trim() : undefined)
@@ -96,6 +108,30 @@ Canje.init({
     fecha_maxima_subsanar: {
         type: new DataTypes.STRING(10),
         allowNull: true
+    },
+    dia_fecha_inicio_subsidio: {
+        type: DataTypes.NUMBER,
+        allowNull: false
+    },
+    mes_fecha_inicio_subsidio: {
+        type: DataTypes.NUMBER,
+        allowNull: false
+    },
+    anio_fecha_inicio_subsidio: {
+        type: DataTypes.NUMBER,
+        allowNull: false
+    },
+    dia_fecha_final_subsidio: {
+        type: DataTypes.NUMBER,
+        allowNull: false
+    },
+    mes_fecha_final_subsidio: {
+        type: DataTypes.NUMBER,
+        allowNull: false
+    },
+    anio_fecha_final_subsidio: {
+        type: DataTypes.NUMBER,
+        allowNull: false
     },
     is_reembolsable: {
         type: DataTypes.BOOLEAN,

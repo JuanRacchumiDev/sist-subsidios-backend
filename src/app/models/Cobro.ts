@@ -9,6 +9,7 @@ interface CobroCreationAttributes extends Optional<ICobro, 'id'> { }
 export class Cobro extends Model<ICobro, CobroCreationAttributes> implements ICobro {
     public id?: string | undefined;
     public id_reembolso?: string | undefined;
+    public correlativo?: number | undefined;
     public codigo?: string | undefined;
     public codigo_cheque?: string | undefined;
     public codigo_voucher?: string | undefined;
@@ -45,6 +46,11 @@ Cobro.init({
             model: Reembolso,
             key: 'id'
         }
+    },
+    correlativo: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        autoIncrement: true
     },
     codigo: {
         type: new DataTypes.STRING(30),

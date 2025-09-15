@@ -1,4 +1,4 @@
-import UsarioRepository from "../../repositories/Usuario/UsuarioRepository";
+import UsuarioRepository from "../../repositories/Usuario/UsuarioRepository";
 import { UsuarioResponsePaginate } from '../../interfaces/Usuario/IUsuario';
 
 /**
@@ -6,6 +6,12 @@ import { UsuarioResponsePaginate } from '../../interfaces/Usuario/IUsuario';
  * @description Servicio para obtener todas los usuarios con paginación, opcionalmente filtrados por estado
  */
 class GetUsuariosPaginateService {
+    protected usuarioRepository: UsuarioRepository
+
+    constructor() {
+        this.usuarioRepository = new UsuarioRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener usuarios paginadas
      * @param {number} page - El número de la página actual
@@ -14,7 +20,7 @@ class GetUsuariosPaginateService {
      * @returns {Promise<UsuarioResponsePaginate>} La respuesta de obtener los usuarios
      */
     async execute(page: number, limit: number, estado?: boolean): Promise<UsuarioResponsePaginate> {
-        return await UsarioRepository.getAllWithPaginate(page, limit, estado)
+        return await this.usuarioRepository.getAllWithPaginate(page, limit, estado)
     }
 }
 

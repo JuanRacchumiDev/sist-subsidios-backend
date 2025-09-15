@@ -50,18 +50,15 @@ module.exports = {
           key: 'codCie10'
         }
       },
-      // id_establecimiento: {
-      //   type: Sequelize.UUID,
-      //   allowNull: false,
-      //   references: {
-      //     model: 'establecimiento',
-      //     key: 'id'
-      //   }
-      // },
+      correlativo: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        unique: true
+      },
       codigo: {
         type: Sequelize.STRING(20),
-        allowNull: false,
-        unique: true
+        allowNull: true
       },
       fecha_otorgamiento: {
         type: Sequelize.STRING(12),
@@ -90,6 +87,34 @@ module.exports = {
       fecha_maxima_subsanar: {
         type: Sequelize.STRING(12),
         allowNull: true
+      },
+      dia_fecha_inicio: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      mes_fecha_inicio: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      anio_fecha_inicio: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      dia_fecha_final: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      mes_fecha_final: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      anio_fecha_final: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      mes_devengado: {
+        type: Sequelize.STRING(12),
+        allowNull: false
       },
       numero_colegiatura: {
         type: Sequelize.STRING(10),

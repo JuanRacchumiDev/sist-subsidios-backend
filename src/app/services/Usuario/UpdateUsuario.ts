@@ -6,6 +6,12 @@ import { IUsuario, UsuarioResponse } from '../../interfaces/Usuario/IUsuario';
  * @description Servicio para actualizar un usuario existente, incluyendo el cambio de estado.
  */
 class UpdateUsuarioService {
+    protected usuarioRepository: UsuarioRepository
+
+    constructor() {
+        this.usuarioRepository = new UsuarioRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar un usuario.
      * Puede actualizar cualquier campo definido en IUsuario, incluyendo el nombre y el estado.
@@ -14,7 +20,7 @@ class UpdateUsuarioService {
      * @returns {Promise<UsuarioResponse>} La respuesta de la operación.
      */
     async execute(id: string, data: IUsuario): Promise<UsuarioResponse> {
-        return await UsuarioRepository.update(id, data);
+        return await this.usuarioRepository.update(id, data);
     }
 }
 

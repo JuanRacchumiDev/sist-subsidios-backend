@@ -6,6 +6,12 @@ import { IDiagnostico, DiagnosticoResponse } from '../../interfaces/Diagnostico/
  * @description Servicio para actualizar un diagnóstico existente, incluyendo el cambio de estado.
  */
 class UpdateDiagnosticoService {
+    protected diagnosticoRepository: DiagnosticoRepository
+
+    constructor() {
+        this.diagnosticoRepository = new DiagnosticoRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar un diagnóstico.
      * Puede actualizar cualquier campo definido en IDiagnostico, incluyendo el nombre y el estado.
@@ -14,7 +20,7 @@ class UpdateDiagnosticoService {
      * @returns {Promise<DiagnosticoResponse>} La respuesta de la operación.
      */
     async execute(codigo: string, data: IDiagnostico): Promise<DiagnosticoResponse> {
-        return await DiagnosticoRepository.update(codigo, data);
+        return await this.diagnosticoRepository.update(codigo, data);
     }
 }
 

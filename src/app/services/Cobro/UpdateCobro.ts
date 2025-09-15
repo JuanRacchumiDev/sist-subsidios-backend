@@ -1,11 +1,17 @@
-import CargoRepository from '../../repositories/Cargo/CargoRepository';
+import CobroRepository from '../../repositories/Cobro/CobroRepository';
 import { ICargo, CargoResponse } from '../../interfaces/Cargo/ICargo';
 
 /**
- * @class UpdateCargoService
- * @description Servicio para actualizar un cargo existente, incluyendo el cambio de estado.
+ * @class UpdateCobroService
+ * @description Servicio para actualizar un cobro existente, incluyendo el cambio de estado.
  */
-class UpdateCargoService {
+class UpdateCobroService {
+    private cobroRepository: CobroRepository
+
+    constructor() {
+        this.cobroRepository = new CobroRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar un cargo.
      * Puede actualizar cualquier campo definido en ICargo, incluyendo el nombre y el estado.
@@ -16,11 +22,13 @@ class UpdateCargoService {
     async execute(id: string, data: ICargo): Promise<CargoResponse> {
         // Si solo se está actualizando el estado, podríamos llamar a un método más específico
         // pero para simplificar, el repositorio 'update' puede manejarlo
-        if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
-            return await CargoRepository.updateEstado(id, data.estado);
-        }
-        return await CargoRepository.update(id, data);
+
+        // if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
+        //     return await CargoRepository.updateEstado(id, data.estado);
+        // }
+
+        return await this.cobroRepository.update(id, data);
     }
 }
 
-export default new UpdateCargoService();
+export default new UpdateCobroService();

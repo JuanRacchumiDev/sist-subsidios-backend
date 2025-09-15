@@ -6,6 +6,12 @@ import { ICanje, CanjeResponse } from '../../interfaces/Canje/ICanje';
  * @description Servicio para actualizar un canje existente, incluyendo el cambio de estado.
  */
 class UpdateCanjeService {
+    private canjeRepository: CanjeRepository
+
+    constructor() {
+        this.canjeRepository = new CanjeRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar un canje.
      * Puede actualizar cualquier campo definido en ICanje, incluyendo el nombre y el estado.
@@ -14,7 +20,7 @@ class UpdateCanjeService {
      * @returns {Promise<CanjeResponse>} La respuesta de la operación.
      */
     async execute(id: string, data: ICanje): Promise<CanjeResponse> {
-        return await CanjeRepository.update(id, data);
+        return await this.canjeRepository.update(id, data);
     }
 }
 

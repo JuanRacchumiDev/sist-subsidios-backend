@@ -6,16 +6,22 @@ import { CobroResponse } from '../../interfaces/Cobro/ICobro';
  * @description Servicio para obtener todos los cobros, opcionalmente filtrados por estado
  */
 class GetCobrosService {
+    private cobroRepository: CobroRepository
+
+    constructor() {
+        this.cobroRepository = new CobroRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener cobros
      * @param {boolean | undefined} estado - Opcional. Filtra los cobros por su estado
      * @returns {Promise<CobroResponse>} La respuesta de obtener los cobros
      */
     async execute(estado?: boolean): Promise<CobroResponse> {
-        if (typeof estado === 'boolean') {
-            return await CobroRepository.getAllByEstado(estado)
-        }
-        return await CobroRepository.getAll()
+        // if (typeof estado === 'boolean') {
+        //     return await CobroRepository.getAllByEstado(estado)
+        // }
+        return await this.cobroRepository.getAll()
     }
 }
 

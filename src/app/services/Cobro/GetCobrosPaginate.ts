@@ -6,6 +6,12 @@ import { CobroResponsePaginate } from '../../interfaces/Cobro/ICobro';
  * @description Servicio para obtener todas los cobros con paginación, opcionalmente filtrados por estado
  */
 class GetCobrosPaginateService {
+    private cobroRepository: CobroRepository
+
+    constructor() {
+        this.cobroRepository = new CobroRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener cobros paginadas
      * @param {number} page - El número de la página actual
@@ -14,7 +20,7 @@ class GetCobrosPaginateService {
      * @returns {Promise<CobroResponsePaginate>} La respuesta de obtener los cobros
      */
     async execute(page: number, limit: number, estado?: boolean): Promise<CobroResponsePaginate> {
-        return await CobroRepository.getAllWithPaginate(page, limit, estado)
+        return await this.cobroRepository.getAllWithPaginate(page, limit, estado)
     }
 }
 

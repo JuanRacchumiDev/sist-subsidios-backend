@@ -318,4 +318,6 @@ class EmpresaRepository {
     }
 }
 
-export default new EmpresaRepository()
+// export default new EmpresaRepository()
+
+export default EmpresaRepository

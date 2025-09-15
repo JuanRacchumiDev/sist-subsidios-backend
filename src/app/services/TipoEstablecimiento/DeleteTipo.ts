@@ -6,13 +6,19 @@ import { TipoEstablecimientoResponse } from '../../interfaces/TipoEstablecimient
  * @description Servicio para eliminar (soft delete) un tipo de establecimiento.
  */
 class DeleteTipoService {
+    protected tipoEstablecimientoRepository: TipoEstablecimientoRepository
+
+    constructor() {
+        this.tipoEstablecimientoRepository = new TipoEstablecimientoRepository()
+    }
+
     /**
      * Ejecuta la operación de eliminación para un tipo de establecimiento.
      * @param {string} id - El ID UUID del tipo de establecimiento a eliminar.
      * @returns {Promise<TipoEstablecimientoResponse>} La respuesta de la operación.
      */
     async execute(id: string): Promise<TipoEstablecimientoResponse> {
-        return await TipoEstablecimientoRepository.delete(id);
+        return await this.tipoEstablecimientoRepository.delete(id);
     }
 }
 

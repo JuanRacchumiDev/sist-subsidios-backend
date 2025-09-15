@@ -6,13 +6,18 @@ import { ICanje, CanjeResponse } from '../../interfaces/Canje/ICanje';
  * @description Servicio para crear un solo canje.
  */
 class CreateCanjeService {
+    private canjeRepository: CanjeRepository
+
+    constructor() {
+        this.canjeRepository = new CanjeRepository()
+    }
     /**
      * Ejecuta la operación para crear un canje.
      * @param {ICanje} data - Los datos del canje a crear.
      * @returns {Promise<CanjeResponse>} La respuesta de la operación.
      */
     async execute(data: ICanje): Promise<CanjeResponse> {
-        return await CanjeRepository.create(data);
+        return await this.canjeRepository.create(data);
     }
 }
 

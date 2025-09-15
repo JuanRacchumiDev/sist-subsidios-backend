@@ -6,6 +6,12 @@ import { PersonaResponse } from "../../interfaces/Persona/IPersona";
  * @description Servicio para obtener una sola persona por tipo y número de documento
  */
 class GetByIdTipoAndNumDocService {
+    protected personaRepository: PersonaRepository
+
+    constructor() {
+        this.personaRepository = new PersonaRepository()
+    }
+
     /**
      * 
      * @param {string} idTipoDoc - El ID del tipo de documento de la persona a buscar 
@@ -13,7 +19,7 @@ class GetByIdTipoAndNumDocService {
      * @returns {Promise<PersonaResponse>} La respuesta de la operación
      */
     async execute(idTipoDoc: string, numDoc: string): Promise<PersonaResponse> {
-        return await PersonaRepository.getByIdTipoDocAndNumDoc(idTipoDoc, numDoc)
+        return await this.personaRepository.getByIdTipoDocAndNumDoc(idTipoDoc, numDoc)
     }
 }
 

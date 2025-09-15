@@ -4,6 +4,7 @@ import { IDescansoMedico } from "../DescansoMedico/IDescansoMedico"
 export interface ICanje {
     id?: string
     id_descansomedico?: string
+    correlativo?: number
     codigo?: string
     fecha_inicio_subsidio?: string
     fecha_final_subsidio?: string
@@ -14,6 +15,12 @@ export interface ICanje {
     fecha_actualiza?: string
     fecha_elimina?: string
     fecha_maxima_subsanar?: string
+    dia_fecha_inicio_subsidio?: number
+    mes_fecha_inicio_subsidio?: number
+    anio_fecha_inicio_subsidio?: number
+    dia_fecha_final_subsidio?: number
+    mes_fecha_final_subsidio?: number
+    anio_fecha_final_subsidio?: number
     is_reembolsable?: boolean
     observacion?: string
     mes_devengado?: string

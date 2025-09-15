@@ -6,6 +6,12 @@ import { ColaboradorResponse } from "../../interfaces/Colaborador/IColaborador";
  * @description Servicio para obtener un colaborador por tipo y número de documento
  */
 class GetByIdTipoAndNumDocService {
+    private colaboradorRepository: ColaboradorRepository
+
+    constructor() {
+        this.colaboradorRepository = new ColaboradorRepository()
+    }
+
     /**
      * 
      * @param {string} idTipoDoc - El ID del tipo de documento del colaborador a buscar 
@@ -13,7 +19,7 @@ class GetByIdTipoAndNumDocService {
      * @returns {Promise<ColaboradorResponse>} La respuesta de la operación
      */
     async execute(idTipoDoc: string, numDoc: string): Promise<ColaboradorResponse> {
-        return await ColaboradorRepository.getByIdTipoDocAndNumDoc(idTipoDoc, numDoc)
+        return await this.colaboradorRepository.getByIdTipoDocAndNumDoc(idTipoDoc, numDoc)
     }
 }
 

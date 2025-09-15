@@ -6,6 +6,12 @@ import { ICargo, CargoResponse } from '../../interfaces/Cargo/ICargo';
  * @description Servicio para actualizar un cargo existente, incluyendo el cambio de estado.
  */
 class UpdateCargoService {
+    private cargoRepository: CargoRepository
+
+    constructor() {
+        this.cargoRepository = new CargoRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar un cargo.
      * Puede actualizar cualquier campo definido en ICargo, incluyendo el nombre y el estado.
@@ -16,10 +22,10 @@ class UpdateCargoService {
     async execute(id: string, data: ICargo): Promise<CargoResponse> {
         // Si solo se está actualizando el estado, podríamos llamar a un método más específico
         // pero para simplificar, el repositorio 'update' puede manejarlo
-        if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
-            return await CargoRepository.updateEstado(id, data.estado);
-        }
-        return await CargoRepository.update(id, data);
+        // if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
+        //     return await CargoRepository.updateEstado(id, data.estado);
+        // }
+        return await this.cargoRepository.update(id, data);
     }
 }
 

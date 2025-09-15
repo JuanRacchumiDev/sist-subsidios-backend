@@ -275,4 +275,6 @@ class AreaRepository {
     }
 }
 
-export default new AreaRepository()
+// export default new AreaRepository()
+
+export default AreaRepository

@@ -6,13 +6,19 @@ import { TrabajadorSocialResponse } from '../../interfaces/TrabajadorSocial/ITra
  * @description Servicio para obtener todas los trabajadores sociales, opcionalmente filtrados por estado
  */
 class GetTrabajadoresSocialesService {
+    protected trabajadorSocialRepository: TrabajadorSocialRepository
+
+    constructor() {
+        this.trabajadorSocialRepository = new TrabajadorSocialRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener trabajadores sociales
      * @param {boolean | undefined} estado - Opcional. Filtra los trabajadores sociales por su estado
      * @returns {Promise<TrabajadorSocialResponse>} La respuesta de obtener los trabajadores sociales
      */
     async execute(estado?: boolean): Promise<TrabajadorSocialResponse> {
-        return await TrabajadorSocialRepository.getAll()
+        return await this.trabajadorSocialRepository.getAll()
     }
 }
 

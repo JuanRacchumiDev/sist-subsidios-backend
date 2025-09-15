@@ -275,4 +275,6 @@ class CobroRepository {
     }
 }
 
-export default new CobroRepository()
+// export default new CobroRepository()
+
+export default CobroRepository

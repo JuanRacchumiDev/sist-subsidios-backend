@@ -6,6 +6,12 @@ import { ISede, SedeResponse } from '../../interfaces/Sede/ISede';
  * @description Servicio para actualizar una sede existente, incluyendo el cambio de estado.
  */
 class UpdateSedeService {
+    protected sedeRepository: SedeRepository
+
+    constructor() {
+        this.sedeRepository = new SedeRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar una sede.
      * Puede actualizar cualquier campo definido en ISede, incluyendo el nombre y el estado.
@@ -16,10 +22,12 @@ class UpdateSedeService {
     async execute(id: string, data: ISede): Promise<SedeResponse> {
         // Si solo se está actualizando el estado, podríamos llamar a un método más específico
         // pero para simplificar, el repositorio 'update' puede manejarlo
-        if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
-            return await SedeRepository.updateEstado(id, data.estado);
-        }
-        return await SedeRepository.update(id, data);
+
+        // if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
+        //     return await SedeRepository.updateEstado(id, data.estado);
+        // }
+
+        return await this.sedeRepository.update(id, data);
     }
 }
 

@@ -228,4 +228,6 @@ class TipoEstablecimientoRepository {
     }
 }
 
-export default new TipoEstablecimientoRepository()
+// export default new TipoEstablecimientoRepository()
+
+export default TipoEstablecimientoRepository

@@ -24,6 +24,12 @@ module.exports = {
           key: 'id'
         }
       },
+      correlativo: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        autoIncrement: true,
+        unique: true
+      },
       codigo: {
         type: Sequelize.STRING(20),
         allowNull: false

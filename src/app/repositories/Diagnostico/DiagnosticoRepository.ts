@@ -232,4 +232,6 @@ class DiagnosticoRepository {
     }
 }
 
-export default new DiagnosticoRepository()
+// export default new DiagnosticoRepository()
+
+export default DiagnosticoRepository

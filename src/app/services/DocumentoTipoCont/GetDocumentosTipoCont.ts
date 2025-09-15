@@ -6,6 +6,12 @@ import { DocumentoTipoContResponse } from '../../interfaces/DocumentoTipoCont/ID
  * @description Servicio para obtener todos los documentos, opcionalmente filtrados por estado
  */
 class GetDocumentosTipoContService {
+    protected documentoTipoContRepository: DocumentoTipoContRepository
+
+    constructor() {
+        this.documentoTipoContRepository = new DocumentoTipoContRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener documentos
      * @param {boolean | undefined} estado - Opcional. Filtra los documentos por su estado
@@ -15,7 +21,7 @@ class GetDocumentosTipoContService {
         // if (typeof estado === 'boolean') {
         //     return await DocumentoTipoContRepository.getal(estado)
         // }
-        return await DocumentoTipoContRepository.getAll()
+        return await this.documentoTipoContRepository.getAll()
     }
 }
 

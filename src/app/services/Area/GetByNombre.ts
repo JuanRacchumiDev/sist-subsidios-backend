@@ -6,13 +6,19 @@ import { AreaResponse } from '../../interfaces/Area/IArea';
  * @description Servicio para obtener un área por su nombre.
  */
 class GetByNombreService {
+    private areaRepository: AreaRepository
+
+    constructor() {
+        this.areaRepository = new AreaRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener un área por nombre.
      * @param {string} nombre - El nombre del área a buscar.
      * @returns {Promise<AreaResponse>} La respuesta de la operación.
      */
     async execute(nombre: string): Promise<AreaResponse> {
-        return await AreaRepository.getByNombre(nombre);
+        return await this.areaRepository.getByNombre(nombre);
     }
 }
 

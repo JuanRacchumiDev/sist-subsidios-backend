@@ -335,4 +335,6 @@ class RepresentanteRepository {
     }
 }
 
-export default new RepresentanteRepository()
+// export default new RepresentanteRepository()
+
+export default RepresentanteRepository

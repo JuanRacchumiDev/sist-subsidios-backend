@@ -8,6 +8,12 @@ import { ESTABLECIMIENTO_ATTRIBUTES } from "../../../constants/EstablecimientoCo
 import { TIPO_ESTABLECIMIENTO_INCLUDE } from "../../../includes/TipoEstablecimientoInclude";
 
 class EstablecimientoRepository {
+    protected tipoEstablecimientoRepository: TipoEstablecimientoRepository
+
+    constructor() {
+        this.tipoEstablecimientoRepository = new TipoEstablecimientoRepository()
+    }
+
     /**
      * Obtiene todos los establecimientos
      * @returns {Promise<EstablecimientoResponse>} Respuesta con la lista de establecimientos
@@ -135,7 +141,7 @@ class EstablecimientoRepository {
                 return { result: false, message: 'El tipo de establecimiento es requerido para crear un establecimiento', status: 400 }
             }
 
-            const responseTipoEstablecimiento = await TipoEstablecimientoRepository.getById(id_tipoestablecimiento)
+            const responseTipoEstablecimiento = await this.tipoEstablecimientoRepository.getById(id_tipoestablecimiento)
 
             const { result: resultTipoEstablecimiento, data: dataTipoEstablecimiento } = responseTipoEstablecimiento
 
@@ -248,4 +254,6 @@ class EstablecimientoRepository {
     }
 }
 
-export default new EstablecimientoRepository()
+// export default new EstablecimientoRepository()
+
+export default EstablecimientoRepository

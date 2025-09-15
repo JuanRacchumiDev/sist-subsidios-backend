@@ -6,13 +6,19 @@ import { TipoDescansoMedicoResponse } from '../../interfaces/TipoDescansoMedico/
  * @description Servicio para eliminar (soft delete) un tipo de descanso médico.
  */
 class DeleteTipoService {
+    protected tipoDescansoMedicoRepository: TipoDescansoMedicoRepository
+
+    constructor() {
+        this.tipoDescansoMedicoRepository = new TipoDescansoMedicoRepository()
+    }
+
     /**
      * Ejecuta la operación de eliminación para un tipo de descanso médico.
      * @param {string} id - El ID UUID del tipo de descanso médico a eliminar.
      * @returns {Promise<TipoDescansoMedicoResponse>} La respuesta de la operación.
      */
     async execute(id: string): Promise<TipoDescansoMedicoResponse> {
-        return await TipoDescansoMedicoRepository.delete(id);
+        return await this.tipoDescansoMedicoRepository.delete(id);
     }
 }
 

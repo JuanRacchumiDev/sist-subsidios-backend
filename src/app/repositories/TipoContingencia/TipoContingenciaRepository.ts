@@ -237,4 +237,6 @@ class TipoContingenciaRepository {
     }
 }
 
-export default new TipoContingenciaRepository()
+// export default new TipoContingenciaRepository()
+
+export default TipoContingenciaRepository

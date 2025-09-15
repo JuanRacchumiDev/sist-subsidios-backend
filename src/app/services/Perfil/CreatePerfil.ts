@@ -6,13 +6,19 @@ import { IPerfil, PerfilResponse } from '../../interfaces/Perfil/IPerfil';
  * @description Servicio para crear un nuevo perfil.
  */
 class CreatePerfilService {
+    protected perfilRepository: PerfilRepository
+
+    constructor() {
+        this.perfilRepository = new PerfilRepository()
+    }
+
     /**
      * Ejecuta la operación para crear un perfil.
      * @param {IPerfil} data - Los datos del perfil a crear.
      * @returns {Promise<PerfilResponse>} La respuesta de la operación.
      */
     async execute(data: IPerfil): Promise<PerfilResponse> {
-        return await PerfilRepository.create(data);
+        return await this.perfilRepository.create(data);
     }
 }
 

@@ -6,6 +6,12 @@ import { IPais, PaisResponse } from '../../interfaces/Pais/IPais';
  * @description Servicio para actualizar un país existente, incluyendo el cambio de estado.
  */
 class UpdatePaisService {
+    protected paisRepository: PaisRepository
+
+    constructor() {
+        this.paisRepository = new PaisRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar un país.
      * Puede actualizar cualquier campo definido en IPais, incluyendo el nombre y el estado.
@@ -16,10 +22,12 @@ class UpdatePaisService {
     async execute(id: string, data: IPais): Promise<PaisResponse> {
         // Si solo se está actualizando el estado, podríamos llamar a un método más específico
         // pero para simplificar, el repositorio 'update' puede manejarlo
-        if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
-            return await PaisRepository.updateEstado(id, data.estado);
-        }
-        return await PaisRepository.update(id, data);
+
+        // if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
+        //     return await PaisRepository.updateEstado(id, data.estado);
+        // }
+
+        return await this.paisRepository.update(id, data);
     }
 }
 

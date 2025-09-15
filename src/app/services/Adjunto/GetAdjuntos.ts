@@ -6,6 +6,11 @@ import { AdjuntoResponse } from '../../interfaces/Adjunto/IAdjunto';
  * @description Servicio para obtener todos los adjuntos, opcionalmente filtrados por estado
  */
 class GetAdjuntosService {
+    private adjuntoRepository: AdjuntoRepository
+
+    constructor() {
+        this.adjuntoRepository = new AdjuntoRepository()
+    }
     /**
      * Ejecuta la operación para obtener adjuntos
      * @param {boolean | undefined} estado - Opcional. Filtra los adjuntos por su estado
@@ -15,7 +20,7 @@ class GetAdjuntosService {
         // if (typeof estado === 'boolean') {
         //     return await AdjuntoRepository.getAllByEstado(estado)
         // }
-        return await AdjuntoRepository.getAll()
+        return await this.adjuntoRepository.getAll()
     }
 }
 

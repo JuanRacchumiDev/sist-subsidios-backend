@@ -6,6 +6,11 @@ import { AdjuntoResponsePaginate } from '../../interfaces/Adjunto/IAdjunto';
  * @description Servicio para obtener todas los adjuntos con paginación, opcionalmente filtrados por estado
  */
 class GetAdjuntosPaginateService {
+    private adjuntoRepository: AdjuntoRepository
+
+    constructor() {
+        this.adjuntoRepository = new AdjuntoRepository()
+    }
     /**
      * Ejecuta la operación para obtener adjuntos paginadas
      * @param {number} page - El número de la página actual
@@ -14,7 +19,7 @@ class GetAdjuntosPaginateService {
      * @returns {Promise<AdjuntoResponsePaginate>} La respuesta de obtener las empresas
      */
     async execute(page: number, limit: number, estado?: boolean): Promise<AdjuntoResponsePaginate> {
-        return await AdjuntoRepository.getAllWithPaginate(page, limit, estado)
+        return await this.adjuntoRepository.getAllWithPaginate(page, limit, estado)
     }
 }
 

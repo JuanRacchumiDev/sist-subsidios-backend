@@ -6,13 +6,19 @@ import { EstablecimientoResponse } from '../../interfaces/Establecimiento/IEstab
  * @description Servicio para eliminar (soft delete) un establecimiento.
  */
 class DeleteEstablecimientoService {
+    protected establecimientoRepository: EstablecimientoRepository
+
+    constructor() {
+        this.establecimientoRepository = new EstablecimientoRepository()
+    }
+
     /**
      * Ejecuta la operación de eliminación para un establecimiento.
      * @param {string} id - El ID UUID del establecimiento a eliminar.
      * @returns {Promise<EstablecimientoResponse>} La respuesta de la operación.
      */
     async execute(id: string): Promise<EstablecimientoResponse> {
-        return await EstablecimientoRepository.delete(id);
+        return await this.establecimientoRepository.delete(id);
     }
 }
 

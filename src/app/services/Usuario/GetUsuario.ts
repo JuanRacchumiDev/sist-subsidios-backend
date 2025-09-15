@@ -6,13 +6,19 @@ import { UsuarioResponse } from '../../interfaces/Usuario/IUsuario';
  * @description Servicio para obtener un solo usuario por ID
  */
 class GetUsuarioService {
+    protected usuarioRepository: UsuarioRepository
+
+    constructor() {
+        this.usuarioRepository = new UsuarioRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener un usuario por ID
      * @param {string} id - El ID UUID del usuario a buscar
      * @returns {Promise<UsuarioResponse>} La respuesta de la operación
      */
     async execute(id: string): Promise<UsuarioResponse> {
-        return await UsuarioRepository.getById(id)
+        return await this.usuarioRepository.getById(id)
     }
 }
 

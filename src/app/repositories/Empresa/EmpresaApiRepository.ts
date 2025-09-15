@@ -4,6 +4,12 @@ import { EmpresaResponse, IEmpresa } from "../../interfaces/Empresa/IEmpresa"
 import EmpresaRepository from './EmpresaRepository'
 
 class EmpresaApiRepository {
+    private empresaRepository: EmpresaRepository
+
+    constructor() {
+        this.empresaRepository = new EmpresaRepository()
+    }
+
     /**
      * Obtiene una empresa por su RUC
      * @param {string} ruc - El ruc de la empresa a buscar
@@ -59,7 +65,7 @@ class EmpresaApiRepository {
                     message: createdEmpresaMessage,
                     error: createdEmpresaError,
                     status: createdEmpresaStatus
-                } = await EmpresaRepository.create(empresaToCreate)
+                } = await this.empresaRepository.create(empresaToCreate)
 
                 if (createdEmpresaResult) {
                     return {
@@ -96,4 +102,6 @@ class EmpresaApiRepository {
     }
 }
 
-export default new EmpresaApiRepository()
+// export default new EmpresaApiRepository()
+
+export default EmpresaApiRepository

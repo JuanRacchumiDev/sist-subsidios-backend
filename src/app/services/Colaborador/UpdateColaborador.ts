@@ -6,6 +6,12 @@ import { IColaborador, ColaboradorResponse } from '../../interfaces/Colaborador/
  * @description Servicio para actualizar un colaborador existente, incluyendo el cambio de estado.
  */
 class UpdateColaborador {
+    private colaboradorRepository: ColaboradorRepository
+
+    constructor() {
+        this.colaboradorRepository = new ColaboradorRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar un colaborador.
      * Puede actualizar cualquier campo definido en IColaborador, incluyendo el nombre y el estado.
@@ -14,7 +20,7 @@ class UpdateColaborador {
      * @returns {Promise<ColaboradorResponse>} La respuesta de la operación.
      */
     async execute(id: string, data: IColaborador): Promise<ColaboradorResponse> {
-        return await ColaboradorRepository.update(id, data);
+        return await this.colaboradorRepository.update(id, data);
     }
 }
 

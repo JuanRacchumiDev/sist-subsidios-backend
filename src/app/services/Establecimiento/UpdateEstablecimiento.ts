@@ -6,6 +6,12 @@ import { IEstablecimiento, EstablecimientoResponse } from '../../interfaces/Esta
  * @description Servicio para actualizar un establecimiento existente, incluyendo el cambio de estado.
  */
 class UpdateEstablecimientoService {
+    protected establecimientoRepository: EstablecimientoRepository
+
+    constructor() {
+        this.establecimientoRepository = new EstablecimientoRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar un establecimiento.
      * Puede actualizar cualquier campo definido en IEstablecimiento, incluyendo el nombre y el estado.
@@ -14,7 +20,7 @@ class UpdateEstablecimientoService {
      * @returns {Promise<EstablecimientoResponse>} La respuesta de la operación.
      */
     async execute(id: string, data: IEstablecimiento): Promise<EstablecimientoResponse> {
-        return await EstablecimientoRepository.update(id, data);
+        return await this.establecimientoRepository.update(id, data);
     }
 }
 

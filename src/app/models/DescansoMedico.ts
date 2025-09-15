@@ -15,7 +15,7 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public id_tipodescansomedico?: string | undefined;
     public id_tipocontingencia?: string | undefined;
     public codcie10_diagnostico?: string | undefined;
-    // public id_establecimiento?: string | undefined;
+    public correlativo?: number | undefined;
     public codigo?: string | undefined;
     public fecha_otorgamiento?: string | undefined;
     public fecha_inicio?: string | undefined;
@@ -24,6 +24,13 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public fecha_actualiza?: string | undefined;
     public fecha_elimina?: string | undefined;
     public fecha_maxima_subsanar?: string | undefined;
+    public dia_fecha_inicio?: number | undefined;
+    public mes_fecha_inicio?: number | undefined;
+    public anio_fecha_inicio?: number | undefined;
+    public dia_fecha_final?: number | undefined;
+    public mes_fecha_final?: number | undefined;
+    public anio_fecha_final?: number | undefined;
+    public mes_devengado?: string | undefined;
     public numero_colegiatura?: string | undefined;
     public medico_tratante?: string | undefined;
     public nombre_colaborador?: string | undefined;
@@ -55,7 +62,6 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public getTipoDescansoMedico!: () => Promise<TipoDescansoMedico>
     public getTipoContingencia!: () => Promise<TipoContingencia>
     public getDiagnostico!: () => Promise<Diagnostico>
-    // public getEstablecimiento?: () => Promise<Establecimiento>
 }
 
 DescansoMedico.init({
@@ -73,9 +79,30 @@ DescansoMedico.init({
             key: 'id'
         }
     },
-    codigo: {
-        type: new DataTypes.STRING(12),
+    id_tipodescansomedico: {
+        type: DataTypes.UUID,
         allowNull: false,
+        references: {
+            model: DescansoMedico,
+            key: 'id'
+        }
+    },
+    id_tipocontingencia: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: TipoContingencia,
+            key: 'id'
+        }
+    },
+    correlativo: {
+        type: DataTypes.NUMBER,
+        allowNull: false,
+        autoIncrement: true
+    },
+    codigo: {
+        type: new DataTypes.STRING(20),
+        allowNull: true,
         unique: true
     },
     fecha_otorgamiento: {
@@ -105,6 +132,34 @@ DescansoMedico.init({
     fecha_maxima_subsanar: {
         type: new DataTypes.STRING(10),
         allowNull: true
+    },
+    dia_fecha_inicio: {
+        type: DataTypes.NUMBER,
+        allowNull: false
+    },
+    mes_fecha_inicio: {
+        type: DataTypes.NUMBER,
+        allowNull: false
+    },
+    anio_fecha_inicio: {
+        type: DataTypes.NUMBER,
+        allowNull: false
+    },
+    dia_fecha_final: {
+        type: DataTypes.NUMBER,
+        allowNull: false
+    },
+    mes_fecha_final: {
+        type: DataTypes.NUMBER,
+        allowNull: false
+    },
+    anio_fecha_final: {
+        type: DataTypes.NUMBER,
+        allowNull: false
+    },
+    mes_devengado: {
+        type: new DataTypes.STRING(12),
+        allowNull: false
     },
     numero_colegiatura: {
         type: new DataTypes.STRING(10),

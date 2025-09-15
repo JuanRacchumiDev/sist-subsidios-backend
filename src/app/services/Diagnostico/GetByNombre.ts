@@ -6,13 +6,19 @@ import { DiagnosticoResponse } from '../../interfaces/Diagnostico/IDiagnostico';
  * @description Servicio para obtener un diagnóstico por su nombre.
  */
 class GetByNombreService {
+    protected diagnosticoRepository: DiagnosticoRepository
+
+    constructor() {
+        this.diagnosticoRepository = new DiagnosticoRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener un diagnóstico por nombre.
      * @param {string} nombre - El nombre del diagnóstico a buscar.
      * @returns {Promise<DiagnosticoResponse>} La respuesta de la operación.
      */
     async execute(nombre: string): Promise<DiagnosticoResponse> {
-        return await DiagnosticoRepository.getByNombre(nombre);
+        return await this.diagnosticoRepository.getByNombre(nombre);
     }
 }
 

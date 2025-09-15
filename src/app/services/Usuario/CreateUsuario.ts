@@ -10,6 +10,14 @@ import { IPersona } from '../../interfaces/Persona/IPersona';
  * @description Servicio para crear un nuevo usuario.
  */
 class CreateUsuarioService {
+    protected usuarioRepository: UsuarioRepository
+    protected personaRepository: PersonaRepository
+
+    constructor() {
+        this.usuarioRepository = new UsuarioRepository()
+        this.personaRepository = new PersonaRepository()
+    }
+
     /**
      * Ejecuta la operación para crear un usuario.
      * @param {IUsuario} data - Los datos del usuario a crear.
@@ -23,7 +31,7 @@ class CreateUsuarioService {
 
         data.password = tempPassword
 
-        const response = await UsuarioRepository.create(data);
+        const response = await this.usuarioRepository.create(data);
 
         const { result: resultUsuario, data: dataUsuario } = response
 
@@ -35,7 +43,7 @@ class CreateUsuarioService {
 
             // Obteniendo la persona registrada
             if (id_persona) {
-                const responsePersona = await PersonaRepository.getById(id_persona)
+                const responsePersona = await this.personaRepository.getById(id_persona)
 
                 const { data } = responsePersona
 

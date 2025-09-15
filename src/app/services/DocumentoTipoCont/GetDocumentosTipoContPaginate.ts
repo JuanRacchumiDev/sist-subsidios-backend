@@ -6,6 +6,12 @@ import { DocumentoTipoContResponsePaginate } from '../../interfaces/DocumentoTip
  * @description Servicio para obtener todas los documentos con paginación, opcionalmente filtrados por estado
  */
 class GetDocumentosTipoContPaginateService {
+    protected documentoTipoContRepository: DocumentoTipoContRepository
+
+    constructor() {
+        this.documentoTipoContRepository = new DocumentoTipoContRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener documentos paginadas
      * @param {number} page - El número de la página actual
@@ -14,7 +20,7 @@ class GetDocumentosTipoContPaginateService {
      * @returns {Promise<DocumentoTipoContResponsePaginate>} La respuesta de obtener los documentos
      */
     async execute(page: number, limit: number, estado?: boolean): Promise<DocumentoTipoContResponsePaginate> {
-        return await DocumentoTipoContRepository.getAllWithPaginate(page, limit, estado)
+        return await this.documentoTipoContRepository.getAllWithPaginate(page, limit, estado)
     }
 }
 

@@ -15,6 +15,7 @@ import { TIPODM_INCLUDE } from "../../../includes/TipoDescansoMedicoInclude";
 import { TIPO_CONTINGENCIA_INCLUDE } from "../../../includes/TipoContingenciaInclude";
 import { DIAGNOSTICO_INCLUDE } from "../../../includes/DiagnosticoInclude";
 import { Op } from 'sequelize';
+import HDate from "../../../helpers/HDate"
 
 class DescansoMedicoRepository {
     /**
@@ -109,7 +110,10 @@ class DescansoMedicoRepository {
                 ],
                 where: {
                     id_colaborador: idColaborador
-                }
+                },
+                order: [
+                    ['fecha_inicio', 'DESC']
+                ],
             })
 
             return { result: true, data: descansos, status: 200 }
@@ -293,33 +297,58 @@ class DescansoMedicoRepository {
      * @returns {Promise<DescansoMedicoResponse>} Respuesta con el descanso médico creado o error
      */
     async create(data: IDescansoMedico): Promise<DescansoMedicoResponse> {
-        const { id_colaborador, fecha_inicio } = data
+        const { id_colaborador, fecha_inicio, fecha_final } = data
 
         const esContinuo = await this.isDescansoConsecutivo(id_colaborador!, fecha_inicio!)
 
         console.log({ esContinuo })
 
+        // Obteniendo fecha de inicio, mes y año de fecha de inicio y fecha final
+        const [anioFechaInicio, mesFechaInicio, diaFechaInicio] = fecha_inicio?.split("-") as string[]
+
+        const [anioFechaFinal, mesFechaFinal, diaFechaFinal] = fecha_final?.split("-") as string[]
+
+        // Obtener el mes de devengado
+        const monthName = HDate.getMonthName(fecha_final as string)
+
         const payload: IDescansoMedico = {
             ...data,
-            is_continuo: esContinuo
+            is_continuo: esContinuo,
+            dia_fecha_inicio: parseInt(diaFechaInicio, 10),
+            mes_fecha_inicio: parseInt(mesFechaInicio, 10),
+            anio_fecha_inicio: parseInt(anioFechaInicio, 10),
+            dia_fecha_final: parseInt(diaFechaFinal, 10),
+            mes_fecha_final: parseInt(mesFechaFinal, 10),
+            anio_fecha_final: parseInt(anioFechaFinal, 10),
+            mes_devengado: monthName
         }
 
+        console.log('payload new descanso médico', payload)
+
         try {
-            // const newDescanso = await DescansoMedico.create(payload, { transaction })
             const newDescanso = await DescansoMedico.create(payload)
+            // const newDescanso = await DescansoMedico.create(data)
 
-            console.log({ newDescanso })
+            // console.log({ newDescanso })
 
-            const { id: idDescanso } = newDescanso
+            // const { id: idDescanso } = newDescanso
 
-            if (!idDescanso) {
-                console.log('error en el repositorio')
+            // if (!idDescanso) {
+            //     return {
+            //         result: false,
+            //         error: 'Error al registrar el descanso médico',
+            //         data: [],
+            //         status: 500
+            //     }
+            // }
+
+            if (!newDescanso || !newDescanso.id) {
                 return {
                     result: false,
                     error: 'Error al registrar el descanso médico',
                     data: [],
                     status: 500
-                }
+                };
             }
 
             return {
@@ -331,6 +360,67 @@ class DescansoMedicoRepository {
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    /**
+     * Crea múltiples descansos médicos dentro de una transacción
+     * @param {IDescansoMedico[]} dataArray - Un array de datos de registros médicos
+     * @returns {Promise<DescansoMedicoResponse[]>} Un array de respuestas por cada creación
+     */
+    async createMultiple(dataArray: IDescansoMedico[]): Promise<DescansoMedicoResponse[]> {
+        const transaction = await sequelize.transaction()
+        const results: DescansoMedicoResponse[] = []
+
+        console.log('registros para crear descansos', dataArray)
+
+        try {
+            for (const data of dataArray) {
+                const { id_colaborador, fecha_inicio, fecha_final } = data
+
+                const esContinuo = await this.isDescansoConsecutivo(id_colaborador!, fecha_inicio!)
+
+                console.log({ esContinuo })
+
+                // Obteniendo fecha de inicio, mes y año de fecha de inicio y fecha final
+                const [anioFechaInicio, mesFechaInicio, diaFechaInicio] = fecha_inicio?.split("-") as string[]
+
+                const [anioFechaFinal, mesFechaFinal, diaFechaFinal] = fecha_final?.split("-") as string[]
+
+                // Obtener el mes de devengado
+                const monthName = HDate.getMonthName(fecha_final as string)
+
+                const payload = {
+                    ...data,
+                    is_continuo: esContinuo,
+                    dia_fecha_inicio: parseInt(diaFechaInicio, 10),
+                    mes_fecha_inicio: parseInt(mesFechaInicio, 10),
+                    anio_fecha_inicio: parseInt(anioFechaInicio, 10),
+                    dia_fecha_final: parseInt(diaFechaFinal, 10),
+                    mes_fecha_final: parseInt(mesFechaFinal, 10),
+                    anio_fecha_final: parseInt(anioFechaFinal, 10),
+                    mes_devengado: monthName
+                }
+
+                const newDescanso = await DescansoMedico.create(payload, { transaction })
+
+                results.push({
+                    result: true,
+                    message: 'Descanso médico registrado con éxito',
+                    data: newDescanso,
+                    status: 200
+                })
+            }
+            await transaction.commit()
+            return results
+        } catch (error) {
+            await transaction.rollback()
+            console.error("Error al registrar múltiples descansos médicos: ", error)
+            return dataArray.map(() => ({
+                result: false,
+                error: 'Error al registrar al descanso médico',
+                status: 500
+            }))
         }
     }
 
@@ -371,68 +461,8 @@ class DescansoMedicoRepository {
             return { result: false, error: errorMessage, status: 500 }
         }
     }
-
-    async generateCorrelativo(): Promise<string> {
-        // const transaction = await sequelize.transaction();
-
-        try {
-            const anioActual = new Date().getFullYear()
-
-            const prefijo = 'DM'
-
-            const formatoCodigo = `${prefijo}-${anioActual}-%`
-
-            console.log({ anioActual })
-
-            console.log({ prefijo })
-
-            console.log({ formatoCodigo })
-
-            // 1. Encontrar el último registro para el año actual
-            const ultimoDescanso = await DescansoMedico.findOne({
-                where: {
-                    codigo: {
-                        [Op.like]: formatoCodigo
-                    }
-                },
-                order: [
-                    ['codigo', 'DESC']
-                ],
-                // transaction,
-                // lock: transaction.LOCK.UPDATE
-            })
-
-            console.log({ ultimoDescanso })
-
-            let nuevoNumero = 1;
-
-            if (ultimoDescanso) {
-
-                const { codigo } = ultimoDescanso
-
-                const codigoStr = codigo as string
-
-                // 2. Extraer y aumentar el número correlativo
-                const partes = codigoStr.split('-');
-
-                const ultimoNumero = parseInt(partes[2], 10);
-
-                nuevoNumero = ultimoNumero + 1;
-            }
-
-            // 3. Formatear el nuevo correlativo
-            const numeroFormateado = String(nuevoNumero).padStart(4, '0');
-
-            const nuevoCorrelativo = `${prefijo}-${anioActual}-${numeroFormateado}`;
-
-            // await transaction.commit();
-            return nuevoCorrelativo;
-        } catch (error) {
-            // await transaction.rollback();
-            console.error('Error al generar el correlativo:', error);
-            throw new Error('No se pudo generar el correlativo del descanso médico');
-        }
-    }
 }
 
-export default new DescansoMedicoRepository()
+// export default new DescansoMedicoRepository()
+
+export default DescansoMedicoRepository;

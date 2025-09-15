@@ -8,6 +8,14 @@ import PersonaRepository from '../Persona/PersonaRepository'
 import { EOrigen } from '../../enums/EOrigen';
 
 class PersonaApiRepository {
+    private personaRepository: PersonaRepository
+    private tipoDocumentoRepository: TipoDocumentoRepository
+
+    constructor() {
+        this.personaRepository = new PersonaRepository()
+        this.tipoDocumentoRepository = new TipoDocumentoRepository()
+    }
+
     /**
      * Obtiene una persona por su ID
      * @param {string} abreviatura - La abreviatura del tipo de documento
@@ -22,7 +30,7 @@ class PersonaApiRepository {
                 data: dataTipoDocumento,
                 message: tipoDocMessage,
                 status: tipoDocStatus
-            } = await TipoDocumentoRepository.getBySearch({ abreviatura })
+            } = await this.tipoDocumentoRepository.getBySearch({ abreviatura })
 
             if (!tipoDocResult && !dataTipoDocumento) {
                 return {
@@ -104,7 +112,7 @@ class PersonaApiRepository {
                     message: createdPersonaMessage,
                     error: createdPersonaError,
                     status: createdPersonaStatus
-                } = await PersonaRepository.create(personaToCreate)
+                } = await this.personaRepository.create(personaToCreate)
 
                 if (!createdPersonaResult) {
                     return {
@@ -143,4 +151,6 @@ class PersonaApiRepository {
     }
 }
 
-export default new PersonaApiRepository()
+// export default new PersonaApiRepository()
+
+export default PersonaApiRepository

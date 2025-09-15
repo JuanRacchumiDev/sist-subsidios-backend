@@ -6,6 +6,12 @@ import { IRepresentanteLegal, RepresentanteLegalResponse } from '../../interface
  * @description Servicio para actualizar un representante legal existente, incluyendo el cambio de estado.
  */
 class UpdateRepresentante {
+    protected representanteRepository: RepresentanteRepository
+
+    constructor() {
+        this.representanteRepository = new RepresentanteRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar un representante legal.
      * Puede actualizar cualquier campo definido en IRepresentanteLegal, incluyendo el nombre y el estado.
@@ -14,7 +20,7 @@ class UpdateRepresentante {
      * @returns {Promise<RepresentanteLegalResponse>} La respuesta de la operación.
      */
     async execute(id: string, data: IRepresentanteLegal): Promise<RepresentanteLegalResponse> {
-        return await RepresentanteRepository.update(id, data);
+        return await this.representanteRepository.update(id, data);
     }
 }
 

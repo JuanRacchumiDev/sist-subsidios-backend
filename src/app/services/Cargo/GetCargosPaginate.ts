@@ -6,6 +6,12 @@ import { CargoResponsePaginate } from '../../interfaces/Cargo/ICargo';
  * @description Servicio para obtener todas los cargos con paginación, opcionalmente filtrados por estado
  */
 class GetCargosPaginateService {
+    private cargoRepository: CargoRepository
+
+    constructor() {
+        this.cargoRepository = new CargoRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener cargos paginadas
      * @param {number} page - El número de la página actual
@@ -14,7 +20,7 @@ class GetCargosPaginateService {
      * @returns {Promise<CargoResponsePaginate>} La respuesta de obtener los cargos
      */
     async execute(page: number, limit: number, estado?: boolean): Promise<CargoResponsePaginate> {
-        return await CargoRepository.getAllWithPaginate(page, limit, estado)
+        return await this.cargoRepository.getAllWithPaginate(page, limit, estado)
     }
 }
 

@@ -4,6 +4,7 @@ import { ICanje } from "../Canje/ICanje"
 export interface IReembolso {
     id?: string
     id_canje?: string
+    correlativo?: number
     codigo?: string
     fecha_registro?: string
     fecha_maxima_reembolso?: string
@@ -23,6 +24,24 @@ export interface ReembolsoResponse {
     result: boolean
     message?: string
     data?: IReembolso | IReembolso[]
+    error?: string
+    status?: number
+}
+
+export interface ICanjePaginate {
+    currentPage: number
+    limit: number
+    totalPages: number
+    totalItems: number
+    nextPage: number | null
+    previousPage: number | null
+}
+
+export interface CanjeResponsePaginate {
+    result: boolean
+    message?: string
+    data?: ICanje[]
+    pagination?: ICanjePaginate
     error?: string
     status?: number
 }

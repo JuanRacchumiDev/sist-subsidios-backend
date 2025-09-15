@@ -6,13 +6,19 @@ import { PerfilResponse } from '../../interfaces/Perfil/IPerfil';
  * @description Servicio para eliminar (soft delete) un perfil.
  */
 class DeletePerfilService {
+    protected perfilRepository: PerfilRepository
+
+    constructor() {
+        this.perfilRepository = new PerfilRepository()
+    }
+
     /**
      * Ejecuta la operación de eliminación para un perfil.
      * @param {string} id - El ID UUID del perfil a eliminar.
      * @returns {Promise<PerfilResponse>} La respuesta de la operación.
      */
     async execute(id: string): Promise<PerfilResponse> {
-        return await PerfilRepository.delete(id);
+        return await this.perfilRepository.delete(id);
     }
 }
 

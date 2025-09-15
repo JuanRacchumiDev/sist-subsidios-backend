@@ -6,6 +6,12 @@ import { ITipoEstablecimiento, TipoEstablecimientoResponse } from '../../interfa
  * @description Servicio para actualizar un tipo de establecimiento existente, incluyendo el cambio de estado.
  */
 class UpdateTipoService {
+    protected tipoEstablecimientoRepository: TipoEstablecimientoRepository
+
+    constructor() {
+        this.tipoEstablecimientoRepository = new TipoEstablecimientoRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar un tipo de establecimiento.
      * Puede actualizar cualquier campo definido en ITipoEstablecimiento, incluyendo el nombre y el estado.
@@ -16,10 +22,12 @@ class UpdateTipoService {
     async execute(id: string, data: ITipoEstablecimiento): Promise<TipoEstablecimientoResponse> {
         // Si solo se está actualizando el estado, podríamos llamar a un método más específico
         // pero para simplificar, el repositorio 'update' puede manejarlo
-        if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
-            return await TipoEstablecimientoRepository.updateEstado(id, data.estado);
-        }
-        return await TipoEstablecimientoRepository.update(id, data);
+
+        // if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
+        //     return await TipoEstablecimientoRepository.updateEstado(id, data.estado);
+        // }
+
+        return await this.tipoEstablecimientoRepository.update(id, data);
     }
 }
 

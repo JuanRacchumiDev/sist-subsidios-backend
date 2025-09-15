@@ -113,6 +113,87 @@ module.exports = {
         estado: true,
         created_at: now,
         updated_at: now
+      },
+      {
+        codCie10: 'A04.5',
+        nombre: 'ENTERITIS DEBIDA A CAMPYLOBACTER',
+        tiempo: 3,
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
+      },
+      {
+        codCie10: 'A04.6',
+        nombre: 'ENTERITIS DEBIDA A YERSINIA ENTEROCOLITICA',
+        tiempo: 3,
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
+      },
+      {
+        codCie10: 'A04.7',
+        nombre: 'ENTEROCOLITIS DEBIDA A CLOSTRIDIUM DIFFICILE',
+        tiempo: 3,
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
+      },
+      {
+        codCie10: 'A04.8',
+        nombre: 'OTRAS INFECCIONES INTESTINALES BACTERIANAS ESPECIFICADAS',
+        tiempo: 3,
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
+      },
+      {
+        codCie10: 'A04.9',
+        nombre: 'INFECCION INTESTINAL BACTERIANA, NO ESPECIFICADA',
+        tiempo: 3,
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
+      },
+      {
+        codCie10: 'A05.0',
+        nombre: 'INTOXICACION ALIMENTARIA ESTAFILOCOCICA',
+        tiempo: 3,
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
+      },
+      {
+        codCie10: 'A05.9',
+        nombre: 'INTOXICACION ALIMENTARIA BACTERIANA, NO ESPECIFICADA',
+        tiempo: 3,
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
+      },
+      {
+        codCie10: 'A06.0',
+        nombre: 'DISENTERIA AMEBIANA AGUDA',
+        tiempo: 7,
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
+      },
+      {
+        codCie10: 'A06.1',
+        nombre: 'AMEBIASIS INTESTINAL CRONICA',
+        tiempo: 7,
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
       }
     ], {})
   },

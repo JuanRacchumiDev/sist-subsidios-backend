@@ -4,6 +4,7 @@ import { IReembolso } from "../Reembolso/IReembolso"
 export interface ICobro {
     id?: string
     id_reembolso?: string
+    correlativo?: number
     codigo?: string
     codigo_cheque?: string
     codigo_voucher?: string

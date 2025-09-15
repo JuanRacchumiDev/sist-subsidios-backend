@@ -249,4 +249,6 @@ class PersonaRepository {
     }
 }
 
-export default new PersonaRepository()
+// export default new PersonaRepository()
+
+export default PersonaRepository

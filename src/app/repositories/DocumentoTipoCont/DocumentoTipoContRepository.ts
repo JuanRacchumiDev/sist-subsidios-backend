@@ -207,4 +207,6 @@ class DocumentoTipoContRepository {
     }
 }
 
-export default new DocumentoTipoContRepository()
+// export default new DocumentoTipoContRepository()
+
+export default DocumentoTipoContRepository

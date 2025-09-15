@@ -6,12 +6,18 @@ import { DiagnosticoResponse } from '../../interfaces/Diagnostico/IDiagnostico';
  * @description Servicio para obtener todos los diagnósticos, opcionalmente filtrados por estado
  */
 class GetDiagnosticosService {
+    protected diagnosticoRepository: DiagnosticoRepository
+
+    constructor() {
+        this.diagnosticoRepository = new DiagnosticoRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener diagnósticos
      * @returns {Promise<DiagnosticoResponse>} La respuesta de obtener los diagnósticos
      */
     async execute(): Promise<DiagnosticoResponse> {
-        return await DiagnosticoRepository.getAll()
+        return await this.diagnosticoRepository.getAll()
     }
 }
 

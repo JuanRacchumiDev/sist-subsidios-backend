@@ -6,13 +6,19 @@ import { IColaborador, ColaboradorResponse } from '../../interfaces/Colaborador/
  * @description Servicio para crear un nuevo colaborador.
  */
 class CreateColaboradorService {
+    private colaboradorRepository: ColaboradorRepository
+
+    constructor() {
+        this.colaboradorRepository = new ColaboradorRepository()
+    }
+
     /**
      * Ejecuta la operación para crear un colaborador.
      * @param {IColaborador} data - Los datos del colaborador a crear.
      * @returns {Promise<ColaboradorResponse>} La respuesta de la operación.
      */
     async execute(data: IColaborador): Promise<ColaboradorResponse> {
-        return await ColaboradorRepository.create(data);
+        return await this.colaboradorRepository.create(data);
     }
 }
 

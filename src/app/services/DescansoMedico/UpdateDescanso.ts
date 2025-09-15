@@ -6,6 +6,12 @@ import { IDescansoMedico, DescansoMedicoResponse } from '../../interfaces/Descan
  * @description Servicio para actualizar un descanso médico existente, incluyendo el cambio de estado.
  */
 class UpdateDescansoService {
+    protected descansoMedicoRepository: DescansoMedicoRepository
+
+    constructor() {
+        this.descansoMedicoRepository = new DescansoMedicoRepository()
+    }
+
     /**
      * Ejecuta la operación para actualizar un descanso médico.
      * Puede actualizar cualquier campo definido en IDescansoMedico, incluyendo el nombre y el estado.
@@ -14,7 +20,7 @@ class UpdateDescansoService {
      * @returns {Promise<DescansoMedicoResponse>} La respuesta de la operación.
      */
     async execute(id: string, data: IDescansoMedico): Promise<DescansoMedicoResponse> {
-        return await DescansoMedicoRepository.update(id, data);
+        return await this.descansoMedicoRepository.update(id, data);
     }
 }
 

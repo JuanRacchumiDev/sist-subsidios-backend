@@ -6,12 +6,18 @@ import { DescansoMedicoResponse } from '../../interfaces/DescansoMedico/IDescans
  * @description Servicio para obtener todos los descansos médicos, opcionalmente filtrados por estado
  */
 class GetDescansosService {
+    protected descansoMedicoRepository: DescansoMedicoRepository
+
+    constructor() {
+        this.descansoMedicoRepository = new DescansoMedicoRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener descansos médicos
      * @returns {Promise<DescansoMedicoResponse>} La respuesta de obtener los descansos médicos
      */
     async execute(): Promise<DescansoMedicoResponse> {
-        return await DescansoMedicoRepository.getAll()
+        return await this.descansoMedicoRepository.getAll()
     }
 }
 

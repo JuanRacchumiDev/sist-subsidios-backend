@@ -5,6 +5,7 @@ export const DESCANSOMEDICO_ATTRIBUTES = [
     'id_tipocontingencia',
     'codcie10_diagnostico',
     // 'id_establecimiento',
+    'correlativo',
     'codigo',
     'fecha_otorgamiento',
     'fecha_inicio',

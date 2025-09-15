@@ -6,12 +6,18 @@ import { PersonaResponse } from '../../interfaces/Persona/IPersona';
  * @description Servicio para obtener todas las personas, opcionalmente filtrados por estado
  */
 class GetPersonasService {
+    protected personaRepository: PersonaRepository
+
+    constructor() {
+        this.personaRepository = new PersonaRepository()
+    }
+
     /**
      * Ejecuta la operación para obtener personas
      * @returns {Promise<PersonaResponse>} La respuesta de obtener las personas
      */
     async execute(): Promise<PersonaResponse> {
-        return await PersonaRepository.getAll()
+        return await this.personaRepository.getAll()
     }
 }
 
