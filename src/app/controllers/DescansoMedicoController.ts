@@ -67,14 +67,14 @@ class DescansoMedicoController {
 
     async createDescanso(req: Request, res: Response, next: NextFunction) {
         try {
-            console.log('parámetros new descanso médico', req.body)
+            // console.log('parámetros new descanso médico', req.body)
             const descansoData: IDescansoMedico = req.body;
 
             const response = await CreateDescansoService.execute(descansoData);
-            console.log('response createDescanso', response)
+            // console.log('response createDescanso', response)
 
             const dataResponse = response as ResponseTransaction
-            console.log('dataResponse createDescanso', dataResponse)
+            // console.log('dataResponse createDescanso', dataResponse)
 
             res.status(dataResponse.status || 201).json(dataResponse);
         } catch (error) {

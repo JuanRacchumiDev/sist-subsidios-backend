@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import LoginService from '../services/Auth/Login'
 import LogoutService from '../services/Auth/Logout'
+import CreateCodigoTempService from '../services/Auth/CreateCodigoTemp'
 import { AuthCredenciales } from '../types/Auth/TAuth'
 
 class AuthController {
@@ -36,6 +37,15 @@ class AuthController {
             const { id: usuarioId } = body
 
             const result = await LogoutService.execute(usuarioId)
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async createCodigoTemp(req: Request, res: Response, next: NextFunction) {
+        try {
+            const result = await CreateCodigoTempService.execute()
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

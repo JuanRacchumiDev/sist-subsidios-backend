@@ -6,6 +6,7 @@ import { CANJE_ATTRIBUTES } from "../../../constants/CanjeConstant"
 import HPagination from "../../../helpers/HPagination"
 import { Op, Transaction } from "sequelize"
 import { DESCANSOMEDICO_INCLUDE } from "../../../includes/DescansoMedicoInclude"
+import HDate from "../../../helpers/HDate"
 
 class CanjeRepository {
     /**
@@ -112,13 +113,58 @@ class CanjeRepository {
      * @returns {Promise<CanjeResponse>} Respuesta con el canje creado o error
      */
     async create(data: ICanje): Promise<CanjeResponse> {
+        const {
+            fecha_inicio_subsidio,
+            fecha_final_subsidio,
+            fecha_inicio_dm,
+            fecha_final_dm
+        } = data
+
+        const [
+            anioFechaInicioSubsidio,
+            mesFechaInicioSubsidio,
+            diaFechaInicioSubsidio
+        ] = (fecha_inicio_subsidio as string).split("-") as string[]
+
+        const [
+            anioFechaFinalSubsidio,
+            mesFechaFinalSubsidio,
+            diaFechaFinalSubsidio
+        ] = (fecha_final_subsidio as string).split("-") as string[]
+
+        const [
+            anioFechaInicioDM,
+            mesFechaInicioDM,
+            diaFechaInicioDM
+        ] = (fecha_inicio_dm as string).split("-") as string[]
+
+        const [
+            anioFechaFinalDM,
+            mesFechaFinalDM,
+            diaFechaFinalDM
+        ] = (fecha_final_dm as string).split("-") as string[]
+
+        // Obtener el mes de devengado
+        const monthName = HDate.getMonthName(fecha_final_subsidio as string)
+
+        const payload: ICanje = {
+            ...data,
+            dia_fecha_inicio_subsidio: parseInt(diaFechaInicioSubsidio, 10),
+            mes_fecha_inicio_subsidio: parseInt(diaFechaInicioSubsidio, 10),
+            anio_fecha_inicio_subsidio: parseInt(diaFechaInicioSubsidio, 10),
+            dia_fecha_final_subsidio: parseInt(diaFechaInicioSubsidio, 10),
+            mes_fecha_final_subsidio: parseInt(diaFechaInicioSubsidio, 10),
+            anio_fecha_final_subsidio: parseInt(diaFechaInicioSubsidio, 10),
+            mes_devengado: monthName
+        }
+
         try {
             // const newCanje = await Canje.create(data, { transaction })
-            const newCanje = await Canje.create(data)
+            const newCanje = await Canje.create(payload)
 
-            const { id: idCanje } = newCanje
+            // const { id: idCanje } = newCanje
 
-            if (!idCanje) {
+            if (!newCanje || !newCanje.id) {
                 return {
                     result: false,
                     error: 'Error al registrar el canje',

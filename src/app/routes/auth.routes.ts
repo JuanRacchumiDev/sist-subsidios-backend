@@ -7,4 +7,6 @@ router.post('/login', AuthController.login)
 
 router.post('/logout', AuthController.logout)
 
+router.get('/create-codigo-temp', AuthController.createCodigoTemp)
+
 export default router

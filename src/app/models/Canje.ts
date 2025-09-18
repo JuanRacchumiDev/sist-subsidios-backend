@@ -68,7 +68,7 @@ Canje.init({
     },
     codigo: {
         type: new DataTypes.STRING(20),
-        allowNull: false,
+        allowNull: true,
         set(value: string) {
             this.setDataValue('codigo', value ? value.trim() : undefined)
         }

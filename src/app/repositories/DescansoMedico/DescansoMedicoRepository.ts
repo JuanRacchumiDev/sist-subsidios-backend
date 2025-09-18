@@ -14,8 +14,9 @@ import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude";
 import { TIPODM_INCLUDE } from "../../../includes/TipoDescansoMedicoInclude";
 import { TIPO_CONTINGENCIA_INCLUDE } from "../../../includes/TipoContingenciaInclude";
 import { DIAGNOSTICO_INCLUDE } from "../../../includes/DiagnosticoInclude";
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import HDate from "../../../helpers/HDate"
+import { ADJUNTO_INCLUDE } from "../../../includes/AdjuntoInclude";
 
 class DescansoMedicoRepository {
     /**
@@ -190,7 +191,7 @@ class DescansoMedicoRepository {
                 }
             })
 
-            console.log('result días registrados', result)
+            // console.log('result días registrados', result)
 
             const totalDias = result || 0
 
@@ -214,7 +215,8 @@ class DescansoMedicoRepository {
                     COLABORADOR_INCLUDE,
                     TIPODM_INCLUDE,
                     TIPO_CONTINGENCIA_INCLUDE,
-                    DIAGNOSTICO_INCLUDE
+                    DIAGNOSTICO_INCLUDE,
+                    ADJUNTO_INCLUDE
                 ]
             })
 
@@ -251,10 +253,10 @@ class DescansoMedicoRepository {
      */
     async isDescansoConsecutivo(idColaborador: string, fechaInicioNuevo: string): Promise<boolean> {
         try {
-            console.log('obteniendo el último descanso médico')
+            // console.log('obteniendo el último descanso médico')
 
-            console.log('idColaborador in isDescansoConsecutivo', idColaborador)
-            console.log('fechaInicioNuevo in inDescansoConsecutivo', fechaInicioNuevo)
+            // console.log('idColaborador in isDescansoConsecutivo', idColaborador)
+            // console.log('fechaInicioNuevo in inDescansoConsecutivo', fechaInicioNuevo)
 
             const ultimoDescanso = await DescansoMedico.findOne({
                 where: { id_colaborador: idColaborador },
@@ -262,7 +264,7 @@ class DescansoMedicoRepository {
                 limit: 1
             });
 
-            console.log({ ultimoDescanso })
+            // console.log({ ultimoDescanso })
 
             // Si no hay descansos previos, es el primero y se considera continuo.
             if (!ultimoDescanso) {
@@ -303,13 +305,40 @@ class DescansoMedicoRepository {
 
         console.log({ esContinuo })
 
-        // Obteniendo fecha de inicio, mes y año de fecha de inicio y fecha final
-        const [anioFechaInicio, mesFechaInicio, diaFechaInicio] = fecha_inicio?.split("-") as string[]
+        const resultValidateFechas = await this.validateAcoplamiento(id_colaborador!, fecha_inicio!, fecha_final!)
 
-        const [anioFechaFinal, mesFechaFinal, diaFechaFinal] = fecha_final?.split("-") as string[]
+        console.log(resultValidateFechas)
+
+        if (!resultValidateFechas) {
+            return {
+                result: false,
+                message: "Error al validar las fechas",
+                data: [],
+                status: 422
+            }
+        }
+
+        const { fechaInicio, fechaFinal } = resultValidateFechas
+
+        data.fecha_otorgamiento = fechaInicio
+
+        data.fecha_inicio = fechaInicio
+
+        data.fecha_final = fechaFinal
+
+        data.total_dias = HDate.differenceDates(fechaInicio, fechaFinal)
+
+        // Obteniendo fecha de inicio, mes y año de fecha de inicio y fecha final
+        // const [anioFechaInicio, mesFechaInicio, diaFechaInicio] = fecha_inicio?.split("-") as string[]
+        // const [anioFechaFinal, mesFechaFinal, diaFechaFinal] = fecha_final?.split("-") as string[]
+
+        const [anioFechaInicio, mesFechaInicio, diaFechaInicio] = (fechaInicio as string).split("-") as string[]
+
+        const [anioFechaFinal, mesFechaFinal, diaFechaFinal] = (fechaFinal as string).split("-") as string[]
 
         // Obtener el mes de devengado
-        const monthName = HDate.getMonthName(fecha_final as string)
+        // const monthName = HDate.getMonthName(fecha_final as string)
+        const monthName = HDate.getMonthName(fechaFinal as string)
 
         const payload: IDescansoMedico = {
             ...data,
@@ -323,7 +352,7 @@ class DescansoMedicoRepository {
             mes_devengado: monthName
         }
 
-        console.log('payload new descanso médico', payload)
+        // console.log('payload new descanso médico', payload)
 
         try {
             const newDescanso = await DescansoMedico.create(payload)
@@ -372,7 +401,7 @@ class DescansoMedicoRepository {
         const transaction = await sequelize.transaction()
         const results: DescansoMedicoResponse[] = []
 
-        console.log('registros para crear descansos', dataArray)
+        // console.log('registros para crear descansos', dataArray)
 
         try {
             for (const data of dataArray) {
@@ -380,7 +409,7 @@ class DescansoMedicoRepository {
 
                 const esContinuo = await this.isDescansoConsecutivo(id_colaborador!, fecha_inicio!)
 
-                console.log({ esContinuo })
+                // console.log({ esContinuo })
 
                 // Obteniendo fecha de inicio, mes y año de fecha de inicio y fecha final
                 const [anioFechaInicio, mesFechaInicio, diaFechaInicio] = fecha_inicio?.split("-") as string[]
@@ -452,13 +481,124 @@ class DescansoMedicoRepository {
             // const updatedDescanso = await descanso.update(dataUpdateDescanso, { transaction })
             const updatedDescanso = await descanso.update(dataUpdateDescanso)
 
+            console.log({ updatedDescanso })
+
             // await transaction.commit()
 
-            return { result: true, message: 'Descanso médico actualizado con éxito', data: updatedDescanso, status: 200 }
+            return {
+                result: true,
+                message: 'Descanso médico actualizado con éxito',
+                data: updatedDescanso,
+                status: 200
+            }
         } catch (error) {
             // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    /**
+     * 
+     * @param {string} idColaborador - El ID del colaborador 
+     * @param fechaInicio - La fecha de inicio del nuevo descanso médico
+     * @param fechaFinal - La fecha de final del nuevo descanso médico
+     * @returns {Promise<{fechaInicio: string, fechaFinal: string} | null>} - Un objeto con las fechas ajustadas
+     */
+    async validateAcoplamiento(
+        idColaborador: string,
+        fechaInicio: string,
+        fechaFinal: string
+    ): Promise<{ fechaInicio: string, fechaFinal: string } | null> {
+        try {
+            const nuevaFechaInicio = new Date(fechaInicio);
+            const nuevaFechaFinal = new Date(fechaFinal);
+
+            // console.log({ nuevaFechaInicio })
+            // console.log({ nuevaFechaFinal })
+
+            // Buscar descansos médicos existentes para el colaborador que se solapen con el nuevo registro.
+            const descansosExistentes = await DescansoMedico.findAll({
+                where: {
+                    id_colaborador: idColaborador,
+                    [Op.and]: [
+                        {
+                            fecha_inicio: {
+                                [Op.lte]: nuevaFechaFinal
+                            }
+                        },
+                        {
+                            fecha_final: {
+                                [Op.gte]: nuevaFechaInicio
+                            }
+                        }
+                    ]
+                },
+                order: [
+                    ['fecha_inicio', 'ASC']
+                ]
+            }) as DescansoMedico[]
+
+            // console.log({ descansosExistentes })
+
+            // Si no hay solapamiento, no hay que hacer nada, se puede guardar el registro tal cual
+            if (descansosExistentes.length === 0) {
+                // console.log('no hay solapamiento')
+                return { fechaInicio, fechaFinal };
+            }
+
+            // Si hay solapamiento, ajusta las fechas
+            let fechaInicioAjustada = nuevaFechaInicio;
+            let fechaFinalAjustada = nuevaFechaFinal;
+
+            // Ordena los descansos existentes por fecha de inicio para procesarlos en orden
+            // descansosExistentes.sort((a, b) => new Date(a.fecha_inicio) - new Date(b.fecha_inicio));
+
+            // Procesa cada solapamiento y ajusta las fechas del nuevo registro
+            for (const descanso of descansosExistentes) {
+                // Se verifica que las fechas existan antes de convertirlas a tipo Date
+                const fechaInicioExistente = descanso.fecha_inicio ? new Date(descanso.fecha_inicio) : null;
+                const fechaFinalExistente = descanso.fecha_final ? new Date(descanso.fecha_final) : null;
+
+                // Continúa con la lógica solo si las fechas existen
+                if (fechaInicioExistente && fechaFinalExistente) {
+                    // Caso 1: Nuevo descanso totalmente cubierto por uno existente
+                    if (fechaInicioAjustada >= fechaInicioExistente && fechaFinalAjustada <= fechaFinalExistente) {
+                        // console.log('aa')
+                        return null;
+                    }
+
+                    // Caso 2: El nuevo descanso se solapa al inicio
+                    if (fechaInicioAjustada >= fechaInicioExistente && fechaInicioAjustada <= fechaFinalExistente) {
+                        // console.log('bb')
+                        fechaInicioAjustada = new Date(fechaFinalExistente);
+                        fechaInicioAjustada.setDate(fechaInicioAjustada.getDate() + 1);
+                    }
+
+                    // Caso 3: El nuevo descanso se solapa al final
+                    if (fechaFinalAjustada >= fechaInicioExistente && fechaFinalAjustada <= fechaFinalExistente) {
+                        // console.log('cc')
+                        fechaFinalAjustada = new Date(fechaInicioExistente);
+                        fechaFinalAjustada.setDate(fechaFinalAjustada.getDate() - 1);
+                    }
+                }
+            }
+
+            // Si las fechas ajustadas son válidas (fecha de inicio es anterior a la fecha de finalización), devuélvelas
+            if (fechaInicioAjustada <= fechaFinalAjustada) {
+                // console.log('dd')
+                return {
+                    fechaInicio: fechaInicioAjustada.toISOString().split('T')[0],
+                    fechaFinal: fechaFinalAjustada.toISOString().split('T')[0]
+                };
+            } else {
+                // console.log('ee')
+                return null; // El ajuste resultó en un período inválido, lo que implica solapamiento total
+            }
+        } catch (error) {
+            // console.log('ff')
+            console.error("Error al validar y ajustar descanso médico:", error);
+            return null
         }
     }
 }

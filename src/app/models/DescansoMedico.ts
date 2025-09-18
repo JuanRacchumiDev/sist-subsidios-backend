@@ -6,6 +6,7 @@ import { TipoDescansoMedico } from './TipoDescansoMedico';
 import { TipoContingencia } from './TipoContingencia';
 import { Diagnostico } from './Diagnostico';
 import sequelize from '../../config/database'
+import { Adjunto } from './Adjunto';
 
 interface DescansoMedicoCreationAttributes extends Optional<IDescansoMedico, 'id'> { }
 
@@ -62,6 +63,7 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public getTipoDescansoMedico!: () => Promise<TipoDescansoMedico>
     public getTipoContingencia!: () => Promise<TipoContingencia>
     public getDiagnostico!: () => Promise<Diagnostico>
+    public getAdjuntos?: () => Promise<Adjunto[]>
 }
 
 DescansoMedico.init({
@@ -234,6 +236,11 @@ DescansoMedico.init({
         defaultValue: false
     },
     is_acepta_responsabilidad: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    is_acepta_politica: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false

@@ -67,6 +67,7 @@ const setupDatabase = async () => {
         // Canje.hasOne(DescansoMedico, { foreignKey: 'id_canje', as: 'descansoMedico' })
         // Canje.belongsTo(Reembolso, { foreignKey: 'id_reembolso', as: 'reembolso' })
         Canje.hasMany(Adjunto, { foreignKey: 'id_canje', as: 'adjuntos' })
+        Canje.belongsTo(DescansoMedico, { foreignKey: 'id_descansomedico', as: 'descansoMedico' })
 
         Cobro.hasOne(Reembolso, { foreignKey: 'id_cobro', as: 'reembolso' })
         Cobro.hasMany(Adjunto, { foreignKey: 'id_cobro', as: 'adjuntos' })

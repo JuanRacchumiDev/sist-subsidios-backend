@@ -56,7 +56,7 @@ class CreateDescansoService {
      * @returns {Promise<ResponseTransaction>} La respuesta de la operación.
      */
     async execute(data: IDescansoMedico): Promise<DescansoMedicoResponse> {
-        console.log('data new descanso médico', data)
+        // console.log('data new descanso médico', data)
 
         const {
             id_colaborador,
@@ -104,15 +104,15 @@ class CreateDescansoService {
         // const { nombre: nombreDiagnostico } = dataDiagnostico as IDiagnostico
 
         // Lógica para obtener y validar el total de días acumulados
-        const totalDiasResponse = await this.descansoMedicoRepository.getTotalDiasByColaborador(id_colaborador)
+        const responseTotalDias = await this.descansoMedicoRepository.getTotalDiasByColaborador(id_colaborador)
 
-        console.log('console log totalDiasResponse')
-        console.log({ totalDiasResponse })
+        // console.log('console log responseTotalDias')
+        // console.log({ responseTotalDias })
 
-        const { result: resultTotalDias, data: totalDiasAcumulados } = totalDiasResponse
+        const { result: resultTotalDias, data: totalDiasAcumulados } = responseTotalDias
 
         if (!resultTotalDias) {
-            console.log('aaa')
+            // console.log('aaa')
             return {
                 result: false,
                 message: 'Error al obtener los días de descanso acumulados',
@@ -120,27 +120,27 @@ class CreateDescansoService {
             };
         }
 
-        const diasAcumulados = (totalDiasAcumulados as number) || 0
+        const diasAcumulados = totalDiasAcumulados as number || 0
 
         const totalDiasWithNuevoDescanso = diasAcumulados + (total_dias as number)
 
-        console.log('console.log totalDiasWithNuevoDescanso')
-        console.log({ totalDiasWithNuevoDescanso })
+        // console.log('console.log totalDiasWithNuevoDescanso')
+        // console.log({ totalDiasWithNuevoDescanso })
 
         try {
             const startDate = parseISO(fecha_inicio as string)
             const endDate = parseISO(fecha_final as string)
 
-            console.log('startDate', startDate)
-            console.log('endDate', endDate)
+            // console.log('startDate', startDate)
+            // console.log('endDate', endDate)
 
             // Verificar si ambas fechas están en el mismo mes
             if (isSameMonth(startDate, endDate)) {
-                console.log('yyy')
+                // console.log('yyy')
                 // const newRecord = {
                 //     ...dataDM
                 // }
-                console.log('newRecord descanso médico', data)
+                // console.log('newRecord descanso médico', data)
                 // return this.descansoMedicoRepository.create(newRecord)
 
                 const responseDescansoMedico = await this.descansoMedicoRepository.create(data)
@@ -155,7 +155,7 @@ class CreateDescansoService {
 
                 const { id: idDescansoMedico } = dataDM as IDescansoMedico
 
-                console.log('idDescansoMedico nuevo registro', idDescansoMedico)
+                // console.log('idDescansoMedico nuevo registro', idDescansoMedico)
 
                 // Actualizar los documentos adjuntos, asignándoles el id de descanso médico
                 await this.adjuntoRepository.updateForCodeTemp(idDescansoMedico as string, codigo_temp as string)
@@ -180,7 +180,7 @@ class CreateDescansoService {
 
                 return responseDescansoMedico
             } else {
-                console.log('zzz')
+                // console.log('zzz')
                 // Fechas en diferentes meses, dividimos en múltiples registros
                 const recordsToCreate: IDescansoMedico[] = []
                 let currentStartDate = startDate

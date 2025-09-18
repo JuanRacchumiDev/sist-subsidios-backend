@@ -3,7 +3,7 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-console.log('variables en process.env', process.env)
+// console.log('variables en process.env', process.env)
 
 const { DB_HOST, DB_USER, DB_PASS, DB_NAME } = process.env
 

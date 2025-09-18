@@ -11,6 +11,7 @@ import { Persona } from '../../models/Persona';
 import { IUsuario } from '../../interfaces/Usuario/IUsuario';
 import { IColaborador } from '../../interfaces/Colaborador/IColaborador';
 import ColaboradorRepository from '../Colaborador/ColaboradorRepository'
+import { TCodigoTemp } from '../../types/DescansoMedico/TCodigoTemp';
 
 class AuthRepository {
     private colaboradorRepository: ColaboradorRepository
@@ -133,8 +134,6 @@ class AuthRepository {
                 }
             }
 
-            const codigo_temp: string = HString.generateRandomString(10)
-
             return {
                 result: true,
                 message: 'Inicio de sesión exitoso',
@@ -148,8 +147,7 @@ class AuthRepository {
                     slug_perfil: perfil?.nombre_url,
                     nombre_completo: nombreCompleto
                 },
-                status: 200,
-                codigo_temp
+                status: 200
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
@@ -158,7 +156,6 @@ class AuthRepository {
                 error: errorMessage,
                 token: "",
                 status: 500,
-                codigo_temp: ""
             }
         }
     }
@@ -194,6 +191,26 @@ class AuthRepository {
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async createCodigoTemp(): Promise<TCodigoTemp> {
+        try {
+            const codigo_temp: string = HString.generateRandomString(10)
+            return {
+                result: true,
+                codigo_temp,
+                error: "",
+                status: 200
+            }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return {
+                result: false,
+                codigo_temp: "",
+                error: errorMessage,
+                status: 500
+            }
         }
     }
 }

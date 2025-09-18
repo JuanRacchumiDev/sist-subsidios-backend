@@ -10,9 +10,9 @@ const getEnv = NODE_ENV || 'development'
 
 const envFilePath = path.resolve(process.cwd(), `.env.${getEnv}`)
 
-console.log({ getEnv })
+// console.log({ getEnv })
 
-console.log({ envFilePath })
+// console.log({ envFilePath })
 
 dotenv.config({ path: envFilePath })
 

@@ -218,9 +218,9 @@ class AdjuntoRepository {
 
     async updateForCodeTemp(idDescansoMedico: string, codigoTemp: string): Promise<void> {
 
-        console.log('updateForCodeTemp')
-        console.log({ idDescansoMedico })
-        console.log({ codigoTemp })
+        // console.log('updateForCodeTemp')
+        // console.log({ idDescansoMedico })
+        // console.log({ codigoTemp })
 
         try {
             const [numberOfUpdatedRows] = await Adjunto.update(
@@ -234,7 +234,7 @@ class AdjuntoRepository {
                 }
             );
 
-            console.log(`Se actualizaron ${numberOfUpdatedRows} registros.`);
+            // console.log(`Se actualizaron ${numberOfUpdatedRows} registros.`);
         } catch (error) {
             console.error('Error al actualizar los registros:', error);
         }

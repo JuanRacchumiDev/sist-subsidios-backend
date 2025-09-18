@@ -86,4 +86,24 @@ export default class HDate {
         }
     }
 
+    /**
+     * Calcula la diferencia en días entre dos fechas.
+     * @param fechaInicial La fecha inicial en formato 'yyyy-mm-dd'.
+     * @param fechaFinal La fecha final en formato 'yyyy-mm-dd'.
+     * @returns La diferencia de fechas en días.
+     */
+    static differenceDates(fechaInicial: string, fechaFinal: string): number {
+        const fecha1 = new Date(fechaInicial);
+        const fecha2 = new Date(fechaFinal);
+
+        // Calcula la diferencia en milisegundos.
+        const diferenciaMilisegundos = fecha2.getTime() - fecha1.getTime();
+
+        // Convierte los milisegundos a días.
+        const milisegundosEnUnDia = 1000 * 60 * 60 * 24;
+        const diferenciaDias = diferenciaMilisegundos / milisegundosEnUnDia;
+
+        return diferenciaDias;
+    }
+
 }
