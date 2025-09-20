@@ -16,11 +16,10 @@ class GetCobrosPaginateService {
      * Ejecuta la operación para obtener cobros paginadas
      * @param {number} page - El número de la página actual
      * @param {number} limit - El número de ítems por página
-     * @param {boolean | undefined} estado - Opcional. Filtra los cobros por su estado
      * @returns {Promise<CobroResponsePaginate>} La respuesta de obtener los cobros
      */
-    async execute(page: number, limit: number, estado?: boolean): Promise<CobroResponsePaginate> {
-        return await this.cobroRepository.getAllWithPaginate(page, limit, estado)
+    async execute(page: number, limit: number): Promise<CobroResponsePaginate> {
+        return await this.cobroRepository.getAllWithPaginate(page, limit)
     }
 }
 

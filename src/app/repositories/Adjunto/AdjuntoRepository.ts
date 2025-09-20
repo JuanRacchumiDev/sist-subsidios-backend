@@ -21,6 +21,7 @@ import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude";
 import { TRABAJADOR_SOCIAL_INCLUDE } from "../../../includes/TrabSocialInclude";
 import { DOCUMENTO_TIPO_CONT_INCLUDE } from "../../../includes/DocumentoTipoContInclude";
 import { Op } from "sequelize";
+import { COLABORADOR_ATTRIBUTES } from "../../../constants/ColaboradorConstant";
 
 class AdjuntoRepository {
     /**
@@ -53,12 +54,10 @@ class AdjuntoRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<AdjuntoResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number): Promise<AdjuntoResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
-
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
 
             const { count, rows } = await Adjunto.findAndCountAll({
                 attributes: ADJUNTO_ATTRIBUTES,
@@ -72,7 +71,6 @@ class AdjuntoRepository {
                     TRABAJADOR_SOCIAL_INCLUDE,
                     DOCUMENTO_TIPO_CONT_INCLUDE
                 ],
-                where: whereClause,
                 order: [
                     ['id', 'DESC']
                 ],
@@ -121,7 +119,11 @@ class AdjuntoRepository {
                     CANJE_INCLUDE,
                     COBRO_INCLUDE,
                     REEMBOLSO_INCLUDE,
-                    COLABORADOR_INCLUDE,
+                    {
+                        model: Colaborador,
+                        as: 'colaborador',
+                        attributes: COLABORADOR_ATTRIBUTES
+                    },
                     TRABAJADOR_SOCIAL_INCLUDE,
                     DOCUMENTO_TIPO_CONT_INCLUDE
                 ]
@@ -130,6 +132,8 @@ class AdjuntoRepository {
             if (!adjunto) {
                 return { result: false, data: [], message: 'Adjunto no encontrado', status: 404 }
             }
+
+            console.log({ adjunto })
 
             // Leer el archivo contenido desde la ruta guardada
             let fileContent: Buffer | null = null
@@ -216,12 +220,13 @@ class AdjuntoRepository {
         }
     }
 
+    /**
+     * Actualiza registros de adjuntos basados en un código temporal.
+     * @param {string} idDescansoMedico - ID del descanso médico.
+     * @param {string} codigoTemp - El código temporal usado para identificar los adjuntos.
+     * @returns {Promise<void>} Respuesta de las operaciones de la base de datos.
+     */
     async updateForCodeTemp(idDescansoMedico: string, codigoTemp: string): Promise<void> {
-
-        // console.log('updateForCodeTemp')
-        // console.log({ idDescansoMedico })
-        // console.log({ codigoTemp })
-
         try {
             const [numberOfUpdatedRows] = await Adjunto.update(
                 { id_descansomedico: idDescansoMedico }, // Valores a actualizar
@@ -264,6 +269,110 @@ class AdjuntoRepository {
         // }
     }
 
+    /**
+     * Actualiza registros de adjuntos basados en un código temporal.
+     * @param {string[]} idDescansosMedicos - Array de IDs de los descansos médicos.
+     * @param {string} codigoTemp - El código temporal usado para identificar los adjuntos.
+     * @returns {Promise<AdjuntoResponse[]>} Respuesta de las operaciones de la base de datos.
+     */
+    async updateAndCreateForCodeTemp(idDescansosMedicos: string[], codigoTemp: string): Promise<AdjuntoResponse[]> {
+        const transaction = await sequelize.transaction();
+        const results: AdjuntoResponse[] = [];
+
+        try {
+            // Buscar el adjunto original con el código temporal
+            const adjuntoOriginal = await Adjunto.findOne({
+                where: { codigo_temp: codigoTemp },
+                transaction
+            });
+
+            if (!adjuntoOriginal) {
+                await transaction.rollback();
+                console.error("No se encontró ningún adjunto con el código temporal.");
+                return [
+                    {
+                        result: false,
+                        error: "No se encontró ningún adjunto",
+                        status: 404
+                    }
+                ];
+            }
+
+            console.log({ adjuntoOriginal })
+
+            // const [numberOfUpdatedRows] = await Adjunto.update(
+            //     { id_descansomedico: idDescansoMedico }, // Valores a actualizar
+            //     // { where: { codigo_temp: codigoTemp, id_descansomedico: null } } // Condición
+            //     {
+            //         where: {
+            //             codigo_temp: codigoTemp,
+            //             // id_descansomedico: undefined
+            //         }
+            //     }
+            // );
+
+            // Actualizar el adjunto original con el primer id de descanso médico
+            // await adjuntoOriginal.update(
+            //     {
+            //         id_descansomedico: idDescansosMedicos[0],
+            //         // codigo_temp: null, // Limpiamos el código temporal para evitar duplicados
+            //     },
+            //     { transaction }
+            // );
+
+            await Adjunto.update(
+                { id_descansomedico: idDescansosMedicos[0] }, // Valores a actualizar
+                // { where: { codigo_temp: codigoTemp, id_descansomedico: null } } // Condición
+                {
+                    where: {
+                        codigo_temp: codigoTemp,
+                        // id_descansomedico: undefined
+                    }
+                }
+            )
+
+            results.push({
+                result: true,
+                message: 'Adjunto actualizado con éxito',
+                data: adjuntoOriginal,
+                status: 200
+            });
+
+            // Si hay más de un descanso médico, creamos nuevos registros
+            for (let i = 1; i < idDescansosMedicos.length; i++) {
+                const nuevoAdjunto = await Adjunto.create(
+                    {
+                        id_tipoadjunto: adjuntoOriginal.id_tipoadjunto,
+                        id_descansomedico: idDescansosMedicos[i],
+                        id_documento: adjuntoOriginal.id_documento,
+                        file_name: adjuntoOriginal.file_name,
+                        file_type: adjuntoOriginal.file_type,
+                        file_path: adjuntoOriginal.file_path,
+                        // Asignamos el resto de campos relevantes del adjunto original
+                        id_colaborador: adjuntoOriginal.id_colaborador,
+                        user_crea: adjuntoOriginal.user_crea,
+                        sistema: adjuntoOriginal.sistema,
+                        estado: adjuntoOriginal.estado,
+                    } as IAdjunto,
+                    { transaction }
+                );
+
+                results.push({
+                    result: true,
+                    message: 'Nuevo adjunto creado con éxito',
+                    data: nuevoAdjunto,
+                    status: 201
+                });
+            }
+
+            await transaction.commit();
+            return results;
+        } catch (error) {
+            await transaction.rollback();
+            console.error('Error al actualizar y/o crear adjuntos:', error);
+            return [{ result: false, error: "Error interno al procesar los adjuntos", status: 500 }];
+        }
+    }
 
     /**
      * Elimina (lógicamente) un adjunto con su ID

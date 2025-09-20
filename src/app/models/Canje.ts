@@ -12,10 +12,13 @@ export class Canje extends Model<ICanje, CanjeCreationAttributes> implements ICa
     public id_descansomedico?: string | undefined;
     public correlativo?: number | undefined;
     public codigo?: string | undefined;
+    public codigo_canje?: string | undefined;
+    public codigo_citt?: string | undefined;
     public fecha_inicio_subsidio?: string | undefined;
     public fecha_final_subsidio?: string | undefined;
     public fecha_inicio_dm?: string | undefined;
     public fecha_final_dm?: string | undefined;
+    public fecha_canje?: string | undefined;
     public fecha_maxima_canje?: string | undefined;
     public fecha_registro?: string | undefined;
     public fecha_actualiza?: string | undefined;
@@ -27,6 +30,7 @@ export class Canje extends Model<ICanje, CanjeCreationAttributes> implements ICa
     public dia_fecha_final_subsidio?: number | undefined;
     public mes_fecha_final_subsidio?: number | undefined;
     public anio_fecha_final_subsidio?: number | undefined;
+    public total_dias?: number | undefined;
     public is_reembolsable?: boolean | undefined;
     public observacion?: string | undefined;
     public mes_devengado?: string | undefined;
@@ -73,40 +77,58 @@ Canje.init({
             this.setDataValue('codigo', value ? value.trim() : undefined)
         }
     },
+    codigo_canje: {
+        type: new DataTypes.STRING(20),
+        allowNull: true,
+        set(value: string) {
+            this.setDataValue('codigo_canje', value ? value.trim() : undefined)
+        }
+    },
+    codigo_citt: {
+        type: new DataTypes.STRING(20),
+        allowNull: true,
+        set(value: string) {
+            this.setDataValue('codigo_citt', value ? value.trim() : undefined)
+        }
+    },
     fecha_inicio_subsidio: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: false
     },
     fecha_final_subsidio: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: false
     },
     fecha_inicio_dm: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: false
     },
     fecha_final_dm: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: false
     },
+    fecha_canje: {
+        type: new DataTypes.STRING(12),
+        allowNull: true
+    },
     fecha_maxima_canje: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: false
     },
     fecha_registro: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: true
     },
     fecha_actualiza: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: true
     },
     fecha_elimina: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: true
     },
     fecha_maxima_subsanar: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: true
     },
     dia_fecha_inicio_subsidio: {
@@ -130,6 +152,10 @@ Canje.init({
         allowNull: false
     },
     anio_fecha_final_subsidio: {
+        type: DataTypes.NUMBER,
+        allowNull: false
+    },
+    total_dias: {
         type: DataTypes.NUMBER,
         allowNull: false
     },

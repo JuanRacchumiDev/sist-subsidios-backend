@@ -16,11 +16,10 @@ class GetCanjesPaginateService {
      * Ejecuta la operación para obtener canjes paginadas
      * @param {number} page - El número de la página actual
      * @param {number} limit - El número de ítems por página
-     * @param {boolean | undefined} estado - Opcional. Filtra los canjes por su estado
      * @returns {Promise<CanjeResponsePaginate>} La respuesta de obtener los canjes
      */
-    async execute(page: number, limit: number, estado?: boolean): Promise<CanjeResponsePaginate> {
-        return await this.canjeRepository.getAllWithPaginate(page, limit, estado)
+    async execute(page: number, limit: number): Promise<CanjeResponsePaginate> {
+        return await this.canjeRepository.getAllWithPaginate(page, limit)
     }
 }
 

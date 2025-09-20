@@ -3,20 +3,15 @@ import CreateTipoAdjuntoService from '../services/TipoAdjunto/CreateTipoAdjunto'
 import DeleteTipoAdjuntoService from '../services/TipoAdjunto/DeleteTipoAdjunto'
 import GetTipoAdjuntoService from '../services/TipoAdjunto/GetTipoAdjunto'
 import GetTipoAdjuntosService from '../services/TipoAdjunto/GetTipoAdjuntos'
+import GetTipoAdjuntoByNombreService from '../services/TipoAdjunto/GetTipoAdjuntoByNombre'
 import UpdateTipoAdjuntoService from '../services/TipoAdjunto/UpdateTipoAdjunto'
 import { ITipoAdjunto } from '../interfaces/TipoAdjunto/ITipoAdjunto';
 
 class TipoAdjuntoController {
     async getAllTipoAdjuntos(req: Request, res: Response, next: NextFunction) {
         try {
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
+            const result = await GetTipoAdjuntosService.execute()
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
-
-            const result = await GetTipoAdjuntosService.execute(estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error) // Pasa al error al middleware de manejo de errores
@@ -30,6 +25,27 @@ class TipoAdjuntoController {
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);
+        }
+    }
+
+    async getTipoAdjuntoByNombre(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { query: { nombre } } = req
+
+            if (!nombre) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'El nombre es requerido como parámetro de consulta'
+                    }
+                );
+            }
+
+            const result = await GetTipoAdjuntoByNombreService.execute(nombre as string);
+
+            res.status(result.status || 200).json(result);
+        } catch (error) {
+            next(error)
         }
     }
 

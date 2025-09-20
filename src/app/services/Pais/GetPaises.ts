@@ -14,13 +14,9 @@ class GetPaisesServixe {
 
     /**
      * Ejecuta la operación para obtener países
-     * @param {boolean | undefined} estado - Opcional. Filtra los países por su estado
      * @returns {Promise<PaisResponse>} La respuesta de obtener los países
      */
-    async execute(estado?: boolean): Promise<PaisResponse> {
-        // if (typeof estado === 'boolean') {
-        //     return await PaisRepository.getAllByEstado(estado)
-        // }
+    async execute(): Promise<PaisResponse> {
         return await this.paisRepository.getAll()
     }
 }

@@ -16,11 +16,10 @@ class GetColaboradoresPaginateService {
      * Ejecuta la operación para obtener colaboradores paginadas
      * @param {number} page - El número de la página actual
      * @param {number} limit - El número de ítems por página
-     * @param {boolean | undefined} estado - Opcional. Filtra los colaboradores por su estado
      * @returns {Promise<ColaboradorResponsePaginate>} La respuesta de obtener los colaboradores
      */
-    async execute(page: number, limit: number, estado?: boolean): Promise<ColaboradorResponsePaginate> {
-        return await this.colaboradorRepository.getAllWithPaginate(page, limit, estado)
+    async execute(page: number, limit: number): Promise<ColaboradorResponsePaginate> {
+        return await this.colaboradorRepository.getAllWithPaginate(page, limit)
     }
 }
 

@@ -10,14 +10,8 @@ import { IPais } from '../interfaces/Pais/IPais';
 class PaisController {
     async getAllPaises(req: Request, res: Response, next: NextFunction) {
         try {
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
+            const result = await GetPaisesService.execute()
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
-
-            const result = await GetPaisesService.execute(estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error) // Pasa al error al middleware de manejo de errores
@@ -37,10 +31,19 @@ class PaisController {
     async getPaisByNombre(req: Request, res: Response, next: NextFunction) {
         try {
             const { nombre } = req.query; // Asumiendo que se pasa como query param
+
             if (typeof nombre !== 'string') {
-                return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'El nombre es requerido como parámetro de consulta',
+                        status: 400
+                    }
+                );
             }
+
             const result = await GetByNombreService.execute(nombre);
+
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

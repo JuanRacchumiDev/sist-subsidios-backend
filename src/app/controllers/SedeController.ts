@@ -10,14 +10,8 @@ import { ISede } from '../interfaces/Sede/ISede';
 class SedeController {
     async getAllSedes(req: Request, res: Response, next: NextFunction) {
         try {
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
+            const result = await GetSedesService.execute()
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
-
-            const result = await GetSedesService.execute(estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error) // Pasa al error al middleware de manejo de errores

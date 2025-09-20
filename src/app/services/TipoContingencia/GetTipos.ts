@@ -14,14 +14,9 @@ class GetTiposService {
 
     /**
      * Ejecuta la operación para obtener tipo de contingencias
-     * @param {boolean | undefined} estado - Opcional. Filtra los tipo de contigencias por su estado
      * @returns {Promise<TipoContingenciaResponse>} La respuesta de obtener los tipo de contingencias
      */
-    async execute(estado?: boolean): Promise<TipoContingenciaResponse> {
-        // if (typeof estado === 'boolean') {
-        //     return await TipoContingenciaRepository.getAllByEstado(estado)
-        // }
-
+    async execute(): Promise<TipoContingenciaResponse> {
         return await this.tipoContingenciaRepository.getAll()
     }
 }

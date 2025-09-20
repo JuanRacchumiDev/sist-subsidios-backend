@@ -14,10 +14,9 @@ class GetRepresentantesService {
 
     /**
      * Ejecuta la operación para obtener representantes legales
-     * @param {boolean | undefined} estado - Opcional. Filtra los representantes legales por su estado
      * @returns {Promise<RepresentanteLegalResponse>} La respuesta de obtener los representantes legales
      */
-    async execute(estado?: boolean): Promise<RepresentanteLegalResponse> {
+    async execute(): Promise<RepresentanteLegalResponse> {
         return await this.representanteRepository.getAll()
     }
 }

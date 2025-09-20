@@ -11,14 +11,8 @@ import { IPerfil } from '../interfaces/Perfil/IPerfil';
 class PerfilController {
     async getAllPerfiles(req: Request, res: Response, next: NextFunction) {
         try {
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
+            const result = await GetPerfilesService.execute()
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
-
-            const result = await GetPerfilesService.execute(estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error) // Pasa al error al middleware de manejo de errores
@@ -28,15 +22,11 @@ class PerfilController {
     async getAllPerfilesPaginated(req: Request, res: Response, next: NextFunction) {
         try {
             const page = parseInt(req.query.page as string) || 1
+
             const limit = parseInt(req.query.limit as string) || 10
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
+            const result = await GetPerfilesPaginateService.execute(page, limit)
 
-            const result = await GetPerfilesPaginateService.execute(page, limit, estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)
@@ -55,11 +45,21 @@ class PerfilController {
 
     async getPerfilByNombre(req: Request, res: Response, next: NextFunction) {
         try {
-            const { nombre } = req.query; // Asumiendo que se pasa como query param
-            if (typeof nombre !== 'string') {
-                return res.status(400).json({ result: false, message: 'El nombre es requerido como parámetro de consulta', status: 400 });
+            const { query: { nombre } } = req
+
+            if (!nombre) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'El nombre es requerido como parámetro de consulta',
+                        status: 400
+                    }
+                );
             }
-            const result = await GetByNombreService.execute(nombre);
+
+            const nombreStr = nombre as string
+
+            const result = await GetByNombreService.execute(nombreStr);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

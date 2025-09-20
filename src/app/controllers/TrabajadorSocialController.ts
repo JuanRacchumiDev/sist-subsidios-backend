@@ -10,14 +10,8 @@ import { ITrabajadorSocial } from "../interfaces/TrabajadorSocial/ITrabajadorSoc
 class TrabajadorSocialController {
     async getTrabajadoresSociales(req: Request, res: Response, next: NextFunction) {
         try {
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
+            const result = await GetTrabajadoresSocialesService.execute()
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
-
-            const result = await GetTrabajadoresSocialesService.execute(estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)
@@ -27,7 +21,9 @@ class TrabajadorSocialController {
     async getTrabajadorSocialById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
+
             const result = await GetTrabajadorSocialService.execute(id);
+
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

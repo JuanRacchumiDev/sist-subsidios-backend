@@ -12,14 +12,8 @@ import { IColaborador } from "../interfaces/Colaborador/IColaborador";
 class ColaboradorController {
     async getColaboradores(req: Request, res: Response, next: NextFunction) {
         try {
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
+            const result = await GetColaboradoresService.execute()
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
-
-            const result = await GetColaboradoresService.execute(estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)
@@ -29,15 +23,11 @@ class ColaboradorController {
     async getAllColaboradoresPaginated(req: Request, res: Response, next: NextFunction) {
         try {
             const page = parseInt(req.query.page as string) || 1
+
             const limit = parseInt(req.query.limit as string) || 10
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
+            const result = await GetColaboradoresPaginateService.execute(page, limit)
 
-            const result = await GetColaboradoresPaginateService.execute(page, limit, estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)
@@ -47,7 +37,9 @@ class ColaboradorController {
     async getColaboradorById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
+
             const result = await GetColaboradorService.execute(id);
+
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

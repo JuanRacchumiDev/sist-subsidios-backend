@@ -10,14 +10,8 @@ import { ICobro } from '../interfaces/Cobro/ICobro';
 class CobroController {
     async getAllCobros(req: Request, res: Response, next: NextFunction) {
         try {
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
+            const result = await GetCobrosService.execute()
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
-
-            const result = await GetCobrosService.execute(estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error) // Pasa al error al middleware de manejo de errores
@@ -27,15 +21,11 @@ class CobroController {
     async getAllCobrosPaginated(req: Request, res: Response, next: NextFunction) {
         try {
             const page = parseInt(req.query.page as string) || 1
+
             const limit = parseInt(req.query.limit as string) || 10
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
+            const result = await GetCobrosPaginateService.execute(page, limit)
 
-            const result = await GetCobrosPaginateService.execute(page, limit, estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

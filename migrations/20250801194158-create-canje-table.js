@@ -34,6 +34,14 @@ module.exports = {
         type: Sequelize.STRING(20),
         allowNull: true
       },
+      codigo_canje: {
+        type: Sequelize.STRING(20),
+        allowNull: true
+      },
+      codigo_citt: {
+        type: Sequelize.STRING(20),
+        allowNull: true
+      },
       fecha_inicio_subsidio: {
         type: Sequelize.STRING(12),
         allowNull: false
@@ -47,6 +55,10 @@ module.exports = {
         allowNull: false
       },
       fecha_final_dm: {
+        type: Sequelize.STRING(12),
+        allowNull: false
+      },
+      fecha_canje: {
         type: Sequelize.STRING(12),
         allowNull: false
       },
@@ -91,6 +103,10 @@ module.exports = {
         allowNull: false
       },
       anio_fecha_final_subsidio: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      total_dias: {
         type: Sequelize.INTEGER,
         allowNull: false
       },

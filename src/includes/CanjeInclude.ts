@@ -16,7 +16,7 @@ export const CANJE_INCLUDE = {
         'fecha_registro',
         'is_reembolsable',
         'mes_devengado',
-        'estado_registrado',
+        'estado_registro',
         'sistema',
         'estado'
     ]

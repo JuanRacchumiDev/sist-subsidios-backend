@@ -14,13 +14,9 @@ class GetCargosService {
 
     /**
      * Ejecuta la operación para obtener cargos
-     * @param {boolean | undefined} estado - Opcional. Filtra los cargos por su estado
      * @returns {Promise<CargoResponse>} La respuesta de obtener los cargos
      */
-    async execute(estado?: boolean): Promise<CargoResponse> {
-        // if (typeof estado === 'boolean') {
-        //     return await CargoRepository.getAllByEstado(estado)
-        // }
+    async execute(): Promise<CargoResponse> {
         return await this.cargoRepository.getAll()
     }
 }

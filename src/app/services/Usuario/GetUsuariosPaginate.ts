@@ -16,11 +16,10 @@ class GetUsuariosPaginateService {
      * Ejecuta la operación para obtener usuarios paginadas
      * @param {number} page - El número de la página actual
      * @param {number} limit - El número de ítems por página
-     * @param {boolean | undefined} estado - Opcional. Filtra los usuarios por su estado
      * @returns {Promise<UsuarioResponsePaginate>} La respuesta de obtener los usuarios
      */
-    async execute(page: number, limit: number, estado?: boolean): Promise<UsuarioResponsePaginate> {
-        return await this.usuarioRepository.getAllWithPaginate(page, limit, estado)
+    async execute(page: number, limit: number): Promise<UsuarioResponsePaginate> {
+        return await this.usuarioRepository.getAllWithPaginate(page, limit)
     }
 }
 

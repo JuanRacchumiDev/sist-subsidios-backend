@@ -30,10 +30,13 @@ export default class HDate {
     /**
    * Suma días a una fecha en formato string y devuelve un string.
    * @param {string} dateString - La fecha original en formato 'YYYY-MM-DD'.
-   * @param {number} daysToAdd - El número de días a sumar.
+   * @param {number} dias - El número de días a sumar.
    * @returns {string} La nueva fecha en formato 'YYYY-MM-DD'.
    */
     static addDaysToDate(dateString: string, dias: number): string {
+        console.log('----------------------');
+        console.log('addDaysToDate')
+        console.log({ dateString })
         const date = new Date(dateString)
         const newDate = addDays(date, dias)
         return format(newDate, 'yyyy-MM-dd')

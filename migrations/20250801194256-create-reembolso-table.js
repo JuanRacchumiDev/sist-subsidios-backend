@@ -32,11 +32,23 @@ module.exports = {
       },
       codigo: {
         type: Sequelize.STRING(20),
-        allowNull: false
+        allowNull: true
+      },
+      codigo_reembolso: {
+        type: Sequelize.STRING(30),
+        allowNull: true
+      },
+      numero_expediente: {
+        type: Sequelize.STRING(30),
+        allowNull: true
       },
       fecha_registro: {
         type: Sequelize.STRING(12),
         allowNull: false
+      },
+      fecha_reembolso: {
+        type: Sequelize.STRING(12),
+        allowNull: true
       },
       fecha_maxima_reembolso: {
         type: Sequelize.STRING(12),

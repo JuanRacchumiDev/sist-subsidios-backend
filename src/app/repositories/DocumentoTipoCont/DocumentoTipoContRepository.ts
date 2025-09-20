@@ -31,19 +31,16 @@ class DocumentoTipoContRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<DocumentoTipoContResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number): Promise<DocumentoTipoContResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
-
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
 
             const { count, rows } = await DocumentoTipoCont.findAndCountAll({
                 attributes: DOCUMENTO_TIPO_CONT_ATTRIBUTES,
                 include: [
                     TIPO_CONTINGENCIA_INCLUDE
                 ],
-                where: whereClause,
                 order: [
                     ['nombre', 'ASC']
                 ],

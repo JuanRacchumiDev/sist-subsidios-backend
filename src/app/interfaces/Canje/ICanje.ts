@@ -6,10 +6,13 @@ export interface ICanje {
     id_descansomedico?: string
     correlativo?: number
     codigo?: string
+    codigo_canje?: string
+    codigo_citt?: string
     fecha_inicio_subsidio?: string
     fecha_final_subsidio?: string
     fecha_inicio_dm?: string
     fecha_final_dm?: string
+    fecha_canje?: string
     fecha_maxima_canje?: string
     fecha_registro?: string
     fecha_actualiza?: string
@@ -21,6 +24,7 @@ export interface ICanje {
     dia_fecha_final_subsidio?: number
     mes_fecha_final_subsidio?: number
     anio_fecha_final_subsidio?: number
+    total_dias?: number
     is_reembolsable?: boolean
     observacion?: string
     mes_devengado?: string

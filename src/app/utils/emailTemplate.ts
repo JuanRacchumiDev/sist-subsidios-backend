@@ -1,4 +1,5 @@
-import { TDetalleEmail } from "../types/DescansoMedico/TDetalleEmail";
+import { TDetalleEmail as TDetalleDescansoEmail } from "../types/DescansoMedico/TDetalleEmail";
+import { TDetalleEmail as TDetalleCanjeEmail } from "../types/Canje/TDetalleEmail";
 
 export function newUserNotificationTemplate(
   data: {
@@ -62,10 +63,10 @@ export function newNotificationDescansoMedico(
   `;
 }
 
-export function notificationIncorrectoDescansoMedico(
+export function notificationDescansoMedicoIncorrecto(
   data: {
     nombreCompleto: string;
-    detalle: TDetalleEmail
+    detalle: TDetalleDescansoEmail
     appUrl: string,
   }): string {
   return `
@@ -85,6 +86,46 @@ export function notificationIncorrectoDescansoMedico(
           <p style="font-size: 16px; color: #4a5568;">Fecha inicio: <strong>${data.detalle.fecha_inicio}</strong></p>
           <p style="font-size: 16px; color: #4a5568;">Fecha final: <strong>${data.detalle.fecha_final}</strong></p>
           <p style="font-size: 16px; color: #4a5568;">Observación: <strong>${data.detalle.observacion}</strong></p>
+          <p style="font-size: 16px; color: #4a5568;">Gracias</p>
+          <p style="font-size: 16px; color: #4a5568;">Saludos,</p>
+          <p style="font-size: 16px; color: #4a5568;">Equipo de Subsidios</p>
+          
+          <div style="text-align: center; margin-top: 32px;">
+            <a href="${data.appUrl}" style="background-color: #48bb78; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Acceder a la plataforma</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+export function notificationCanjeObservado(
+  data: {
+    nombreCompleto: string;
+    detalle: TDetalleCanjeEmail
+    appUrl: string,
+  }): string {
+  return `
+    <div style="font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); overflow: hidden;">
+        <div style="background-color: #4a5568; padding: 24px;">
+          <h1 style="color: #ffffff; font-size: 24px; font-weight: bold; text-align: center; margin: 0;">¡Bienvenido(a) a la plataforma!</h1>
+        </div>
+        <div style="padding: 24px;">
+          <p style="font-size: 16px; color: #4a5568;">Estimado colaborador, <strong>${data.nombreCompleto}</strong>,</p>
+          <p style="font-size: 16px; color: #4a5568;">La documentación agregada del siguiente canje, está observada. Por favor subsanar en el menor tiempo posible</p>
+          <p style="font-size: 16px; color: #4a5568;">A continuación se detalle el canje</p>
+          <p style="font-size: 16px; color: #4a5568;">Fecha inicio subsidio: <strong>${data.detalle.fecha_inicio_subsidio}</strong></p>
+          <p style="font-size: 16px; color: #4a5568;">Fecha final subsidio: <strong>${data.detalle.fecha_final_subsidio}</strong></p>
+          <p style="font-size: 16px; color: #4a5568;">Observación: <strong>${data.detalle.observacion}</strong></p>
+          
+          <p style="font-size: 16px; color: #4a5568;">Fecha inicio descanso médico: <strong>${data.detalle.descansoMedico?.fecha_inicio}</strong></p>
+          <p style="font-size: 16px; color: #4a5568;">Fecha final descanso médico: <strong>${data.detalle.descansoMedico?.fecha_final}</strong></p>
+          <p style="font-size: 16px; color: #4a5568;">Tipo de descanso médico: <strong>${data.detalle.descansoMedico?.nombre_tipodescansomedico}</strong></p>
+          <p style="font-size: 16px; color: #4a5568;">Tipo de contingencia: <strong>${data.detalle.descansoMedico?.nombre_tipocontingencia}</strong></p>
+          <p style="font-size: 16px; color: #4a5568;">Diagnóstico: <strong>${data.detalle.descansoMedico?.nombre_diagnostico}</strong></p>
+          <p style="font-size: 16px; color: #4a5568;">Establecimiento: <strong>${data.detalle.descansoMedico?.nombre_establecimiento}</strong></p>
+          
           <p style="font-size: 16px; color: #4a5568;">Gracias</p>
           <p style="font-size: 16px; color: #4a5568;">Saludos,</p>
           <p style="font-size: 16px; color: #4a5568;">Equipo de Subsidios</p>

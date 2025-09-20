@@ -14,14 +14,9 @@ class GetSedesService {
 
     /**
      * Ejecuta la operación para obtener sedes
-     * @param {boolean | undefined} estado - Opcional. Filtra los perfiles por su estado
      * @returns {Promise<PerfilResponse>} La respuesta de obtener los perfiles
      */
-    async execute(estado?: boolean): Promise<PerfilResponse> {
-        // if (typeof estado === 'boolean') {
-        //     return await PerfilRepository.getAllByEstado(estado)
-        // }
-
+    async execute(): Promise<PerfilResponse> {
         return await this.perfilRepository.getAll()
     }
 }

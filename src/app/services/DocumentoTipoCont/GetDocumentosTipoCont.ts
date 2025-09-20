@@ -14,13 +14,9 @@ class GetDocumentosTipoContService {
 
     /**
      * Ejecuta la operación para obtener documentos
-     * @param {boolean | undefined} estado - Opcional. Filtra los documentos por su estado
      * @returns {Promise<DocumentoTipoContResponse>} La respuesta de obtener los documentos
      */
-    async execute(estado?: boolean): Promise<DocumentoTipoContResponse> {
-        // if (typeof estado === 'boolean') {
-        //     return await DocumentoTipoContRepository.getal(estado)
-        // }
+    async execute(): Promise<DocumentoTipoContResponse> {
         return await this.documentoTipoContRepository.getAll()
     }
 }

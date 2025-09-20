@@ -16,11 +16,10 @@ class GetDescansosPaginateService {
      * Ejecuta la operación para obtener descansos médicos paginadas
      * @param {number} page - El número de la página actual
      * @param {number} limit - El número de ítems por página
-     * @param {boolean | undefined} estado - Opcional. Filtra los descansos médicos por su estado
      * @returns {Promise<DescansoMedicoResponsePaginate>} La respuesta de obtener los descansos médicos
      */
-    async execute(page: number, limit: number, estado?: boolean): Promise<DescansoMedicoResponsePaginate> {
-        return await this.descansoMedicoRepository.getAllWithPaginate(page, limit, estado)
+    async execute(page: number, limit: number): Promise<DescansoMedicoResponsePaginate> {
+        return await this.descansoMedicoRepository.getAllWithPaginate(page, limit)
     }
 }
 

@@ -56,7 +56,7 @@ class CreateDescansoService {
      * @returns {Promise<ResponseTransaction>} La respuesta de la operación.
      */
     async execute(data: IDescansoMedico): Promise<DescansoMedicoResponse> {
-        // console.log('data new descanso médico', data)
+        console.log('data new descanso médico', data)
 
         const {
             id_colaborador,
@@ -65,7 +65,6 @@ class CreateDescansoService {
             codcie10_diagnostico,
             fecha_inicio,
             fecha_final,
-            total_dias,
             codigo_temp
         } = data
 
@@ -103,30 +102,6 @@ class CreateDescansoService {
 
         // const { nombre: nombreDiagnostico } = dataDiagnostico as IDiagnostico
 
-        // Lógica para obtener y validar el total de días acumulados
-        const responseTotalDias = await this.descansoMedicoRepository.getTotalDiasByColaborador(id_colaborador)
-
-        // console.log('console log responseTotalDias')
-        // console.log({ responseTotalDias })
-
-        const { result: resultTotalDias, data: totalDiasAcumulados } = responseTotalDias
-
-        if (!resultTotalDias) {
-            // console.log('aaa')
-            return {
-                result: false,
-                message: 'Error al obtener los días de descanso acumulados',
-                status: 422
-            };
-        }
-
-        const diasAcumulados = totalDiasAcumulados as number || 0
-
-        const totalDiasWithNuevoDescanso = diasAcumulados + (total_dias as number)
-
-        // console.log('console.log totalDiasWithNuevoDescanso')
-        // console.log({ totalDiasWithNuevoDescanso })
-
         try {
             const startDate = parseISO(fecha_inicio as string)
             const endDate = parseISO(fecha_final as string)
@@ -136,6 +111,7 @@ class CreateDescansoService {
 
             // Verificar si ambas fechas están en el mismo mes
             if (isSameMonth(startDate, endDate)) {
+                console.log('fechas en el mismo mes')
                 // console.log('yyy')
                 // const newRecord = {
                 //     ...dataDM
@@ -180,17 +156,27 @@ class CreateDescansoService {
 
                 return responseDescansoMedico
             } else {
+                console.log('fechas en diferentes meses')
                 // console.log('zzz')
                 // Fechas en diferentes meses, dividimos en múltiples registros
                 const recordsToCreate: IDescansoMedico[] = []
                 let currentStartDate = startDate
+                let idDescansoMedico: string = ""
 
                 while (currentStartDate <= endDate) {
+                    console.log({ currentStartDate })
+                    console.log({ endDate })
+
                     let currentEndDate = endOfMonth(currentStartDate)
+                    console.log('currentEndDate inicial')
+                    console.log({ currentEndDate })
 
                     if (currentEndDate > endDate) {
                         currentEndDate = endDate
                     }
+
+                    console.log('currentEndDate final')
+                    console.log({ currentEndDate })
 
                     const newRecord = {
                         ...data,
@@ -200,6 +186,8 @@ class CreateDescansoService {
                     }
 
                     recordsToCreate.push(newRecord)
+
+                    console.log({ recordsToCreate })
 
                     currentStartDate = addMonths(startOfMonth(currentStartDate), 1)
                 }
@@ -211,6 +199,37 @@ class CreateDescansoService {
                 const allSuccessful = results.every(res => res.result);
 
                 if (allSuccessful) {
+
+                    // Obtener los IDs de los descansos médicos creados
+                    const createIds = results
+                        .filter(res => res.data && 'id' in res.data)
+                        .map(res => (res.data as IDescansoMedico).id as string)
+
+                    console.log("IDs de los descansos médicos creados: ", createIds)
+
+                    // Actualizar los documentos adjuntos, asignándoles el id de descanso médico
+                    // await this.adjuntoRepository.updateForCodeTemp(idDescansoMedico as string, codigo_temp as string)
+                    await this.adjuntoRepository.updateAndCreateForCodeTemp(createIds, codigo_temp as string)
+
+                    // Envío correo de notificación
+                    const dataEmail = {
+                        nombreCompleto: nombreColaborador,
+                        appUrl: process.env.APP_URL || 'http://localhost:3000',
+                    }
+
+                    const mailOptions = {
+                        from: process.env.EMAIL_USER_GMAIL,
+                        to: correo_personal,
+                        subject: '¡REGISTRO DE NUEVO DESCANSO MÉDICO',
+                        html: newNotificationDescansoMedico(dataEmail)
+                    }
+
+                    const responseEmail = await transporter.sendMail(mailOptions);
+                    console.log(`Correo de bienvenida enviado a ${nombreColaborador}`);
+
+                    console.log({ responseEmail })
+
+
                     return {
                         result: true,
                         message: 'Descanso médico registrado con éxito en múltiples registros',
@@ -225,7 +244,6 @@ class CreateDescansoService {
                         status: 500,
                     };
                 }
-
             }
 
         } catch (error) {

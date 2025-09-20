@@ -17,6 +17,7 @@ import { DIAGNOSTICO_INCLUDE } from "../../../includes/DiagnosticoInclude";
 import { Op, Sequelize } from 'sequelize';
 import HDate from "../../../helpers/HDate"
 import { ADJUNTO_INCLUDE } from "../../../includes/AdjuntoInclude";
+import { EDescansoMedico } from "../../enums/EDescansoMedico";
 
 class DescansoMedicoRepository {
     /**
@@ -185,15 +186,64 @@ class DescansoMedicoRepository {
      */
     async getTotalDiasByColaborador(idColaborador: string): Promise<TTotalDias> {
         try {
-            const result = await DescansoMedico.sum('total_dias', {
+            const descansosMedicos = await DescansoMedico.findAll({
                 where: {
-                    id_colaborador: idColaborador
-                }
-            })
+                    id_colaborador: idColaborador,
+                    estado_registro: EDescansoMedico.REGISTRO_EXITOSO
+                },
+                order: [
+                    ['fecha_inicio', 'ASC']
+                ]
+            });
+
+            // Suma los 'total_dias' de los resultados obtenidos
+            const totalDias = descansosMedicos.reduce((sum, dm) => {
+                return sum + Number(dm.total_dias)
+            }, 0)
 
             // console.log('result días registrados', result)
 
-            const totalDias = result || 0
+            // const totalDias = result || 0
+
+            return { result: true, data: totalDias, status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            return { result: false, error: errorMessage, status: 500 };
+        }
+    }
+
+    /**
+     * Calcula el total de días de descansos médicos para un colaborador
+     * @param {string} idColaborador - El ID del colaborador a buscar
+     * @param {string} idDescansoMedico - El ID del descanso médico a no considerar a buscar
+     * @return {Promise<TTotalDias>} La suma de días acumulados
+     */
+    async getTotalDiasByColaboradorWithoutIdDescanso(
+        idColaborador: string,
+        idDescansoMedico: string
+    ): Promise<TTotalDias> {
+        try {
+            const descansosMedicos = await DescansoMedico.findAll({
+                where: {
+                    id_colaborador: idColaborador,
+                    estado_registro: EDescansoMedico.REGISTRO_EXITOSO,
+                    id: {
+                        [Op.ne]: idDescansoMedico
+                    }
+                },
+                order: [
+                    ['fecha_inicio', 'ASC']
+                ]
+            });
+
+            // Suma los 'total_dias' de los resultados obtenidos
+            const totalDias = descansosMedicos.reduce((sum, dm) => {
+                return sum + Number(dm.total_dias)
+            }, 0)
+
+            // console.log('result días registrados', result)
+
+            // const totalDias = result || 0
 
             return { result: true, data: totalDias, status: 200 }
         } catch (error) {
@@ -281,9 +331,17 @@ class DescansoMedicoRepository {
             // Sumar 1 día a la fecha final del descanso anterior
             const diaSiguiente = addDays(fechaFinalAnterior, 1);
 
+            console.log('fechaFinalAnterior', fechaFinalAnterior)
+            console.log('fechaInicioNueva', fechaInicioNueva)
+            console.log('diaSiguiente', diaSiguiente)
+            console.log('fechaInicioNueva.getTime()', fechaInicioNueva.getTime())
+            console.log('diaSiguiente.getTime()', diaSiguiente.getTime())
+
             // Comparar si la nueva fecha de inicio es igual al día siguiente de la fecha final anterior.
             // Para la comparación, solo nos interesa la fecha, no la hora, lo cual parseISO ya maneja.
             const esMismoDia = fechaInicioNueva.getTime() === diaSiguiente.getTime();
+
+            console.log({ esMismoDia })
 
             return esMismoDia;
         } catch (error) {
@@ -300,6 +358,8 @@ class DescansoMedicoRepository {
      */
     async create(data: IDescansoMedico): Promise<DescansoMedicoResponse> {
         const { id_colaborador, fecha_inicio, fecha_final } = data
+        console.log('fecha_inicio create data one descanso', fecha_inicio)
+        console.log('fecha_final create data one descanso', fecha_final)
 
         const esContinuo = await this.isDescansoConsecutivo(id_colaborador!, fecha_inicio!)
 
@@ -318,6 +378,8 @@ class DescansoMedicoRepository {
             }
         }
 
+        console.log({ resultValidateFechas })
+
         const { fechaInicio, fechaFinal } = resultValidateFechas
 
         data.fecha_otorgamiento = fechaInicio
@@ -326,18 +388,21 @@ class DescansoMedicoRepository {
 
         data.fecha_final = fechaFinal
 
-        data.total_dias = HDate.differenceDates(fechaInicio, fechaFinal)
+        data.total_dias = HDate.differenceDates(fechaInicio, fechaFinal) + 1
 
-        // Obteniendo fecha de inicio, mes y año de fecha de inicio y fecha final
-        // const [anioFechaInicio, mesFechaInicio, diaFechaInicio] = fecha_inicio?.split("-") as string[]
-        // const [anioFechaFinal, mesFechaFinal, diaFechaFinal] = fecha_final?.split("-") as string[]
+        const [
+            anioFechaInicio,
+            mesFechaInicio,
+            diaFechaInicio
+        ] = (fechaInicio as string).split("-") as string[]
 
-        const [anioFechaInicio, mesFechaInicio, diaFechaInicio] = (fechaInicio as string).split("-") as string[]
-
-        const [anioFechaFinal, mesFechaFinal, diaFechaFinal] = (fechaFinal as string).split("-") as string[]
+        const [
+            anioFechaFinal,
+            mesFechaFinal,
+            diaFechaFinal
+        ] = (fechaFinal as string).split("-") as string[]
 
         // Obtener el mes de devengado
-        // const monthName = HDate.getMonthName(fecha_final as string)
         const monthName = HDate.getMonthName(fechaFinal as string)
 
         const payload: IDescansoMedico = {
@@ -404,22 +469,34 @@ class DescansoMedicoRepository {
         // console.log('registros para crear descansos', dataArray)
 
         try {
+            console.log('dataArray createMuliple descansos médicos')
+            console.log({ dataArray })
+
             for (const data of dataArray) {
                 const { id_colaborador, fecha_inicio, fecha_final } = data
-
+                console.log({ fecha_inicio })
+                console.log({ fecha_final })
                 const esContinuo = await this.isDescansoConsecutivo(id_colaborador!, fecha_inicio!)
 
                 // console.log({ esContinuo })
 
                 // Obteniendo fecha de inicio, mes y año de fecha de inicio y fecha final
-                const [anioFechaInicio, mesFechaInicio, diaFechaInicio] = fecha_inicio?.split("-") as string[]
+                const [
+                    anioFechaInicio,
+                    mesFechaInicio,
+                    diaFechaInicio
+                ] = fecha_inicio?.split("-") as string[]
 
-                const [anioFechaFinal, mesFechaFinal, diaFechaFinal] = fecha_final?.split("-") as string[]
+                const [
+                    anioFechaFinal,
+                    mesFechaFinal,
+                    diaFechaFinal
+                ] = fecha_final?.split("-") as string[]
 
                 // Obtener el mes de devengado
                 const monthName = HDate.getMonthName(fecha_final as string)
 
-                const payload = {
+                const payload: IDescansoMedico = {
                     ...data,
                     is_continuo: esContinuo,
                     dia_fecha_inicio: parseInt(diaFechaInicio, 10),
@@ -464,7 +541,11 @@ class DescansoMedicoRepository {
 
         try {
             // const descanso = await DescansoMedico.findByPk(id, { transaction })
-            const descanso = await DescansoMedico.findByPk(id)
+            const descanso = await DescansoMedico.findByPk(id, {
+                include: [
+                    COLABORADOR_INCLUDE
+                ]
+            })
 
             if (!descanso) {
                 // await transaction.rollback();

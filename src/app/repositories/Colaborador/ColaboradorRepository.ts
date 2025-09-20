@@ -53,12 +53,10 @@ class ColaboradorRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<ColaboradorResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number): Promise<ColaboradorResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
-
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
 
             const { count, rows } = await Colaborador.findAndCountAll({
                 attributes: COLABORADOR_ATTRIBUTES,
@@ -69,7 +67,6 @@ class ColaboradorRepository {
                     SEDE_INCLUDE,
                     PAIS_INCLUDE
                 ],
-                where: whereClause,
                 order: [
                     ['apellido_paterno', 'ASC']
                 ],

@@ -1,6 +1,7 @@
 export const COBRO_ATTRIBUTES = [
     'id',
     'id_reembolso',
+    'correlativo',
     'codigo',
     'codigo_cheque',
     'codigo_voucher',

@@ -43,12 +43,10 @@ class UsuarioRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<UsuarioResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number): Promise<UsuarioResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
-
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
 
             const { count, rows } = await Usuario.findAndCountAll({
                 attributes: USUARIO_ATTRIBUTES,
@@ -58,7 +56,6 @@ class UsuarioRepository {
                     COLABORADOR_INCLUDE,
                     TRABAJADOR_SOCIAL_INCLUDE
                 ],
-                where: whereClause,
                 order: [
                     ['email', 'ASC']
                 ],

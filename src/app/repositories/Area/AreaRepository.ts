@@ -26,16 +26,13 @@ class AreaRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<AreaResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number): Promise<AreaResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
-
             const { count, rows } = await Area.findAndCountAll({
                 attributes: AREA_ATTRIBUTES,
-                where: whereClause,
                 order: [
                     ['nombre', 'ASC']
                 ],

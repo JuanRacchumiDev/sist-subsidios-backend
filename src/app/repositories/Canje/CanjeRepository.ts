@@ -1,4 +1,9 @@
-import { CanjeResponse, CanjeResponsePaginate, ICanje, ICanjePaginate } from "../../interfaces/Canje/ICanje"
+import {
+    CanjeResponse,
+    CanjeResponsePaginate,
+    ICanje,
+    ICanjePaginate
+} from "../../interfaces/Canje/ICanje"
 import { Canje } from "../../models/Canje"
 import { DescansoMedico } from "../../models/DescansoMedico"
 import sequelize from "../../../config/database"
@@ -30,17 +35,14 @@ class CanjeRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<CanjeResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number): Promise<CanjeResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
-
             const { count, rows } = await Canje.findAndCountAll({
                 attributes: CANJE_ATTRIBUTES,
                 include: [DESCANSOMEDICO_INCLUDE],
-                where: whereClause,
                 order: [
                     ['fecha_inicio_subsidio', 'DESC']
                 ],
@@ -116,8 +118,6 @@ class CanjeRepository {
         const {
             fecha_inicio_subsidio,
             fecha_final_subsidio,
-            fecha_inicio_dm,
-            fecha_final_dm
         } = data
 
         const [
@@ -132,17 +132,7 @@ class CanjeRepository {
             diaFechaFinalSubsidio
         ] = (fecha_final_subsidio as string).split("-") as string[]
 
-        const [
-            anioFechaInicioDM,
-            mesFechaInicioDM,
-            diaFechaInicioDM
-        ] = (fecha_inicio_dm as string).split("-") as string[]
-
-        const [
-            anioFechaFinalDM,
-            mesFechaFinalDM,
-            diaFechaFinalDM
-        ] = (fecha_final_dm as string).split("-") as string[]
+        data.total_dias = HDate.differenceDates(fecha_inicio_subsidio as string, fecha_final_subsidio as string) + 1
 
         // Obtener el mes de devengado
         const monthName = HDate.getMonthName(fecha_final_subsidio as string)
@@ -150,11 +140,11 @@ class CanjeRepository {
         const payload: ICanje = {
             ...data,
             dia_fecha_inicio_subsidio: parseInt(diaFechaInicioSubsidio, 10),
-            mes_fecha_inicio_subsidio: parseInt(diaFechaInicioSubsidio, 10),
-            anio_fecha_inicio_subsidio: parseInt(diaFechaInicioSubsidio, 10),
-            dia_fecha_final_subsidio: parseInt(diaFechaInicioSubsidio, 10),
-            mes_fecha_final_subsidio: parseInt(diaFechaInicioSubsidio, 10),
-            anio_fecha_final_subsidio: parseInt(diaFechaInicioSubsidio, 10),
+            mes_fecha_inicio_subsidio: parseInt(mesFechaInicioSubsidio, 10),
+            anio_fecha_inicio_subsidio: parseInt(anioFechaInicioSubsidio, 10),
+            dia_fecha_final_subsidio: parseInt(diaFechaFinalSubsidio, 10),
+            mes_fecha_final_subsidio: parseInt(mesFechaFinalSubsidio, 10),
+            anio_fecha_final_subsidio: parseInt(anioFechaFinalSubsidio, 10),
             mes_devengado: monthName
         }
 
@@ -186,6 +176,76 @@ class CanjeRepository {
     }
 
     /**
+     * Crea múltiples canjes dentro de una transacción
+     * @param {ICanje[]} dataArray - Un array de datos de canjes
+     * @returns {Promise<CanjeResponse[]>} Un array de respuestas por cada creación
+     */
+    async createMultiple(dataArray: ICanje[]): Promise<CanjeResponse[]> {
+        const transaction = await sequelize.transaction()
+        const results: CanjeResponse[] = []
+
+        // console.log('registros para crear descansos', dataArray)
+
+        try {
+            for (const data of dataArray) {
+                const {
+                    fecha_inicio_subsidio,
+                    fecha_final_subsidio,
+                } = data
+
+                // console.log({ esContinuo })
+
+                const [
+                    anioFechaInicioSubsidio,
+                    mesFechaInicioSubsidio,
+                    diaFechaInicioSubsidio
+                ] = (fecha_inicio_subsidio as string).split("-") as string[]
+
+                const [
+                    anioFechaFinalSubsidio,
+                    mesFechaFinalSubsidio,
+                    diaFechaFinalSubsidio
+                ] = (fecha_final_subsidio as string).split("-") as string[]
+
+                data.total_dias = HDate.differenceDates(fecha_inicio_subsidio as string, fecha_final_subsidio as string) + 1
+
+                // Obtener el mes de devengado
+                const monthName = HDate.getMonthName(fecha_final_subsidio as string)
+
+                const payload: ICanje = {
+                    ...data,
+                    dia_fecha_inicio_subsidio: parseInt(diaFechaInicioSubsidio, 10),
+                    mes_fecha_inicio_subsidio: parseInt(mesFechaInicioSubsidio, 10),
+                    anio_fecha_inicio_subsidio: parseInt(anioFechaInicioSubsidio, 10),
+                    dia_fecha_final_subsidio: parseInt(diaFechaFinalSubsidio, 10),
+                    mes_fecha_final_subsidio: parseInt(mesFechaFinalSubsidio, 10),
+                    anio_fecha_final_subsidio: parseInt(anioFechaFinalSubsidio, 10),
+                    mes_devengado: monthName
+                }
+
+                const newCanje = await Canje.create(payload, { transaction })
+
+                results.push({
+                    result: true,
+                    message: 'Canje registrado con éxito',
+                    data: newCanje,
+                    status: 200
+                })
+            }
+            await transaction.commit()
+            return results
+        } catch (error) {
+            await transaction.rollback()
+            console.error("Error al registrar múltiples canjes: ", error)
+            return dataArray.map(() => ({
+                result: false,
+                error: 'Error al registrar el canje',
+                status: 500
+            }))
+        }
+    }
+
+    /**
      * Actualiza un canje existente por su ID
      * @param {string} id - El ID del canje a actualizar
      * @param {ICanje} data - Los nuevos datos del canje
@@ -196,7 +256,10 @@ class CanjeRepository {
 
         try {
             // const canje = await Canje.findByPk(id, { transaction })
-            const canje = await Canje.findByPk(id)
+            const canje = await Canje.findByPk(id, {
+                attributes: CANJE_ATTRIBUTES,
+                include: [DESCANSOMEDICO_INCLUDE]
+            })
 
             if (!canje) {
                 // await transaction.rollback();

@@ -14,13 +14,9 @@ class GetCobrosService {
 
     /**
      * Ejecuta la operación para obtener cobros
-     * @param {boolean | undefined} estado - Opcional. Filtra los cobros por su estado
      * @returns {Promise<CobroResponse>} La respuesta de obtener los cobros
      */
-    async execute(estado?: boolean): Promise<CobroResponse> {
-        // if (typeof estado === 'boolean') {
-        //     return await CobroRepository.getAllByEstado(estado)
-        // }
+    async execute(): Promise<CobroResponse> {
         return await this.cobroRepository.getAll()
     }
 }

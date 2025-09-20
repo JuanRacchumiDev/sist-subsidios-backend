@@ -14,14 +14,9 @@ class GetParentescosService {
 
     /**
      * Ejecuta la operación para obtener parentescos
-     * @param {boolean | undefined} estado - Opcional. Filtra los parentescos por su estado
      * @returns {Promise<ParentescoResponse>} La respuesta de obtener los parentescos
      */
-    async execute(estado?: boolean): Promise<ParentescoResponse> {
-        // if (typeof estado === 'boolean') {
-        //     return await ParentescoRepository.getAllByEstado(estado)
-        // }
-
+    async execute(): Promise<ParentescoResponse> {
         return await this.parentescoRepository.getAll()
     }
 }

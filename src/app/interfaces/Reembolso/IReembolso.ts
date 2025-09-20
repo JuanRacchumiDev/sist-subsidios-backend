@@ -6,7 +6,10 @@ export interface IReembolso {
     id_canje?: string
     correlativo?: number
     codigo?: string
+    codigo_reembolso?: string
+    numero_expediente?: string
     fecha_registro?: string
+    fecha_reembolso?: string
     fecha_maxima_reembolso?: string
     fecha_maxima_subsanar?: string
     is_cobrable?: boolean
@@ -28,7 +31,7 @@ export interface ReembolsoResponse {
     status?: number
 }
 
-export interface ICanjePaginate {
+export interface IReembolsoPaginate {
     currentPage: number
     limit: number
     totalPages: number
@@ -37,11 +40,11 @@ export interface ICanjePaginate {
     previousPage: number | null
 }
 
-export interface CanjeResponsePaginate {
+export interface ReembolsoResponsePaginate {
     result: boolean
     message?: string
-    data?: ICanje[]
-    pagination?: ICanjePaginate
+    data?: IReembolso[]
+    pagination?: IReembolsoPaginate
     error?: string
     status?: number
 }

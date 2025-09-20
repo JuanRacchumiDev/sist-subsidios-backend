@@ -15,11 +15,10 @@ class GetAdjuntosPaginateService {
      * Ejecuta la operación para obtener adjuntos paginadas
      * @param {number} page - El número de la página actual
      * @param {number} limit - El número de ítems por página
-     * @param {boolean | undefined} estado - Opcional. Filtra los adjuntos por su estado
      * @returns {Promise<AdjuntoResponsePaginate>} La respuesta de obtener las empresas
      */
-    async execute(page: number, limit: number, estado?: boolean): Promise<AdjuntoResponsePaginate> {
-        return await this.adjuntoRepository.getAllWithPaginate(page, limit, estado)
+    async execute(page: number, limit: number): Promise<AdjuntoResponsePaginate> {
+        return await this.adjuntoRepository.getAllWithPaginate(page, limit)
     }
 }
 

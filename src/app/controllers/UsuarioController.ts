@@ -10,6 +10,7 @@ class UsuarioController {
     async getAllUsuarios(req: Request, res: Response, next: NextFunction) {
         try {
             const result = await GetUsuariosService.execute()
+
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)
@@ -19,15 +20,11 @@ class UsuarioController {
     async getAllUsuariosPaginated(req: Request, res: Response, next: NextFunction) {
         try {
             const page = parseInt(req.query.page as string) || 1
+
             const limit = parseInt(req.query.limit as string) || 10
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
+            const result = await GetUsuariosPaginateService.execute(page, limit)
 
-            const result = await GetUsuariosPaginateService.execute(page, limit, estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

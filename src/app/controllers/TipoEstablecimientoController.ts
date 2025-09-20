@@ -10,14 +10,8 @@ import { ITipoEstablecimiento } from '../interfaces/TipoEstablecimiento/ITipoEst
 class TipoEstablecimientoController {
     async getAllTipoEstablecimientos(req: Request, res: Response, next: NextFunction) {
         try {
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
+            const result = await GetTipoEstablecimientosService.execute()
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
-
-            const result = await GetTipoEstablecimientosService.execute(estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)
@@ -27,7 +21,9 @@ class TipoEstablecimientoController {
     async getTipoEstablecimientoById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
+
             const result = await GetTipoEstablecimientoService.execute(id);
+
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

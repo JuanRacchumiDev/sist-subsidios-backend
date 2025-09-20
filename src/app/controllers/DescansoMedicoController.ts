@@ -21,15 +21,11 @@ class DescansoMedicoController {
     async getAllDescansosPaginated(req: Request, res: Response, next: NextFunction) {
         try {
             const page = parseInt(req.query.page as string) || 1
+
             const limit = parseInt(req.query.limit as string) || 10
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
+            const result = await GetDescansosPaginateService.execute(page, limit)
 
-            const result = await GetDescansosPaginateService.execute(page, limit, estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)
@@ -39,16 +35,13 @@ class DescansoMedicoController {
     async getAllDescansosByColaboradorPaginated(req: Request, res: Response, next: NextFunction) {
         try {
             const idColaborador = req.query.idColaborador as string
+
             const page = parseInt(req.query.page as string) || 1
+
             const limit = parseInt(req.query.limit as string) || 10
 
-            // let estado: boolean | undefined
-
-            // if (typeof estadoParam === 'string') {
-            //     estado = estadoParam.toLowerCase() === 'true'
-            // }
-
             const result = await GetDescansosByColaboradorPaginate.execute(idColaborador, page, limit)
+
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

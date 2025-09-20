@@ -13,13 +13,9 @@ class GetAdjuntosService {
     }
     /**
      * Ejecuta la operación para obtener adjuntos
-     * @param {boolean | undefined} estado - Opcional. Filtra los adjuntos por su estado
      * @returns {Promise<AdjuntoResponse>} La respuesta de obtener los adjuntos
      */
-    async execute(estado?: boolean): Promise<AdjuntoResponse> {
-        // if (typeof estado === 'boolean') {
-        //     return await AdjuntoRepository.getAllByEstado(estado)
-        // }
+    async execute(): Promise<AdjuntoResponse> {
         return await this.adjuntoRepository.getAll()
     }
 }

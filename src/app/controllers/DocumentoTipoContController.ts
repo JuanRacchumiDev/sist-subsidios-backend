@@ -10,14 +10,8 @@ import { IDocumentoTipoCont } from '../interfaces/DocumentoTipoCont/IDocumentoTi
 class DocumentoTipoContController {
     async getAllDocumentos(req: Request, res: Response, next: NextFunction) {
         try {
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
+            const result = await GetDocumentosTipoContService.execute()
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
-
-            const result = await GetDocumentosTipoContService.execute(estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error) // Pasa al error al middleware de manejo de errores
@@ -27,15 +21,11 @@ class DocumentoTipoContController {
     async getAllDocumentosPaginated(req: Request, res: Response, next: NextFunction) {
         try {
             const page = parseInt(req.query.page as string) || 1
+
             const limit = parseInt(req.query.limit as string) || 10
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
+            const result = await GetDocumentosTipoContPaginateService.execute(page, limit)
 
-            const result = await GetDocumentosTipoContPaginateService.execute(page, limit, estado)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

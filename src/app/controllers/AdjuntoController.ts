@@ -12,14 +12,7 @@ import path from 'path';
 class AdjuntoController {
     async getAllAdjuntos(req: Request, res: Response, next: NextFunction) {
         try {
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
-
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
-
-            const result = await getAdjuntosService.execute(estado)
+            const result = await getAdjuntosService.execute()
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error) // Pasa al error al middleware de manejo de errores
@@ -29,15 +22,10 @@ class AdjuntoController {
     async getAllAdjuntosPaginated(req: Request, res: Response, next: NextFunction) {
         try {
             const page = parseInt(req.query.page as string) || 1
+
             const limit = parseInt(req.query.limit as string) || 10
-            const estadoParam = req.query.estado
-            let estado: boolean | undefined
 
-            if (typeof estadoParam === 'string') {
-                estado = estadoParam.toLowerCase() === 'true'
-            }
-
-            const result = await GetAdjuntosPaginateService.execute(page, limit, estado)
+            const result = await GetAdjuntosPaginateService.execute(page, limit)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

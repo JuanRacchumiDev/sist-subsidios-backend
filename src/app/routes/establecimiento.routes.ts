@@ -4,7 +4,7 @@ import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
-router.get('/buscar-por-nombre', authToken, EstablecimientoController.getEstablecimientoByNombre)
+router.get('/buscar', authToken, EstablecimientoController.getEstablecimientoByNombre)
 
 router.get('/', authToken, EstablecimientoController.getAllEstablecimientos)
 

@@ -4,6 +4,8 @@ import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
+router.get('/buscar', TipoAdjuntoController.getTipoAdjuntoByNombre)
+
 router.get('/', authToken, TipoAdjuntoController.getAllTipoAdjuntos)
 
 router.get('/:id', authToken, TipoAdjuntoController.getTipoAdjuntoById)

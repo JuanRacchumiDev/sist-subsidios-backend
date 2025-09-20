@@ -12,7 +12,9 @@ class TipoDocumentoController {
     async getAllTipoDocumentos(req: Request, res: Response, next: NextFunction) {
         try {
             const response = await GetTipoDocumentosService.execute()
+
             const { status } = response
+
             res.status(status || 200).json(response)
         } catch (error) {
             next(error) // Pasa al error al middleware de manejo de errores
@@ -22,7 +24,9 @@ class TipoDocumentoController {
     async getTipoDocumentoById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
+
             const result = await GetTipoDocumentoService.execute(id);
+
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

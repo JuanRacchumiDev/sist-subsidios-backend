@@ -31,16 +31,13 @@ class EmpresaRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<EmpresaResponsePaginate> {
+    async getAllWithPaginate(page: number, limit: number): Promise<EmpresaResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            const whereClause = typeof estado === 'boolean' ? { estado } : {}
-
             const { count, rows } = await Empresa.findAndCountAll({
                 attributes: EMPRESA_ATTRIBUTES,
-                where: whereClause,
                 order: [
                     ['nombre_o_razon_social', 'ASC']
                 ],

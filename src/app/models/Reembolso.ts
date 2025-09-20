@@ -11,7 +11,10 @@ export class Reembolso extends Model<IReembolso, ReembolsoCreationAttributes> im
     public id_canje?: string | undefined;
     public correlativo?: number | undefined;
     public codigo?: string | undefined;
+    public codigo_reembolso?: string | undefined;
+    public numero_expediente?: string | undefined;
     public fecha_registro?: string | undefined;
+    public fecha_reembolso?: string | undefined;
     public fecha_maxima_reembolso?: string | undefined;
     public fecha_maxima_subsanar?: string | undefined;
     public is_cobrable?: boolean | undefined;
@@ -49,22 +52,35 @@ Reembolso.init({
     },
     correlativo: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        autoIncrement: true
     },
     codigo: {
         type: new DataTypes.STRING(12),
         allowNull: false
     },
+    codigo_reembolso: {
+        type: new DataTypes.STRING(30),
+        allowNull: true
+    },
+    numero_expediente: {
+        type: new DataTypes.STRING(30),
+        allowNull: true
+    },
     fecha_registro: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
+        allowNull: true
+    },
+    fecha_reembolso: {
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     fecha_maxima_reembolso: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: false
     },
     fecha_maxima_subsanar: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: true
     },
     is_cobrable: {

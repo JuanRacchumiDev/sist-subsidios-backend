@@ -14,13 +14,9 @@ class GetAreasService {
 
     /**
      * Ejecuta la operación para obtener áreas
-     * @param {boolean | undefined} estado - Opcional. Filtra las áreas por su estado
      * @returns {Promise<AreaResponse>} La respuesta de obtener las áreas
      */
-    async execute(estado?: boolean): Promise<AreaResponse> {
-        // if (typeof estado === 'boolean') {
-        //     return await this.areaRepository.getAllByEstado(estado)
-        // }
+    async execute(): Promise<AreaResponse> {
         return await this.areaRepository.getAll()
     }
 }

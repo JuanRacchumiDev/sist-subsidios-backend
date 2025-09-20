@@ -14,14 +14,9 @@ class GetSedesService {
 
     /**
      * Ejecuta la operación para obtener sedes
-     * @param {boolean | undefined} estado - Opcional. Filtra las sedes por su estado
      * @returns {Promise<SedeResponse>} La respuesta de obtener las sedes
      */
-    async execute(estado?: boolean): Promise<SedeResponse> {
-        // if (typeof estado === 'boolean') {
-        //     return await SedeRepository.getAllByEstado(estado)
-        // }
-
+    async execute(): Promise<SedeResponse> {
         return await this.sedeRepository.getAll()
     }
 }

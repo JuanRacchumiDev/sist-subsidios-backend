@@ -32,19 +32,23 @@ module.exports = {
       },
       codigo: {
         type: Sequelize.STRING(20),
-        allowNull: false
+        allowNull: true
       },
       codigo_cheque: {
-        type: Sequelize.STRING(15),
+        type: Sequelize.STRING(30),
         allowNull: true
       },
       codigo_voucher: {
-        type: Sequelize.STRING(15),
+        type: Sequelize.STRING(30),
         allowNull: true
       },
       fecha_registro: {
         type: Sequelize.STRING(12),
         allowNull: false
+      },
+      fecha_cobro: {
+        type: Sequelize.STRING(12),
+        allowNull: true
       },
       fecha_maxima_cobro: {
         type: Sequelize.STRING(12),

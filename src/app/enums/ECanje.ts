@@ -4,7 +4,7 @@
  */
 export enum ECanje {
     CANJE_REGISTRADO = 'Canje registrado',
-    CANJE_OBSERVADO = 'Canje observado',
     CANJE_INGRESADO = 'Canje ingresado',
+    CANJE_OBSERVADO = 'Canje observado',
     CANJE_CONFORME = 'Canje conforme'
 }

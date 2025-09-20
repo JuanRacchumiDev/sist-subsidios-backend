@@ -14,14 +14,9 @@ class GetTiposService {
 
     /**
      * Ejecuta la operación para obtener tipo de establecimientos
-     * @param {boolean | undefined} estado - Opcional. Filtra los tipo de establecimientos por su estado
      * @returns {Promise<TipoEstablecimientoResponse>} La respuesta de obtener los tipo de establecimientos
      */
-    async execute(estado?: boolean): Promise<TipoEstablecimientoResponse> {
-        // if (typeof estado === 'boolean') {
-        //     return await TipoEstablecimientoRepository.getAllByEstado(estado)
-        // }
-
+    async execute(): Promise<TipoEstablecimientoResponse> {
         return await this.tipoEstablecimientoRepository.getAll()
     }
 }
