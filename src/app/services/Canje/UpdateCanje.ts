@@ -73,7 +73,7 @@ class UpdateCanjeService {
             nombre_establecimiento
         } = detalleDescansoMedico
 
-        const colaborador = descansoMedico?.colaborador as IColaborador
+        const colaborador = descansoMedico?.colaborador_dm as IColaborador
 
         console.log({ colaborador })
 
@@ -120,7 +120,6 @@ class UpdateCanjeService {
 
             const payloadReembolso: IReembolso = {
                 id_canje: idCanje,
-                codigo: "aaa",
                 fecha_registro: fechaActual,
                 fecha_maxima_reembolso: fechaActual,
                 is_cobrable: false,

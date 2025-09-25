@@ -12,6 +12,9 @@ export interface IDescansoMedico {
     codcie10_diagnostico?: string
     correlativo?: number
     codigo?: string
+    codigo_citt?: string
+    fecha_inicio_ingresado?: string
+    fecha_final_ingresado?: string
     fecha_otorgamiento?: string
     fecha_inicio?: string
     fecha_final?: string
@@ -46,10 +49,12 @@ export interface IDescansoMedico {
     estado_registro?: EDescansoMedico
     sistema?: boolean
     estado?: boolean
-    colaborador?: IColaborador
+    colaborador_dm?: IColaborador
     tipoDescansoMedico?: ITipoDescansoMedico
     tipoContingencia?: ITipoContingencia
     diagnostico?: IDiagnostico
+    id_usuario?: string
+    slug_perfil?: string
 }
 
 export interface DescansoMedicoResponse {

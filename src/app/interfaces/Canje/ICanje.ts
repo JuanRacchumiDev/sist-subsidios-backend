@@ -1,15 +1,18 @@
 import { ECanje } from "../../enums/ECanje"
+import { IColaborador } from "../Colaborador/IColaborador"
 import { IDescansoMedico } from "../DescansoMedico/IDescansoMedico"
 
 export interface ICanje {
     id?: string
     id_descansomedico?: string
+    id_colaborador?: string
     correlativo?: number
     codigo?: string
     codigo_canje?: string
     codigo_citt?: string
     fecha_inicio_subsidio?: string
     fecha_final_subsidio?: string
+    fecha_otorgamiento?: string
     fecha_inicio_dm?: string
     fecha_final_dm?: string
     fecha_canje?: string
@@ -28,6 +31,8 @@ export interface ICanje {
     is_reembolsable?: boolean
     observacion?: string
     mes_devengado?: string
+    nombre_tipodescansomedico?: string
+    nombre_tipocontingencia?: string
     user_crea?: string
     user_actualiza?: string
     user_elimina?: string
@@ -35,6 +40,7 @@ export interface ICanje {
     sistema?: boolean
     estado?: boolean
     descansoMedico?: IDescansoMedico
+    colaborador?: IColaborador
 }
 
 export interface CanjeResponse {

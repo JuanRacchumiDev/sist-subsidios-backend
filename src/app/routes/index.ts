@@ -18,6 +18,7 @@ import colaboradorRoutes from './colaborador.routes'
 import usuarioRoutes from './usuario.routes'
 import descansoMedicoRoutes from './descansoMedico.routes'
 import canjeRoutes from './canje.routes'
+import reembolsoRoutes from './reembolso.routes'
 import cobroRoutes from './cobro.routes'
 import documentoTipoContRoutes from './documentoTipoCont.routes'
 import tipoAdjuntoRoutes from './tipoAdjunto.routes'
@@ -43,6 +44,7 @@ router.use('/colaboradores', colaboradorRoutes)
 router.use('/usuarios', usuarioRoutes)
 router.use('/descansos', descansoMedicoRoutes)
 router.use('/canjes', canjeRoutes)
+router.use('/reembolsos', reembolsoRoutes)
 router.use('/cobros', cobroRoutes)
 router.use('/documentos-tipo-contingencia', documentoTipoContRoutes)
 router.use('/tipo-adjuntos', tipoAdjuntoRoutes)

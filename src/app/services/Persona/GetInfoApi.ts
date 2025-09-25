@@ -2,6 +2,7 @@ import TipoDocumentoRepository from "../../repositories/TipoDocumento/TipoDocume
 import PersonaApiRepository from "../../repositories/Persona/PersonaApiRepository"
 import { ITipoDocumento } from "../../interfaces/TipoDocumento/ITipoDocumento";
 import { TTipoDocumentoSearch } from "../../types/TipoDocumento/TTipoDocumentoSearch";
+import PersonaRepository from "../../repositories/Persona/PersonaRepository";
 
 /**
  * @class GetInfoApiService
@@ -10,10 +11,12 @@ import { TTipoDocumentoSearch } from "../../types/TipoDocumento/TTipoDocumentoSe
 class GetInfoApiService {
     protected tipoDocumentoRepository: TipoDocumentoRepository
     protected personaApiRepository: PersonaApiRepository
+    protected personaRepository: PersonaRepository
 
     constructor() {
         this.tipoDocumentoRepository = new TipoDocumentoRepository()
         this.personaApiRepository = new PersonaApiRepository()
+        this.personaRepository = new PersonaRepository()
     }
 
     /**
@@ -31,6 +34,8 @@ class GetInfoApiService {
 
         const responseTipoDocumento = await this.tipoDocumentoRepository.getBySearch(paramSearch);
 
+        console.log({ responseTipoDocumento })
+
         const { result, data } = responseTipoDocumento
 
         if (!result || !data) {
@@ -41,25 +46,21 @@ class GetInfoApiService {
             }
         }
 
-        // const { id } = data as ITipoDocumento
+        const { id } = data as ITipoDocumento
 
-        // const idStr = id as string
-
-        return await this.personaApiRepository.getInfoApi(abreviatura, numeroDocumento)
+        const idStr = id as string
 
         // Validamos si la persona se encuentra registrada
-        // const responsePersona = await PersonaRepository.getByIdTipoDocAndNumDoc(idStr, numeroDocumento)
+        const responsePersona = await this.personaRepository.getByIdTipoDocAndNumDoc(idStr, numeroDocumento)
 
-        // const { result: resultPersona, data: dataPersona } = responsePersona
+        const { result: resultPersona, data: dataPersona } = responsePersona
 
         // // Validamos si la persona no existe
-        // if (!resultPersona && !dataPersona) {
-        //     return await PersonaRepository.getInfoApi(abreviatura, numeroDocumento)
-        // }
+        if (resultPersona && dataPersona) {
+            return responsePersona
+        }
 
-        // return {
-        //     ...responsePersona
-        // }
+        return await this.personaApiRepository.getInfoApi(abreviatura, numeroDocumento)
     }
 }
 

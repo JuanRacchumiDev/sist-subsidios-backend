@@ -4,6 +4,8 @@ import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
+router.get('/reportes/', DescansoMedicoController.getAllDescansosForReport)
+
 router.get('/colaborador/paginate', authToken, DescansoMedicoController.getAllDescansosByColaboradorPaginated)
 
 router.get('/paginate', authToken, DescansoMedicoController.getAllDescansosPaginated)

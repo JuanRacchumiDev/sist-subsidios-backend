@@ -18,6 +18,9 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public codcie10_diagnostico?: string | undefined;
     public correlativo?: number | undefined;
     public codigo?: string | undefined;
+    public codigo_citt?: string | undefined;
+    public fecha_inicio_ingresado?: string | undefined;
+    public fecha_final_ingresado?: string | undefined;
     public fecha_otorgamiento?: string | undefined;
     public fecha_inicio?: string | undefined;
     public fecha_final?: string | undefined;
@@ -107,32 +110,44 @@ DescansoMedico.init({
         allowNull: true,
         unique: true
     },
+    codigo_citt: {
+        type: new DataTypes.STRING(30),
+        allowNull: true
+    },
+    fecha_inicio_ingresado: {
+        type: new DataTypes.STRING(12),
+        allowNull: false
+    },
+    fecha_final_ingresado: {
+        type: new DataTypes.STRING(12),
+        allowNull: false
+    },
     fecha_otorgamiento: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: false
     },
     fecha_inicio: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: false
     },
     fecha_final: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: false
     },
     fecha_registro: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: false
     },
     fecha_actualiza: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: true
     },
     fecha_elimina: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: true
     },
     fecha_maxima_subsanar: {
-        type: new DataTypes.STRING(10),
+        type: new DataTypes.STRING(12),
         allowNull: true
     },
     dia_fecha_inicio: {

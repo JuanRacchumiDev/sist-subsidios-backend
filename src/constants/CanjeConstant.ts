@@ -1,12 +1,14 @@
 export const CANJE_ATTRIBUTES = [
     'id',
     'id_descansomedico',
+    'id_colaborador',
     'correlativo',
     'codigo',
     'codigo_canje',
     'codigo_citt',
     'fecha_inicio_subsidio',
     'fecha_final_subsidio',
+    'fecha_otorgamiento',
     'fecha_inicio_dm',
     'fecha_final_dm',
     'fecha_canje',
@@ -16,6 +18,8 @@ export const CANJE_ATTRIBUTES = [
     'is_reembolsable',
     'observacion',
     'mes_devengado',
+    'nombre_tipodescansomedico',
+    'nombre_tipocontingencia',
     'estado_registro',
     'estado'
 ]

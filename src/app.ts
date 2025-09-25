@@ -68,6 +68,7 @@ const setupDatabase = async () => {
         // Canje.belongsTo(Reembolso, { foreignKey: 'id_reembolso', as: 'reembolso' })
         Canje.hasMany(Adjunto, { foreignKey: 'id_canje', as: 'adjuntos' })
         Canje.belongsTo(DescansoMedico, { foreignKey: 'id_descansomedico', as: 'descansoMedico' })
+        Canje.belongsTo(Colaborador, { foreignKey: 'id_colaborador', as: 'colaborador' })
 
         Cobro.hasOne(Reembolso, { foreignKey: 'id_cobro', as: 'reembolso' })
         Cobro.hasMany(Adjunto, { foreignKey: 'id_cobro', as: 'adjuntos' })
@@ -84,9 +85,10 @@ const setupDatabase = async () => {
         Colaborador.belongsTo(Empresa, { foreignKey: 'id_empresa', as: 'empresa' })
         Colaborador.belongsTo(Parentesco, { foreignKey: 'id_parentesco', as: 'parentesco' })
         Colaborador.hasMany(Adjunto, { foreignKey: 'id_colaborador', as: 'adjuntos' })
+        Colaborador.hasMany(Canje, { foreignKey: 'id_colaborador', as: 'canjes' })
 
-        // DescansoMedico.belongsTo(Canje, { foreignKey: 'id_canje', as: 'canje' })
-        DescansoMedico.belongsTo(Colaborador, { foreignKey: 'id_colaborador', as: 'colaborador' })
+        DescansoMedico.hasOne(Canje, { foreignKey: 'id_descansomedico', as: 'canje' })
+        DescansoMedico.belongsTo(Colaborador, { foreignKey: 'id_colaborador', as: 'colaborador_dm' })
         DescansoMedico.belongsTo(TipoDescansoMedico, { foreignKey: 'id_tipodescansomedico', as: 'tipoDescansoMedico' })
         DescansoMedico.belongsTo(TipoContingencia, { foreignKey: 'id_tipocontingencia', as: 'tipoContingencia' })
         DescansoMedico.belongsTo(Diagnostico, { foreignKey: 'codcie10_diagnostico', as: 'diagnostico' })
@@ -116,6 +118,7 @@ const setupDatabase = async () => {
 
         // Reembolso.hasOne(Canje, { foreignKey: 'id_reembolso', as: 'canje' })
         Reembolso.belongsTo(Cobro, { foreignKey: 'id_cobro', as: 'cobro' })
+        Reembolso.belongsTo(Canje, { foreignKey: 'id_canje', as: 'canje' })
         Reembolso.hasMany(Adjunto, { foreignKey: 'id_reembolso', as: 'adjuntos' })
 
         RepresentanteLegal.belongsTo(TipoDocumento, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })

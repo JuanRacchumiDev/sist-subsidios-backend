@@ -4,18 +4,21 @@ import { ECanje } from '../enums/ECanje';
 import { DescansoMedico } from './DescansoMedico';
 import sequelize from '../../config/database'
 import { Reembolso } from './Reembolso';
+import { Colaborador } from './Colaborador';
 
 interface CanjeCreationAttributes extends Optional<ICanje, 'id'> { }
 
 export class Canje extends Model<ICanje, CanjeCreationAttributes> implements ICanje {
     public id?: string | undefined;
     public id_descansomedico?: string | undefined;
+    public id_colaborador?: string | undefined;
     public correlativo?: number | undefined;
     public codigo?: string | undefined;
     public codigo_canje?: string | undefined;
     public codigo_citt?: string | undefined;
     public fecha_inicio_subsidio?: string | undefined;
     public fecha_final_subsidio?: string | undefined;
+    public fecha_otorgamiento?: string | undefined;
     public fecha_inicio_dm?: string | undefined;
     public fecha_final_dm?: string | undefined;
     public fecha_canje?: string | undefined;
@@ -34,6 +37,8 @@ export class Canje extends Model<ICanje, CanjeCreationAttributes> implements ICa
     public is_reembolsable?: boolean | undefined;
     public observacion?: string | undefined;
     public mes_devengado?: string | undefined;
+    public nombre_tipocontingencia?: string | undefined;
+    public nombre_tipodescansomedico?: string | undefined;
     public user_crea?: string | undefined;
     public user_actualiza?: string | undefined;
     public user_elimina?: string | undefined;
@@ -48,6 +53,7 @@ export class Canje extends Model<ICanje, CanjeCreationAttributes> implements ICa
 
     // Asociaciones
     public getDescansoMedico!: () => Promise<DescansoMedico>
+    public getColaborador!: () => Promise<Colaborador>
 }
 
 Canje.init({
@@ -62,6 +68,14 @@ Canje.init({
         allowNull: false,
         references: {
             model: DescansoMedico,
+            key: 'id'
+        }
+    },
+    id_colaborador: {
+        type: DataTypes.UUID,
+        defaultValue: false,
+        references: {
+            model: Colaborador,
             key: 'id'
         }
     },
@@ -96,6 +110,10 @@ Canje.init({
         allowNull: false
     },
     fecha_final_subsidio: {
+        type: new DataTypes.STRING(12),
+        allowNull: false
+    },
+    fecha_otorgamiento: {
         type: new DataTypes.STRING(12),
         allowNull: false
     },
@@ -176,6 +194,20 @@ Canje.init({
         allowNull: false,
         set(value: string) {
             this.setDataValue('mes_devengado', value ? value.trim() : undefined)
+        }
+    },
+    nombre_tipodescansomedico: {
+        type: new DataTypes.STRING(50),
+        allowNull: false,
+        set(value: string) {
+            this.setDataValue('nombre_tipodescansomedico', value ? value.trim() : undefined)
+        }
+    },
+    nombre_tipocontingencia: {
+        type: new DataTypes.STRING(50),
+        allowNull: false,
+        set(value: string) {
+            this.setDataValue('nombre_tipocontingencia', value ? value.trim() : undefined)
         }
     },
     user_crea: {

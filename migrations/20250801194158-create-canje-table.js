@@ -24,6 +24,14 @@ module.exports = {
           key: 'id'
         }
       },
+      id_colaborador: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'colaborador',
+          key: 'id'
+        }
+      },
       correlativo: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -47,6 +55,10 @@ module.exports = {
         allowNull: false
       },
       fecha_final_subsidio: {
+        type: Sequelize.STRING(12),
+        allowNull: false
+      },
+      fecha_otorgamiento: {
         type: Sequelize.STRING(12),
         allowNull: false
       },
@@ -121,6 +133,14 @@ module.exports = {
       },
       mes_devengado: {
         type: Sequelize.STRING(12),
+        allowNull: false
+      },
+      nombre_tipodescansomedico: {
+        type: Sequelize.STRING(50),
+        allowNull: false
+      },
+      nombre_tipocontingencia: {
+        type: Sequelize.STRING(50),
         allowNull: false
       },
       user_crea: {

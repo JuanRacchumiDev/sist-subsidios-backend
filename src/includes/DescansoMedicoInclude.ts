@@ -1,5 +1,6 @@
 import { DescansoMedico } from "../app/models/DescansoMedico";
-import { COLABORADOR_INCLUDE } from "./ColaboradorInclude";
+import { COLABORADOR_DM_INCLUDE } from "./ColaboradorDMInclude";
+// import { COLABORADOR_INCLUDE } from "./ColaboradorInclude";
 import { DIAGNOSTICO_INCLUDE } from "./DiagnosticoInclude";
 import { TIPO_CONTINGENCIA_INCLUDE } from "./TipoContingenciaInclude";
 import { TIPODM_INCLUDE } from "./TipoDescansoMedicoInclude";
@@ -15,6 +16,7 @@ export const DESCANSOMEDICO_INCLUDE = {
         'codcie10_diagnostico',
         'correlativo',
         'codigo',
+        'codigo_citt',
         'fecha_otorgamiento',
         'fecha_inicio',
         'fecha_final',
@@ -36,7 +38,7 @@ export const DESCANSOMEDICO_INCLUDE = {
         'estado'
     ],
     include: [
-        COLABORADOR_INCLUDE,
+        COLABORADOR_DM_INCLUDE,
         TIPODM_INCLUDE,
         TIPO_CONTINGENCIA_INCLUDE,
         DIAGNOSTICO_INCLUDE

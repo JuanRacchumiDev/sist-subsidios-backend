@@ -60,6 +60,18 @@ module.exports = {
         type: Sequelize.STRING(20),
         allowNull: true
       },
+      codigo_citt: {
+        type: Sequelize.STRING(30),
+        allowNull: true
+      },
+      fecha_inicio_ingresado: {
+        type: Sequelize.STRING(12),
+        allowNull: false
+      },
+      fecha_final_ingresado: {
+        type: Sequelize.STRING(12),
+        allowNull: false
+      },
       fecha_otorgamiento: {
         type: Sequelize.STRING(12),
         allowNull: false

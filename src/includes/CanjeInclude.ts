@@ -1,4 +1,5 @@
 import { Canje } from "../app/models/Canje";
+import { DESCANSOMEDICO_INCLUDE } from "./DescansoMedicoInclude";
 
 export const CANJE_INCLUDE = {
     model: Canje,
@@ -6,6 +7,7 @@ export const CANJE_INCLUDE = {
     attributes: [
         'id',
         'id_descansomedico',
+        'id_colaborador',
         'correlativo',
         'codigo',
         'fecha_inicio_subsidio',
@@ -19,5 +21,8 @@ export const CANJE_INCLUDE = {
         'estado_registro',
         'sistema',
         'estado'
+    ],
+    include: [
+        DESCANSOMEDICO_INCLUDE
     ]
 }
