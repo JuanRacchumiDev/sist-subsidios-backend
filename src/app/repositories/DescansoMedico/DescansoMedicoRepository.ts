@@ -14,12 +14,13 @@ import { COLABORADOR_DM_INCLUDE } from "../../../includes/ColaboradorDMInclude";
 import { TIPODM_INCLUDE } from "../../../includes/TipoDescansoMedicoInclude";
 import { TIPO_CONTINGENCIA_INCLUDE } from "../../../includes/TipoContingenciaInclude";
 import { DIAGNOSTICO_INCLUDE } from "../../../includes/DiagnosticoInclude";
-import { Op, Sequelize } from 'sequelize';
+import { Op, WhereOptions } from 'sequelize';
 import HDate from "../../../helpers/HDate"
 import { ADJUNTO_INCLUDE } from "../../../includes/AdjuntoInclude";
 import { EDescansoMedico } from "../../enums/EDescansoMedico";
 import { TItemReport } from "../../types/DescansoMedico/TItemReport";
 import { Canje } from "../../models/Canje";
+import { IDescansoMedicoFilter } from '../../interfaces/DescansoMedico/IDescansoMedicoFilter';
 
 type TReportResponse = {
     result: boolean
@@ -56,10 +57,64 @@ class DescansoMedicoRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<DescansoMedicoResponsePaginate> {
+    async getAllWithPaginate(
+        page: number,
+        limit: number,
+        filters: IDescansoMedicoFilter = {}
+    ): Promise<DescansoMedicoResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
+
+            // Construcción dinámica de la claúsula WHERE
+            const where: WhereOptions = {}
+
+            // Filtro por estado
+            if (filters.estado !== undefined) {
+                where.estado = filters.estado
+            }
+
+            // Filtro por tipo de descanso médico (id_tipodescansomedico)
+            if (filters.id_tipodescansomedico) {
+                where.id_tipodescansomedico = filters.id_tipodescansomedico
+            }
+
+            // Filtro por tipo de contingencia (id_tipocontingencia)
+            if (filters.id_tipocontingencia) {
+                where.id_tipocontingencia = filters.id_tipocontingencia
+            }
+
+            // Filtro por nombre del colaborador
+            if (filters.nombre_colaborador) {
+                where.nombre_colaborador = {
+                    [Op.like]: `%${filters.nombre_colaborador}%`
+                }
+            }
+
+            // Filtro por rango de fechas
+            if (filters.fecha_inicio && filters.fecha_final) {
+                where.fecha_inicio = {
+                    [Op.lte]: filters.fecha_final
+                }
+
+                where.fecha_final = {
+                    [Op.gte]: filters.fecha_inicio
+                }
+
+                /**
+                where.fecha_inicio = {
+                    [Op.between]: [filters.fecha_inicio, filters.fecha_final]
+                }
+                */
+            } else if (filters.fecha_inicio) {
+                where.fecha_inicio = {
+                    [Op.gte]: filters.fecha_inicio
+                };
+            } else if (filters.fecha_final) {
+                where.fecha_final = {
+                    [Op.lte]: filters.fecha_final
+                };
+            }
 
             const { count, rows } = await DescansoMedico.findAndCountAll({
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
@@ -69,6 +124,7 @@ class DescansoMedicoRepository {
                     TIPO_CONTINGENCIA_INCLUDE,
                     DIAGNOSTICO_INCLUDE
                 ],
+                where,
                 order: [
                     ['fecha_inicio', 'ASC']
                 ],
@@ -137,11 +193,57 @@ class DescansoMedicoRepository {
      * @param {string} idColaborador - El ID del colaborador a buscar
      * @param {number} page - El número de página actual
      * @param {number} limit - El número de elementos por página
+     * @param {IDescansoMedicoFilter} filters - Los parámetros a buscar
      * @returns {Promise<DescansoMedicoResponsePaginate>}
      */
-    async getAllByColaboradorPaginate(idColaborador: string, page: number, limit: number): Promise<DescansoMedicoResponsePaginate> {
+    async getAllByColaboradorPaginate(
+        idColaborador: string,
+        page: number,
+        limit: number,
+        filters: IDescansoMedicoFilter
+    ): Promise<DescansoMedicoResponsePaginate> {
         try {
             const offset = HPagination.getOffset(page, limit);
+
+            // Construcción dinámica de la claúsula WHERE
+            const where: WhereOptions = {}
+
+            where.id_colaborador = idColaborador
+
+            // Filtro por tipo de descanso médico (id_tipodescansomedico)
+            if (filters.id_tipodescansomedico) {
+                where.id_tipodescansomedico = filters.id_tipodescansomedico
+            }
+
+            // Filtro por tipo de contingencia (id_tipocontingencia)
+            if (filters.id_tipocontingencia) {
+                where.id_tipocontingencia = filters.id_tipocontingencia
+            }
+
+            // Filtro por rango de fechas
+            if (filters.fecha_inicio && filters.fecha_final) {
+                where.fecha_inicio = {
+                    [Op.lte]: filters.fecha_final
+                }
+
+                where.fecha_final = {
+                    [Op.gte]: filters.fecha_inicio
+                }
+
+                /**
+                where.fecha_inicio = {
+                    [Op.between]: [filters.fecha_inicio, filters.fecha_final]
+                }
+                */
+            } else if (filters.fecha_inicio) {
+                where.fecha_inicio = {
+                    [Op.gte]: filters.fecha_inicio
+                };
+            } else if (filters.fecha_final) {
+                where.fecha_final = {
+                    [Op.lte]: filters.fecha_final
+                };
+            }
 
             const { count, rows } = await DescansoMedico.findAndCountAll({
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
@@ -151,9 +253,10 @@ class DescansoMedicoRepository {
                     TIPO_CONTINGENCIA_INCLUDE,
                     DIAGNOSTICO_INCLUDE
                 ],
-                where: {
-                    id_colaborador: idColaborador
-                },
+                where,
+                // where: {
+                //     id_colaborador: idColaborador
+                // },
                 order: [
                     ['fecha_inicio', 'ASC']
                 ],
@@ -423,19 +526,22 @@ class DescansoMedicoRepository {
 
         // data.fecha_final = fechaFinal
 
-        // data.total_dias = HDate.differenceDates(fechaInicio, fechaFinal) + 1
+        const fechaInicio = fecha_inicio as string
+        const fechaFinal = fecha_final as string
+
+        data.total_dias = HDate.differenceDates(fechaInicio, fechaFinal) + 1
 
         const [
             anioFechaInicio,
             mesFechaInicio,
             diaFechaInicio
-        ] = (fecha_inicio as string).split("-") as string[]
+        ] = (fechaInicio).split("-") as string[]
 
         const [
             anioFechaFinal,
             mesFechaFinal,
             diaFechaFinal
-        ] = (fecha_final as string).split("-") as string[]
+        ] = (fechaFinal).split("-") as string[]
 
         // Obtener el mes de devengado
         const monthName = HDate.getMonthName(fecha_final as string)
@@ -530,8 +636,13 @@ class DescansoMedicoRepository {
                     diaFechaFinal
                 ] = fecha_final?.split("-") as string[]
 
+                const fechaInicio = fecha_inicio as string
+                const fechaFinal = fecha_final as string
+
                 // Obtener el mes de devengado
-                const monthName = HDate.getMonthName(fecha_final as string)
+                const monthName = HDate.getMonthName(fechaFinal)
+
+                data.total_dias = HDate.differenceDates(fechaInicio, fechaFinal) + 1
 
                 const payload: IDescansoMedico = {
                     ...data,
@@ -722,6 +833,78 @@ class DescansoMedicoRepository {
         }
     }
 
+    /**
+     * Procesa un array de descansos médicos a crear y ajusta sus fechas para evitar solapamiento con registros existentes.
+     * @param {IDescansoMedico[]} descansosToCreate - Un array de objetos IDescansoMedico a procesar.
+     * @returns {Promise<IDescansoMedico[]>} - El array de descansos médicos con las fechas ajustadas.
+     */
+    async validateSolapamientoFechas(descansosToCreate: IDescansoMedico[]): Promise<IDescansoMedico[]> {
+        const processedDescansos: IDescansoMedico[] = [];
+
+        for (const newDescanso of descansosToCreate) {
+            const { id_colaborador, fecha_inicio, fecha_final } = newDescanso;
+
+            const idColaborador = id_colaborador as string
+
+            // Asegurar que las fechas existan antes de la consulta.
+            if (!fecha_inicio || !fecha_final) {
+                // Si faltan fechas, no se puede validar, se salta o se maneja el error.
+                // En este caso, simplemente se añade al array para su posterior procesamiento.
+                processedDescansos.push(newDescanso);
+                continue;
+            }
+
+            const existingDescansos = await DescansoMedico.findAll({
+                where: {
+                    id_colaborador: idColaborador,
+                    [Op.or]: [
+                        { // El descanso médico existente empieza o termina dentro del nuevo descanso médico
+                            fecha_inicio: { [Op.between]: [fecha_inicio, fecha_final] }
+                        },
+                        {
+                            fecha_final: { [Op.between]: [fecha_inicio, fecha_final] }
+                        },
+                        { // El nuevo descanso médico está completamente dentro de un descanso existente
+                            [Op.and]: [
+                                { fecha_inicio: { [Op.lte]: fecha_inicio } },
+                                { fecha_final: { [Op.gte]: fecha_final } }
+                            ]
+                        }
+                    ]
+                }
+            });
+
+            if (existingDescansos.length > 0) {
+                let adjustedStartDate = new Date(fecha_inicio as string);
+
+                let adjustedEndDate = new Date(fecha_final as string);
+
+                existingDescansos.forEach(existingDescanso => {
+                    const existingStart = new Date(existingDescanso.fecha_inicio as string);
+
+                    const existingEnd = new Date(existingDescanso.fecha_final as string);
+
+                    if (adjustedStartDate >= existingStart && adjustedStartDate <= existingEnd) {
+                        adjustedStartDate.setDate(existingEnd.getDate() + 1);
+                    }
+
+                    if (adjustedEndDate >= existingStart && adjustedEndDate <= existingEnd) {
+                        adjustedEndDate.setDate(existingStart.getDate() - 1);
+                    }
+                });
+
+                if (adjustedStartDate <= adjustedEndDate) {
+                    newDescanso.fecha_inicio = adjustedStartDate.toISOString().split("T")[0];
+                    newDescanso.fecha_final = adjustedEndDate.toISOString().split("T")[0];
+                    processedDescansos.push(newDescanso);
+                }
+            } else {
+                processedDescansos.push(newDescanso);
+            }
+        }
+        return processedDescansos;
+    }
+
     async getAllFilteredForReports(startDate: string = "", endDate: string = ""): Promise<TReportResponse> {
         try {
             let descansos: IDescansoMedico[] = []
@@ -753,19 +936,20 @@ class DescansoMedicoRepository {
 
             // Mapear los datos para el reporte
             const data = descansos.map(descanso => ({
-                colaborador: descanso.colaborador_dm?.nombre_completo,
-                numero_documento: descanso.colaborador_dm?.numero_documento,
+                nombre_colaborador: descanso.nombre_colaborador,
+                fecha_otorgamiento: descanso.fecha_otorgamiento,
                 fecha_inicio: descanso.fecha_inicio,
                 fecha_final: descanso.fecha_final,
                 total_dias: descanso.total_dias,
                 tipo_descansomedico: descanso.nombre_tipodescansomedico,
                 tipo_contingencia: descanso.nombre_tipocontingencia,
-                diagnostico: descanso.nombre_diagnostico,
                 mes_devengado: descanso.mes_devengado,
                 codigo_citt: descanso.codigo_citt
             }))
 
             const descansosReport = data as TItemReport[]
+
+            console.log({ descansosReport })
 
             return {
                 result: true,
@@ -781,8 +965,6 @@ class DescansoMedicoRepository {
                 error: errorMessage,
                 status: 500
             }
-            // console.error('Error al obtener datos para el reporte:', error);
-            // throw new Error('Error al generar el reporte.');
         }
     }
 }

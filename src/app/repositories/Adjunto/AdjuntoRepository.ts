@@ -13,7 +13,7 @@ import { ADJUNTO_ATTRIBUTES } from "../../../constants/AjuntoConstant";
 import HPagination from "../../../helpers/HPagination";
 import { DocumentoTipoCont } from "../../models/DocumentoTipoCont";
 import { TIPO_ADJUNTO_INCLUDE } from "../../../includes/TipoAdjuntoInclude";
-import { DESCANSOMEDICO_INCLUDE } from "../../../includes/DescansoMedicoInclude";
+import { DESCANSOMEDICO_ADJ_INCLUDE } from "../../../includes/DescansoMedicoAdjInclude";
 import { CANJE_INCLUDE } from "../../../includes/CanjeInclude";
 import { COBRO_INCLUDE } from "../../../includes/CobroInclude";
 import { REEMBOLSO_INCLUDE } from "../../../includes/ReembolsoInclude";
@@ -34,7 +34,7 @@ class AdjuntoRepository {
                 attributes: ADJUNTO_ATTRIBUTES,
                 include: [
                     TIPO_ADJUNTO_INCLUDE,
-                    DESCANSOMEDICO_INCLUDE,
+                    DESCANSOMEDICO_ADJ_INCLUDE,
                     CANJE_INCLUDE,
                     COBRO_INCLUDE,
                     REEMBOLSO_INCLUDE,
@@ -63,7 +63,7 @@ class AdjuntoRepository {
                 attributes: ADJUNTO_ATTRIBUTES,
                 include: [
                     TIPO_ADJUNTO_INCLUDE,
-                    DESCANSOMEDICO_INCLUDE,
+                    DESCANSOMEDICO_ADJ_INCLUDE,
                     CANJE_INCLUDE,
                     COBRO_INCLUDE,
                     REEMBOLSO_INCLUDE,
@@ -112,21 +112,7 @@ class AdjuntoRepository {
     async getById(id: string): Promise<AdjuntoResponse> {
         try {
             const adjunto = await Adjunto.findByPk(id, {
-                attributes: ADJUNTO_ATTRIBUTES,
-                include: [
-                    TIPO_ADJUNTO_INCLUDE,
-                    DESCANSOMEDICO_INCLUDE,
-                    CANJE_INCLUDE,
-                    COBRO_INCLUDE,
-                    REEMBOLSO_INCLUDE,
-                    {
-                        model: Colaborador,
-                        as: 'colaborador',
-                        attributes: COLABORADOR_ATTRIBUTES
-                    },
-                    TRABAJADOR_SOCIAL_INCLUDE,
-                    DOCUMENTO_TIPO_CONT_INCLUDE
-                ]
+                attributes: ADJUNTO_ATTRIBUTES
             }) as IAdjunto
 
             if (!adjunto) {
@@ -239,7 +225,7 @@ class AdjuntoRepository {
                 }
             );
 
-            // console.log(`Se actualizaron ${numberOfUpdatedRows} registros.`);
+            console.log(`Se actualizaron ${numberOfUpdatedRows} registros.`);
         } catch (error) {
             console.error('Error al actualizar los registros:', error);
         }

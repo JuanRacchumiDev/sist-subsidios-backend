@@ -37,6 +37,7 @@ export class Canje extends Model<ICanje, CanjeCreationAttributes> implements ICa
     public is_reembolsable?: boolean | undefined;
     public observacion?: string | undefined;
     public mes_devengado?: string | undefined;
+    public nombre_colaborador?: string | undefined;
     public nombre_tipocontingencia?: string | undefined;
     public nombre_tipodescansomedico?: string | undefined;
     public user_crea?: string | undefined;
@@ -194,6 +195,13 @@ Canje.init({
         allowNull: false,
         set(value: string) {
             this.setDataValue('mes_devengado', value ? value.trim() : undefined)
+        }
+    },
+    nombre_colaborador: {
+        type: new DataTypes.STRING(80),
+        allowNull: false,
+        set(value: string) {
+            this.setDataValue('nombre_colaborador', value ? value.trim() : undefined)
         }
     },
     nombre_tipodescansomedico: {

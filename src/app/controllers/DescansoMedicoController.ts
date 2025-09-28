@@ -10,6 +10,9 @@ import { IDescansoMedico } from "../interfaces/DescansoMedico/IDescansoMedico";
 import { ResponseTransaction } from '../types/DescansoMedico/TResponseTransaction';
 import { generatePdfReport } from "../utils/pdfGenerator";
 import { generateExcelReport } from "../utils/excelGenerator";
+import { IDescansoMedicoFilter } from "../interfaces/DescansoMedico/IDescansoMedicoFilter";
+import HDate from "../../helpers/HDate";
+import { TItemReport } from "../types/DescansoMedico/TItemReport";
 
 class DescansoMedicoController {
     async getAllDescansos(req: Request, res: Response, next: NextFunction) {
@@ -27,7 +30,27 @@ class DescansoMedicoController {
 
             const limit = parseInt(req.query.limit as string) || 10
 
-            const result = await GetDescansosPaginateService.execute(page, limit)
+            // Extracción de filtros opcionales de req.query
+            const {
+                id_tipodescansomedico,
+                id_tipocontingencia,
+                nombre_colaborador,
+                fecha_inicio,
+                fecha_final,
+                estado
+            } = req.query;
+
+            // Construir el objeto de filtros (maneja el estado como booleano si es necesario)
+            const filters: IDescansoMedicoFilter = {
+                id_tipodescansomedico: id_tipodescansomedico as string,
+                id_tipocontingencia: id_tipocontingencia as string,
+                nombre_colaborador: nombre_colaborador as string,
+                fecha_inicio: fecha_inicio as string,
+                fecha_final: fecha_final as string,
+                estado: estado !== undefined ? estado === 'true' : undefined // Convierte 'true'/'false' a booleano, o undefined si no está
+            };
+
+            const result = await GetDescansosPaginateService.execute(page, limit, filters)
 
             res.status(result.status || 200).json(result)
         } catch (error) {
@@ -43,7 +66,25 @@ class DescansoMedicoController {
 
             const limit = parseInt(req.query.limit as string) || 10
 
-            const result = await GetDescansosByColaboradorPaginate.execute(idColaborador, page, limit)
+            // Extracción de filtros opcionales de req.query
+            const {
+                id_tipodescansomedico,
+                id_tipocontingencia,
+                fecha_inicio,
+                fecha_final,
+                estado
+            } = req.query;
+
+            // Construir el objeto de filtros (maneja el estado como booleano si es necesario)
+            const filters: IDescansoMedicoFilter = {
+                id_tipodescansomedico: id_tipodescansomedico as string,
+                id_tipocontingencia: id_tipocontingencia as string,
+                fecha_inicio: fecha_inicio as string,
+                fecha_final: fecha_final as string,
+                estado: estado !== undefined ? estado === 'true' : undefined // Convierte 'true'/'false' a booleano, o undefined si no está
+            };
+
+            const result = await GetDescansosByColaboradorPaginate.execute(idColaborador, page, limit, filters)
 
             res.status(result.status || 200).json(result)
         } catch (error) {
@@ -59,31 +100,37 @@ class DescansoMedicoController {
 
             const { data } = response
 
-            const dataDescansos = data as IDescansoMedico[]
+            const dataDescansos = data as TItemReport[]
 
             const headers = [
                 'Colaborador',
+                'Fecha Otorgamiento',
                 'Fecha Inicio',
                 'Fecha Final',
-                'Número de Días',
-                'Tipo de Contingencia',
+                'Total Días',
                 'Tipo de Descanso',
+                'Tipo de Contingencia',
                 'Mes Devengado',
                 'Código CITT',
             ];
 
+            const fileExtension = tipo === "pdf" ? "pdf" : "xlsx"
+
+            const fileSuffix = HDate.getCurrentDateToString("ddMMyyyy")
+
+            const filename = `reporte_descansos_${fileSuffix}.${fileExtension}`
+
             if (tipo === 'pdf') {
                 const pdfBuffer = await generatePdfReport(headers, dataDescansos);
                 res.setHeader('Content-Type', 'application/pdf');
-                res.setHeader('Content-Disposition', 'attachment; filename=reporte_descansos.pdf');
+                res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
                 res.send(pdfBuffer);
             } else if (tipo === 'excel') {
                 const excelBuffer = await generateExcelReport(headers, dataDescansos);
                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                res.setHeader('Content-Disposition', 'attachment; filename=reporte_descansos.xlsx');
+                res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
                 res.send(excelBuffer);
-            }
-            else {
+            } else {
                 return res.status(400).json({ message: 'Tipo de reporte no válido.' });
             }
 

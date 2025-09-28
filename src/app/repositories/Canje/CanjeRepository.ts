@@ -9,10 +9,11 @@ import { DescansoMedico } from "../../models/DescansoMedico"
 import sequelize from "../../../config/database"
 import { CANJE_ATTRIBUTES } from "../../../constants/CanjeConstant"
 import HPagination from "../../../helpers/HPagination"
-import { Op, Transaction } from "sequelize"
+import { Op, Transaction, WhereOptions } from "sequelize"
 import { DESCANSOMEDICO_INCLUDE } from "../../../includes/DescansoMedicoInclude"
 import HDate from "../../../helpers/HDate"
 import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude"
+import { ICanjeFilter } from "../../interfaces/Canje/ICanjeFilter"
 
 class CanjeRepository {
     /**
@@ -43,10 +44,56 @@ class CanjeRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number): Promise<CanjeResponsePaginate> {
+    async getAllWithPaginate(
+        page: number,
+        limit: number,
+        filters: ICanjeFilter
+    ): Promise<CanjeResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
+
+            // Construcción dinámica de la claúsula WHERE
+            const where: WhereOptions = {}
+
+            where.is_reembolsable = true
+
+            // Filtro por estado
+            if (filters.estado !== undefined) {
+                where.estado = filters.estado
+            }
+
+            // Filtro por nombre del colaborador
+            if (filters.nombre_colaborador) {
+                where.nombre_colaborador = {
+                    [Op.like]: `%${filters.nombre_colaborador}%`
+                }
+            }
+
+            // Filtro por rango de fechas
+            if (filters.fecha_inicio_subsidio && filters.fecha_final_subsidio) {
+                where.fecha_inicio_subsidio = {
+                    [Op.lte]: filters.fecha_final_subsidio
+                }
+
+                where.fecha_final_subsidio = {
+                    [Op.gte]: filters.fecha_inicio_subsidio
+                }
+
+                /**
+                 where.fecha_inicio_subsidio = {
+                    [Op.between]: [filters.fecha_inicio_subsidio, filters.fecha_final_subsidio]
+                 }
+                 */
+            } else if (filters.fecha_inicio_subsidio) {
+                where.fecha_inicio_subsidio = {
+                    [Op.gte]: filters.fecha_inicio_subsidio
+                }
+            } else if (filters.fecha_final_subsidio) {
+                where.fecha_final_subsidio = {
+                    [Op.lte]: filters.fecha_final_subsidio
+                }
+            }
 
             const { count, rows } = await Canje.findAndCountAll({
                 attributes: CANJE_ATTRIBUTES,
@@ -54,9 +101,10 @@ class CanjeRepository {
                     DESCANSOMEDICO_INCLUDE,
                     // COLABORADOR_INCLUDE
                 ],
-                where: {
-                    is_reembolsable: true
-                },
+                where,
+                // where: {
+                //     is_reembolsable: true
+                // },
                 order: [
                     ['fecha_inicio_dm', 'ASC'],
                     ['fecha_inicio_subsidio', 'ASC']
@@ -469,6 +517,7 @@ class CanjeRepository {
      */
     async validateSolapamientoFechas(canjesToCreate: ICanje[]): Promise<ICanje[]> {
         const processedCanjes: ICanje[] = [];
+
         for (const newCanje of canjesToCreate) {
             const { id_colaborador, fecha_inicio_subsidio, fecha_final_subsidio } = newCanje;
 
@@ -519,8 +568,6 @@ class CanjeRepository {
                 });
 
                 if (adjustedStartDate <= adjustedEndDate) {
-                    // newCanje.fecha_inicio_subsidio = HDate.formatDate(adjustedStartDate);
-                    // newCanje.fecha_final_subsidio = HDate.formatDate(adjustedEndDate);
                     newCanje.fecha_inicio_subsidio = adjustedStartDate.toISOString().split("T")[0];
                     newCanje.fecha_final_subsidio = adjustedEndDate.toISOString().split("T")[0];
                     processedCanjes.push(newCanje);

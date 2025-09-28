@@ -13,6 +13,7 @@ import HDate from '../../../helpers/HDate';
 import { CanjeResponse, ICanje } from '../../interfaces/Canje/ICanje';
 import { ECanje } from '../../enums/ECanje';
 import CanjeRepository from '../../repositories/Canje/CanjeRepository';
+import { addMonths, differenceInCalendarDays, endOfMonth, format, isSameMonth, parseISO, startOfMonth } from 'date-fns';
 
 type TFechas = {
     fechaInicio: string
@@ -41,12 +42,12 @@ class UpdateDescansoService {
      * @param {IDescansoMedico} payload - Los datos parciales o completos del descanso médico a actualizar.
      * @returns {Promise<DescansoMedicoResponse>} La respuesta de la operación.
      */
-    async execute(id: string, payload: IDescansoMedico): Promise<DescansoMedicoResponse> {
+    async execute(idDescanso: string, payload: IDescansoMedico): Promise<DescansoMedicoResponse> {
         try {
             let nombreCompleto: string = ""
             let email: string = ""
 
-            const responseDescansoMedico = await this.descansoMedicoRepository.update(id, payload);
+            const responseDescansoMedico = await this.descansoMedicoRepository.update(idDescanso, payload);
 
             console.log({ responseDescansoMedico })
 
@@ -61,10 +62,8 @@ class UpdateDescansoService {
             console.log('descanso update', descanso)
 
             const {
-                id: idDescansoMedico,
+                id,
                 id_colaborador,
-                fecha_inicio_ingresado,
-                fecha_final_ingresado,
                 fecha_otorgamiento,
                 fecha_inicio,
                 fecha_final,
@@ -112,316 +111,311 @@ class UpdateDescansoService {
 
                 console.log({ responseEmail })
             } else if (estado_registro === EDescansoMedico.REGISTRO_EXITOSO) {
+
                 console.log('creando canjes desde update descanso')
 
-                // Registrar canjes
-                // let diasAcumulados = 0
+                const idColaborador = id_colaborador as string
 
-                const responseTotalDias = await this.descansoMedicoRepository.getTotalDiasByColaboradorWithoutIdDescanso(
-                    id_colaborador as string,
-                    idDescansoMedico as string,
-                    fecha_otorgamiento as string
-                )
+                const idDescansoMedico = id as string
 
-                console.log('console.log responseTotalDias')
-                console.log({ responseTotalDias })
+                const fechaOtorgamiento = fecha_otorgamiento as string
 
-                const { result: resultTotalDias, data: totalDiasAcumulados } = responseTotalDias
+                const fechaInicio = fecha_inicio as string
 
-                if (!resultTotalDias) {
-                    console.log('creando canjes desde update descanso')
-                    console.log('aaa')
+                const fechaFinal = fecha_final as string
 
-                    return {
-                        result: false,
-                        message: 'Error al obtener los días de descanso acumulados',
-                        status: 422
-                    };
-                }
-
-                // if (typeof totalDiasAcumulados === 'string') {
-                //     diasAcumulados = parseInt(totalDiasAcumulados)
-                // } else {
-                //     diasAcumulados = totalDiasAcumulados as number
-                // }
-
-                const diasAcumulados = typeof totalDiasAcumulados === 'string' ? parseInt(totalDiasAcumulados) : totalDiasAcumulados as number;
                 const totalDiasActual = total_dias as number;
 
-                console.log({ diasAcumulados })
-                console.log(typeof diasAcumulados)
+                // Obteniendo datos del colaborador
+                const responseColaborador = await this.colaboradorRepository.getById(idColaborador)
 
-                const newDiasAcumulados = diasAcumulados + totalDiasActual
+                const { result: resultColaborador, data: dataColaborador } = responseColaborador
 
-                // Si la suma de días (anteriores + actual) es menor o igual a 20, no se generan canjes
-                if (newDiasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
-                    // if (diasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
-                    console.log('creando canjes desde update descanso')
-                    console.log('bb')
-
-                    return responseDescansoMedico
+                if (!resultColaborador || !dataColaborador) return {
+                    result: false,
+                    message: 'Colaborador no encontrado',
+                    status: 404
                 }
 
-                console.log('creando canjes desde update descanso')
-                console.log('ccc')
+                const {
+                    nombres,
+                    apellido_paterno,
+                    apellido_materno,
+                    correo_personal
+                } = dataColaborador as IColaborador
 
-                // Creando un arreglo de canjes
-                const recordsToCreate: ICanje[] = []
+                const nombreColaborador = `${nombres} ${apellido_paterno} ${apellido_materno}`
 
                 const fechaActual: string = HDate.getCurrentDateToString('yyyy-MM-dd')
 
                 let fechaInicioSubsidio: string;
+
                 let fechaFinalSubsidio: string;
-                let isReembolsable: boolean;
 
-                // Lógica del primer canje (no subsidiado)
-                // Se crean canjes para los días no subsidiados (hasta 20 días en total)
-                // if (diasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
-                if (newDiasAcumulados > TOTAL_DIAS_DESCANSO_MEDICO) {
-                    console.log('nuevos días acumulados mayor a los días total_dias_descanso_medico')
+                const recordsToCreateCanje: ICanje[] = [];
 
-                    const diasMaximo = TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados;
-                    // const fechaFinalPrimerCanje = HDate.addDaysToDate(fecha_inicio as string, diasMaximo - 1);
-                    // const diasMaximo = TOTAL_DIAS_DESCANSO_MEDICO
-                    const fechaFinalPrimerCanje = HDate.addDaysToDate(fecha_inicio as string, diasMaximo - 1)
+                const isReembolsable: boolean = true;
 
-                    fechaInicioSubsidio = fecha_inicio as string;
-                    fechaFinalSubsidio = fechaFinalPrimerCanje;
-                    isReembolsable = false;
+                const esMaternidad = nombre_tipocontingencia?.toLowerCase().includes('maternidad')
 
-                    console.log({ diasMaximo })
-                    console.log({ fechaFinalPrimerCanje })
+                console.log({ esMaternidad })
+
+                console.log('Creando canjes para maternidad o por canjes por superar los 20 días')
+
+                if (esMaternidad) {
+                    console.log('crear subsidio por maternidad')
+
+                    fechaInicioSubsidio = fechaInicio;
+                    fechaFinalSubsidio = fechaFinal;
+
                     console.log({ fechaInicioSubsidio })
                     console.log({ fechaFinalSubsidio })
 
-                    const payloadCanjeWithoutSubsidio: ICanje = {
-                        id_descansomedico: id,
-                        id_colaborador,
-                        fecha_otorgamiento,
-                        fecha_inicio_subsidio: fechaInicioSubsidio,
-                        fecha_final_subsidio: fechaFinalSubsidio,
-                        fecha_inicio_dm: fecha_inicio,
-                        fecha_final_dm: fecha_final,
-                        fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
-                        fecha_registro: fechaActual,
-                        is_reembolsable: isReembolsable,
-                        estado_registro: ECanje.CANJE_REGISTRADO,
-                        nombre_tipocontingencia,
-                        nombre_tipodescansomedico
-                    };
+                    // Validando si las fechas de inicio y canje están en las mismas fechas o fechas distintas
+                    const startDateCanje = parseISO(fechaInicioSubsidio)
+                    const endDateCanje = parseISO(fechaFinalSubsidio)
 
-                    console.log({ payloadCanjeWithoutSubsidio })
+                    if (isSameMonth(startDateCanje, endDateCanje)) {
+                        console.log('fechas de canje en el mismo mes')
 
-                    recordsToCreate.push(payloadCanjeWithoutSubsidio);
-                }
-
-                // Lógica del segundo canje (subsidiado)
-                // Se crean canjes para los días subsidiados (a partir del día 21)
-                const diasRestantes = newDiasAcumulados - TOTAL_DIAS_DESCANSO_MEDICO;
-                console.log({ diasRestantes })
-
-                if (diasRestantes > 0) {
-                    console.log('newdiasacumulados es mayor a total_dias_descanso_medico')
-
-                    let fechaInicioSegundoCanje: string;
-
-                    console.log({ diasAcumulados })
-
-                    if (diasAcumulados >= TOTAL_DIAS_DESCANSO_MEDICO) {
-                        console.log('ppppp')
-                        fechaInicioSegundoCanje = fecha_inicio as string;
-                    } else {
-                        console.log('qqqqq')
-                        // const fechaFinalPrimerCanje = HDate.addDaysToDate(fecha_inicio as string, TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados - 1);
-                        console.log('TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados', (TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados))
-                        const fechaFinalPrimerCanje = HDate.addDaysToDate(fecha_inicio as string, TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados - 1)
-                        fechaInicioSegundoCanje = HDate.addDaysToDate(fechaFinalPrimerCanje, 1);
-                        console.log({ fechaFinalPrimerCanje })
-                        console.log({ fechaInicioSegundoCanje })
-                    }
-
-                    console.log({ fechaInicioSegundoCanje })
-
-                    fechaInicioSubsidio = fechaInicioSegundoCanje;
-                    fechaFinalSubsidio = fecha_final as string;
-                    isReembolsable = true;
-
-                    console.log({ fechaInicioSegundoCanje })
-                    console.log({ fechaInicioSubsidio })
-                    console.log({ fechaFinalSubsidio })
-
-                    const payloadCanjeWithSubsidio: ICanje = {
-                        id_descansomedico: id,
-                        id_colaborador,
-                        fecha_otorgamiento,
-                        fecha_inicio_subsidio: fechaInicioSubsidio,
-                        fecha_final_subsidio: fechaFinalSubsidio,
-                        fecha_inicio_dm: fecha_inicio,
-                        fecha_final_dm: fecha_final,
-                        fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
-                        fecha_registro: fechaActual,
-                        is_reembolsable: isReembolsable,
-                        estado_registro: ECanje.CANJE_REGISTRADO,
-                        nombre_tipocontingencia,
-                        nombre_tipodescansomedico
-                    };
-
-                    console.log({ payloadCanjeWithSubsidio })
-
-                    recordsToCreate.push(payloadCanjeWithSubsidio);
-                }
-
-                // Aquí se llama a la función para gestionar los solapamientos de fechas
-                const recordsToCreateWithOverlapHandling = await this.canjeRepository.validateSolapamientoFechas(recordsToCreate);
-
-                console.log({ recordsToCreateWithOverlapHandling })
-
-                // Se eliminan los canjes que queden sin días después del manejo del solapamiento
-                const finalRecordsToCreate = recordsToCreateWithOverlapHandling.filter(canje => HDate.differenceDates(canje.fecha_inicio_subsidio as string, canje.fecha_final_subsidio as string) + 1 > 0);
-
-                console.log({ finalRecordsToCreate })
-
-                if (finalRecordsToCreate.length > 0) {
-                    const resultsCanjes = await this.canjeRepository.createMultiple(finalRecordsToCreate) as CanjeResponse[];
-                    const allSuccessful = resultsCanjes.every(res => res.result);
-
-                    if (allSuccessful) {
-                        return {
-                            result: true,
-                            message: "Canjes registrados con éxito",
-                            status: 200
+                        const payloadCanjeMaternidad: ICanje = {
+                            id_descansomedico: idDescansoMedico,
+                            id_colaborador,
+                            fecha_otorgamiento,
+                            fecha_inicio_subsidio: fechaInicioSubsidio,
+                            fecha_final_subsidio: fechaFinalSubsidio,
+                            fecha_inicio_dm: fecha_inicio,
+                            fecha_final_dm: fecha_final,
+                            fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, 30),
+                            fecha_registro: fechaActual,
+                            is_reembolsable: isReembolsable,
+                            estado_registro: ECanje.CANJE_REGISTRADO,
+                            nombre_colaborador: nombreColaborador,
+                            nombre_tipocontingencia,
+                            nombre_tipodescansomedico
                         };
+
+                        recordsToCreateCanje.push(payloadCanjeMaternidad)
                     } else {
+                        console.log('fechas de canje en meses distintos')
+                        let currentStartDateCanje = startDateCanje
+
+                        while (currentStartDateCanje <= endDateCanje) {
+                            console.log({ currentStartDateCanje })
+                            console.log({ endDateCanje })
+
+                            let currentEndDateCanje = endOfMonth(currentStartDateCanje)
+                            console.log('currentEndDateCanje inicial')
+                            console.log({ currentEndDateCanje })
+
+                            if (currentEndDateCanje > endDateCanje) {
+                                currentEndDateCanje = endDateCanje
+                            }
+
+                            console.log('currentEndDateCanje final')
+                            console.log({ currentEndDateCanje })
+
+                            const payloadCanjeMaternidad: ICanje = {
+                                id_descansomedico: idDescansoMedico,
+                                id_colaborador,
+                                fecha_otorgamiento,
+                                fecha_inicio_subsidio: format(currentStartDateCanje, "yyyy-MM-dd"),
+                                fecha_final_subsidio: format(currentEndDateCanje, "yyyy-MM-dd"),
+                                total_dias: differenceInCalendarDays(currentEndDateCanje, currentStartDateCanje) + 1,
+                                fecha_inicio_dm: fecha_inicio,
+                                fecha_final_dm: fecha_final,
+                                fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, 30),
+                                fecha_registro: fechaActual,
+                                is_reembolsable: true,
+                                estado_registro: ECanje.CANJE_REGISTRADO,
+                                nombre_colaborador: nombreColaborador,
+                                nombre_tipocontingencia,
+                                nombre_tipodescansomedico
+                            };
+
+                            recordsToCreateCanje.push(payloadCanjeMaternidad)
+
+                            currentStartDateCanje = addMonths(startOfMonth(currentStartDateCanje), 1)
+                        }
+
+                        console.log('array de canjes para registrar')
+                        console.log({ recordsToCreateCanje })
+                    }
+                } else {
+                    console.log('crear canje que no es maternidad')
+                    const responseTotalDias = await this.descansoMedicoRepository.getTotalDiasByColaboradorWithoutIdDescanso(
+                        idColaborador,
+                        idDescansoMedico,
+                        fechaOtorgamiento
+                    )
+
+                    console.log('console.log responseTotalDias')
+                    console.log({ responseTotalDias })
+
+                    const { result: resultTotalDias, data: totalDiasAcumulados } = responseTotalDias
+
+                    if (!resultTotalDias) {
+                        console.log('creando canjes desde update descanso')
+                        console.log('aaa')
+
                         return {
                             result: false,
-                            error: "Error al registrar uno o más canjes",
-                            status: 500
+                            message: 'Error al obtener los días de descanso acumulados',
+                            status: 422
                         };
                     }
+
+                    const diasAcumulados = typeof totalDiasAcumulados === 'string' ? parseInt(totalDiasAcumulados) : totalDiasAcumulados as number;
+
+                    console.log({ diasAcumulados })
+                    console.log(typeof diasAcumulados)
+
+                    const newDiasAcumulados = diasAcumulados + totalDiasActual
+
+                    // Si la suma de días (anteriores + actual) es menor o igual a 20, no se generan canjes
+                    if (newDiasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
+                        // if (diasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
+                        console.log('creando canjes desde update descanso')
+                        console.log('bb')
+
+                        return responseDescansoMedico
+                    }
+
+                    console.log('creando canjes desde update descanso')
+                    console.log('ccc')
+
+                    // Lógica del primer canje (no subsidiado)
+                    // Se crean canjes para los días no subsidiados (hasta 20 días en total)
+                    // if (diasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
+                    if (newDiasAcumulados > TOTAL_DIAS_DESCANSO_MEDICO) {
+                        console.log('nuevos días acumulados mayor a los días total_dias_descanso_medico')
+
+                        const diasMaximo = TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados;
+
+                        const fechaFinalPrimerCanje = HDate.addDaysToDate(fechaInicio, diasMaximo - 1)
+
+                        fechaInicioSubsidio = fechaInicio;
+
+                        fechaFinalSubsidio = fechaFinalPrimerCanje;
+
+                        // isReembolsable = false;
+
+                        console.log({ diasMaximo })
+                        console.log({ fechaFinalPrimerCanje })
+                        console.log({ fechaInicioSubsidio })
+                        console.log({ fechaFinalSubsidio })
+
+                        const payloadCanjeWithoutSubsidio: ICanje = {
+                            id_descansomedico: idDescansoMedico,
+                            id_colaborador,
+                            fecha_otorgamiento,
+                            fecha_inicio_subsidio: fechaInicioSubsidio,
+                            fecha_final_subsidio: fechaFinalSubsidio,
+                            fecha_inicio_dm: fecha_inicio,
+                            fecha_final_dm: fecha_final,
+                            fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, 30),
+                            fecha_registro: fechaActual,
+                            is_reembolsable: false,
+                            estado_registro: ECanje.CANJE_REGISTRADO,
+                            nombre_colaborador: nombreColaborador,
+                            nombre_tipocontingencia,
+                            nombre_tipodescansomedico
+                        };
+
+                        console.log({ payloadCanjeWithoutSubsidio })
+
+                        recordsToCreateCanje.push(payloadCanjeWithoutSubsidio);
+                    }
+
+                    // Lógica del segundo canje (subsidiado)
+                    // Se crean canjes para los días subsidiados (a partir del día 21)
+                    const diasRestantes = newDiasAcumulados - TOTAL_DIAS_DESCANSO_MEDICO;
+                    console.log({ diasRestantes })
+
+                    if (diasRestantes > 0) {
+                        console.log('newdiasacumulados es mayor a total_dias_descanso_medico')
+
+                        let fechaInicioSegundoCanje: string;
+
+                        console.log({ diasAcumulados })
+
+                        if (diasAcumulados >= TOTAL_DIAS_DESCANSO_MEDICO) {
+                            console.log('ppppp')
+                            fechaInicioSegundoCanje = fechaInicio;
+                        } else {
+                            console.log('qqqqq')
+                            // const fechaFinalPrimerCanje = HDate.addDaysToDate(fechaInicio, TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados - 1);
+                            console.log('TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados', (TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados))
+                            const fechaFinalPrimerCanje = HDate.addDaysToDate(fechaInicio, TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados - 1)
+                            fechaInicioSegundoCanje = HDate.addDaysToDate(fechaFinalPrimerCanje, 1);
+                            console.log({ fechaFinalPrimerCanje })
+                            console.log({ fechaInicioSegundoCanje })
+                        }
+
+                        console.log({ fechaInicioSegundoCanje })
+
+                        fechaInicioSubsidio = fechaInicioSegundoCanje;
+
+                        fechaFinalSubsidio = fechaFinal;
+
+                        // isReembolsable = true;
+
+                        console.log({ fechaInicioSegundoCanje })
+                        console.log({ fechaInicioSubsidio })
+                        console.log({ fechaFinalSubsidio })
+
+                        const payloadCanjeWithSubsidio: ICanje = {
+                            id_descansomedico: idDescansoMedico,
+                            id_colaborador,
+                            fecha_otorgamiento,
+                            fecha_inicio_subsidio: fechaInicioSubsidio,
+                            fecha_final_subsidio: fechaFinalSubsidio,
+                            fecha_inicio_dm: fecha_inicio,
+                            fecha_final_dm: fecha_final,
+                            fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, 30),
+                            fecha_registro: fechaActual,
+                            is_reembolsable: isReembolsable,
+                            estado_registro: ECanje.CANJE_REGISTRADO,
+                            nombre_colaborador: nombreColaborador,
+                            nombre_tipocontingencia,
+                            nombre_tipodescansomedico
+                        };
+
+                        console.log({ payloadCanjeWithSubsidio })
+
+                        recordsToCreateCanje.push(payloadCanjeWithSubsidio);
+                    }
+
+                    // Aquí se llama a la función para gestionar los solapamientos de fechas
+                    const recordsToCreateWithOverlapHandling = await this.canjeRepository.validateSolapamientoFechas(recordsToCreateCanje);
+
+                    console.log({ recordsToCreateWithOverlapHandling })
+
+                    // Se eliminan los canjes que queden sin días después del manejo del solapamiento
+                    const finalRecordsToCreate = recordsToCreateWithOverlapHandling.filter(canje => HDate.differenceDates(canje.fecha_inicio_subsidio as string, canje.fecha_final_subsidio as string) + 1 > 0);
+
+                    console.log({ finalRecordsToCreate })
+
+                    if (finalRecordsToCreate.length > 0) {
+                        const resultsCanjes = await this.canjeRepository.createMultiple(finalRecordsToCreate) as CanjeResponse[];
+
+                        const allSuccessful = resultsCanjes.every(res => res.result);
+
+                        if (allSuccessful) {
+                            return {
+                                result: true,
+                                message: "Canjes registrados con éxito",
+                                status: 200
+                            };
+                        } else {
+                            return {
+                                result: false,
+                                error: "Error al registrar uno o más canjes",
+                                status: 500
+                            };
+                        }
+                    }
                 }
-
-                // // Crear nuevo canje primera parte sin subsidio
-                // const diasMaximo: number = TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados
-                // // const diasMaximo: number = TOTAL_DIAS_DESCANSO_MEDICO
-
-                // console.log('creando canjes desde update descanso')
-                // console.log({ diasMaximo })
-
-                // // const fechaFinalFirstSubsidio: string = HDate.addDaysToDate(fecha_inicio as string, diasMaximo)
-                // const fechaFinalFirstSubsidio: string = HDate.addDaysToDate(fecha_otorgamiento as string, diasMaximo)
-
-                // console.log('creando canjes desde update descanso')
-                // console.log({ fechaFinalFirstSubsidio })
-
-                // const fechaInicioLastSubsidio: string = HDate.addDaysToDate(fechaFinalFirstSubsidio, 1)
-
-                // console.log('creando canjes desde update descanso')
-                // console.log({ fechaInicioLastSubsidio })
-
-                // // const fechaMaximaCanje: string = HDate.addDaysToDate(fecha_inicio as string, 30)
-                // const fechaMaximaCanje: string = HDate.addDaysToDate(fecha_inicio_ingresado as string, 30)
-
-                // console.log('creando canjes desde update descanso')
-                // console.log({ fechaMaximaCanje })
-
-                // // Validar solapamiento de fechas
-                // // const datesValidatedFirstCanje = await this.canjeRepository.validateAcoplamiento(
-                // //     id_colaborador as string,
-                // //     fecha_inicio as string,
-                // //     fechaFinalFirstSubsidio
-                // // ) as TFechas
-
-                // // const {
-                // //     fechaInicio: fechaInicioFirstCanje,
-                // //     fechaFinal: fechaFinalFirstCanje
-                // // } = datesValidatedFirstCanje
-
-                // // Crear el primer canje (no reembolsable, hasta el día 20)
-                // const payloadCanjeWithoutSubsidio: ICanje = {
-                //     id_descansomedico: id,
-                //     id_colaborador,
-                //     fecha_otorgamiento,
-                //     fecha_inicio_subsidio: fecha_otorgamiento,
-                //     fecha_final_subsidio: fechaFinalFirstSubsidio,
-                //     // fecha_inicio_subsidio: fechaInicioFirstCanje,
-                //     // fecha_final_subsidio: fechaFinalFirstCanje,
-                //     // fecha_inicio_subsidio: fecha_inicio,
-                //     // fecha_final_subsidio: fechaFinalFirstSubsidio,
-                //     fecha_inicio_dm: fecha_inicio,
-                //     fecha_final_dm: fecha_final,
-                //     // fecha_inicio_dm: fecha_inicio,
-                //     // fecha_final_dm: fecha_final,
-                //     fecha_maxima_canje: fechaMaximaCanje,
-                //     fecha_registro: fechaActual,
-                //     is_reembolsable: false,
-                //     estado_registro: ECanje.CANJE_REGISTRADO,
-                //     nombre_tipocontingencia,
-                //     nombre_tipodescansomedico
-                // }
-
-                // console.log('creando canjes desde nuevo descanso')
-                // console.log({ payloadCanjeWithoutSubsidio })
-
-                // // const datesValidatedSecondCanje = await this.canjeRepository.validateAcoplamiento(
-                // //     id_colaborador as string,
-                // //     fechaInicioLastSubsidio,
-                // //     fecha_final as string
-                // // ) as TFechas
-
-                // // const {
-                // //     fechaInicio: fechaInicioLastCanje,
-                // //     fechaFinal: fechaFinalLastCanje
-                // // } = datesValidatedSecondCanje
-
-                // const payloadCanjeWithSubsidio: ICanje = {
-                //     id_descansomedico: id,
-                //     id_colaborador,
-                //     fecha_otorgamiento,
-                //     fecha_inicio_subsidio: fechaInicioLastSubsidio,
-                //     fecha_final_subsidio: fecha_final,
-                //     // fecha_inicio_subsidio: fechaInicioLastCanje,
-                //     // fecha_final_subsidio: fechaFinalLastCanje,
-                //     // fecha_inicio_subsidio: fechaInicioLastSubsidio,
-                //     // fecha_final_subsidio: fecha_final,
-                //     fecha_inicio_dm: fecha_inicio,
-                //     fecha_final_dm: fecha_final,
-                //     // fecha_inicio_dm: fecha_inicio,
-                //     // fecha_final_dm: fecha_final,
-                //     fecha_maxima_canje: fechaMaximaCanje,
-                //     fecha_registro: fechaActual,
-                //     is_reembolsable: true,
-                //     estado_registro: ECanje.CANJE_REGISTRADO,
-                //     nombre_tipocontingencia,
-                //     nombre_tipodescansomedico
-                // }
-
-                // console.log('creando canjes desde nuevo descanso')
-                // console.log({ payloadCanjeWithSubsidio })
-
-                // recordsToCreate.push(payloadCanjeWithoutSubsidio)
-                // recordsToCreate.push(payloadCanjeWithSubsidio)
-
-                // const resultsCanjes = await this.canjeRepository.createMultiple(recordsToCreate) as CanjeResponse[]
-
-                // // Verificamos si todos los registros fueron creados satisfactoriamente
-                // const allSuccessful = resultsCanjes.every(res => res.result)
-
-                // console.log('creando canjes desde nuevo descanso')
-
-                // if (allSuccessful) {
-                //     return {
-                //         result: true,
-                //         // message: "Canje registrado con éxito en múltiples registros",
-                //         message: "Canjes registrados con éxito",
-                //         status: 200
-                //     }
-                // } else {
-                //     return {
-                //         result: false,
-                //         error: "Error al registrar uno o más canjes",
-                //         status: 500
-                //     }
-                // }
             }
 
             console.log('final updateDescanso')

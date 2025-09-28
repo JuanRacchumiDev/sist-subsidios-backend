@@ -56,7 +56,7 @@ const setupDatabase = async () => {
         Area.hasMany(TrabajadorSocial, { foreignKey: 'id_area', as: 'trabajadoresSociales' })
 
         Adjunto.belongsTo(TipoAdjunto, { foreignKey: 'id_tipoadjunto', as: 'tipoAdjunto' })
-        Adjunto.belongsTo(DescansoMedico, { foreignKey: 'id_descansomedico', as: 'descansoMedico' })
+        Adjunto.belongsTo(DescansoMedico, { foreignKey: 'id_descansomedico', as: 'descansoMedico_adj' })
         Adjunto.belongsTo(Canje, { foreignKey: 'id_canje', as: 'canje' })
         Adjunto.belongsTo(Cobro, { foreignKey: 'id_cobro', as: 'cobro' })
         Adjunto.belongsTo(Reembolso, { foreignKey: 'id_reembolso', as: 'reembolso' })
@@ -64,8 +64,6 @@ const setupDatabase = async () => {
         Adjunto.belongsTo(TrabajadorSocial, { foreignKey: 'id_trabajadorsocial', as: 'trabajadorSocial' })
         Adjunto.belongsTo(DocumentoTipoCont, { foreignKey: 'id_documento', as: 'documentoTipoCont' })
 
-        // Canje.hasOne(DescansoMedico, { foreignKey: 'id_canje', as: 'descansoMedico' })
-        // Canje.belongsTo(Reembolso, { foreignKey: 'id_reembolso', as: 'reembolso' })
         Canje.hasMany(Adjunto, { foreignKey: 'id_canje', as: 'adjuntos' })
         Canje.belongsTo(DescansoMedico, { foreignKey: 'id_descansomedico', as: 'descansoMedico' })
         Canje.belongsTo(Colaborador, { foreignKey: 'id_colaborador', as: 'colaborador' })

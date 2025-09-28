@@ -18,6 +18,9 @@ export const CANJE_INCLUDE = {
         'fecha_registro',
         'is_reembolsable',
         'mes_devengado',
+        'nombre_colaborador',
+        'nombre_tipodescansomedico',
+        'nombre_tipocontingencia',
         'estado_registro',
         'sistema',
         'estado'

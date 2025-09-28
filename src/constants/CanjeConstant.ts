@@ -18,6 +18,7 @@ export const CANJE_ATTRIBUTES = [
     'is_reembolsable',
     'observacion',
     'mes_devengado',
+    'nombre_colaborador',
     'nombre_tipodescansomedico',
     'nombre_tipocontingencia',
     'estado_registro',

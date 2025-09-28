@@ -31,6 +31,7 @@ export interface ICanje {
     is_reembolsable?: boolean
     observacion?: string
     mes_devengado?: string
+    nombre_colaborador?: string
     nombre_tipodescansomedico?: string
     nombre_tipocontingencia?: string
     user_crea?: string

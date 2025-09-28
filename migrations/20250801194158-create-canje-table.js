@@ -135,6 +135,10 @@ module.exports = {
         type: Sequelize.STRING(12),
         allowNull: false
       },
+      nombre_colaborador: {
+        type: Sequelize.STRING(80),
+        allowNull: false
+      },
       nombre_tipodescansomedico: {
         type: Sequelize.STRING(50),
         allowNull: false

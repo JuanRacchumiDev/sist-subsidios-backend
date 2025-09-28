@@ -14,10 +14,11 @@ export const generateExcelReport = async (headers: string[], data: any[]): Promi
 
     // Mapear los datos de TItemReport para que coincidan con las claves de las columnas
     const mappedData = data.map(item => ({
-        colaborador: item.colaborador,
+        nombre_colaborador: item.nombre_colaborador,
+        fecha_otorgamiento: item.fecha_otorgamiento,
         fecha_inicio: item.fecha_inicio,
         fecha_final: item.fecha_final,
-        numero_de_dias: item.total_dias,
+        total_dias: item.total_dias,
         tipo_de_contingencia: item.tipo_contingencia,
         tipo_de_descanso: item.tipo_descansomedico,
         mes_devengado: item.mes_devengado,
