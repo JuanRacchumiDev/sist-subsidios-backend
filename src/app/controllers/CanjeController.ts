@@ -1,11 +1,16 @@
 import { NextFunction, Response, Request } from "express";
 import GetCanjesService from '../services/Canje/GetCanjes'
 import GetCanjeService from '../services/Canje/GetCanje'
+import GetCanjesForReportService from '../services/Canje/GetCanjesForReport'
 import CreateCanjeService from '../services/Canje/CreateCanje'
 import UpdateCanjeService from '../services/Canje/UpdateCanje'
 import { ICanje } from "../interfaces/Canje/ICanje";
 import GetCanjesPaginateService from "../services/Canje/GetCanjesPaginate";
 import { ICanjeFilter } from "../interfaces/Canje/ICanjeFilter";
+import { THeaderColumn } from "../types/Reportes/THeader";
+import HDate from "../../helpers/HDate";
+import { generateExcelReport } from "../utils/excelGenerator";
+import { TItemReport } from "../types/Canje/TItemReport";
 
 class CanjeController {
     async getAllCanjes(req: Request, res: Response, next: NextFunction) {
@@ -48,6 +53,85 @@ class CanjeController {
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)
+        }
+    }
+
+    async getAllForReport(req: Request, res: Response, next: NextFunction) {
+        try {
+            const reportTitle = 'REPORTE DE DETALLE DE DESCANSOS MÉDICOS'
+
+            const fileSuffix = HDate.getCurrentDateToString("ddMMyyyy")
+
+            const headersColumns: THeaderColumn[] = [
+                {
+                    nameColumn: "DNI",
+                    key: "numero_documento",
+                    width: 10
+                },
+                {
+                    nameColumn: "APALLIDOS Y NOMBRES",
+                    key: "nombre_colaborador",
+                    width: 40
+                },
+                {
+                    nameColumn: "INICIO SUBSIDIO",
+                    key: "fecha_inicio_subsidio",
+                    width: 20
+                },
+                {
+                    nameColumn: "FIN SUBSIDIO",
+                    key: "fecha_fin_subsidio",
+                    width: 20
+                },
+                {
+                    nameColumn: "N° DE DÍAS SUBSIDIO",
+                    key: "total_dias",
+                    width: 20
+                }
+            ]
+
+            console.log('req.query')
+            console.log(req.query)
+
+            const {
+                type,
+                limit,
+                output
+            } = req.query; // 'type': non_consecutive, consecutive, global | 'limit': 90, 150, 340 | 'output': excel, pdf
+
+            if (!type || !limit) {
+                return res.status(400).json({ message: 'Los parámetros "type" y "limit" son obligatorios.' });
+            }
+
+            const parsedLimit = parseInt(limit as string);
+
+            const reportType = type as 'non_consecutive' | 'consecutive' | 'global';
+
+            // Ejecuta el servicio
+            const response = await GetCanjesForReportService.execute(reportType, parsedLimit);
+
+            const { result, data } = response
+
+            if (!result || !data) {
+                return res.status(response.status || 500).json(response);
+            }
+
+            const fileExtension = output === "pdf" ? "pdf" : "xlsx";
+
+            const filename = `reporte_subsidios_${reportType}_${fileSuffix}.${fileExtension}`;
+
+            const dataCanjes = data as TItemReport[]
+
+            if (output === 'excel') {
+                const excelBuffer = await generateExcelReport(reportTitle, headersColumns, dataCanjes);
+                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+                res.send(excelBuffer);
+            }
+
+        } catch (error) {
+            next(error)
+            res.status(500).json({ message: 'Error interno del servidor al generar el reporte.', error: error });
         }
     }
 

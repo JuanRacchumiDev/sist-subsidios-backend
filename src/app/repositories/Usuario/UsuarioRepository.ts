@@ -15,6 +15,8 @@ import { PERFIL_INCLUDE } from '../../../includes/PerfilInclude';
 import { COLABORADOR_INCLUDE } from '../../../includes/ColaboradorInclude';
 import { TRABAJADOR_SOCIAL_INCLUDE } from '../../../includes/TrabSocialInclude';
 import { PERSONA_INCLUDE } from '../../../includes/PersonaInclude';
+import { IUsuarioFilter } from '../../interfaces/Usuario/IUsuarioFilter';
+import { Op, WhereOptions } from 'sequelize';
 
 class UsuarioRepository {
     /**
@@ -43,10 +45,27 @@ class UsuarioRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number): Promise<UsuarioResponsePaginate> {
+    async getAllWithPaginate(
+        page: number,
+        limit: number,
+        filters: IUsuarioFilter
+    ): Promise<UsuarioResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
+
+            // Construcción dinámica de la claúsula WHERE
+            const where: WhereOptions = {}
+
+            if (filters.id_perfil !== undefined) {
+                where.id_perfil = filters.id_perfil
+            }
+
+            if (filters.nombre_persona !== undefined) {
+                where.nombre_persona = {
+                    [Op.like]: `%${filters.nombre_persona}%`
+                }
+            }
 
             const { count, rows } = await Usuario.findAndCountAll({
                 attributes: USUARIO_ATTRIBUTES,
@@ -56,6 +75,7 @@ class UsuarioRepository {
                     COLABORADOR_INCLUDE,
                     TRABAJADOR_SOCIAL_INCLUDE
                 ],
+                where,
                 order: [
                     ['email', 'ASC']
                 ],

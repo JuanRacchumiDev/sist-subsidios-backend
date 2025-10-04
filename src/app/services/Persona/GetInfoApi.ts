@@ -34,7 +34,7 @@ class GetInfoApiService {
 
         const responseTipoDocumento = await this.tipoDocumentoRepository.getBySearch(paramSearch);
 
-        console.log({ responseTipoDocumento })
+        // console.log({ responseTipoDocumento })
 
         const { result, data } = responseTipoDocumento
 

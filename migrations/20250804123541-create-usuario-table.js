@@ -61,6 +61,10 @@ module.exports = {
         type: Sequelize.STRING(255),
         allowNull: false
       },
+      nombre_persona: {
+        type: Sequelize.STRING(80),
+        allowNull: true
+      },
       remember_token: {
         type: Sequelize.STRING(100),
         allowNull: true

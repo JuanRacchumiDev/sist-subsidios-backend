@@ -119,7 +119,7 @@ class AdjuntoRepository {
                 return { result: false, data: [], message: 'Adjunto no encontrado', status: 404 }
             }
 
-            console.log({ adjunto })
+            // console.log({ adjunto })
 
             // Leer el archivo contenido desde la ruta guardada
             let fileContent: Buffer | null = null
@@ -225,7 +225,7 @@ class AdjuntoRepository {
                 }
             );
 
-            console.log(`Se actualizaron ${numberOfUpdatedRows} registros.`);
+            // console.log(`Se actualizaron ${numberOfUpdatedRows} registros.`);
         } catch (error) {
             console.error('Error al actualizar los registros:', error);
         }
@@ -284,7 +284,7 @@ class AdjuntoRepository {
                 ];
             }
 
-            console.log({ adjuntoOriginal })
+            // console.log({ adjuntoOriginal })
 
             // const [numberOfUpdatedRows] = await Adjunto.update(
             //     { id_descansomedico: idDescansoMedico }, // Valores a actualizar

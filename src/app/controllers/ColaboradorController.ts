@@ -8,6 +8,7 @@ import GetColaboradoresByEmpresaService from "../services/Colaborador/GetColabor
 import GetByIdTipoAndNumDocService from "../services/Colaborador/GetByIdTipoAndNumDoc"
 import { NextFunction, Request, Response } from "express";
 import { IColaborador } from "../interfaces/Colaborador/IColaborador";
+import { IColaboradorFilter } from "../interfaces/Colaborador/IColaboradorFilter";
 
 class ColaboradorController {
     async getColaboradores(req: Request, res: Response, next: NextFunction) {
@@ -26,7 +27,25 @@ class ColaboradorController {
 
             const limit = parseInt(req.query.limit as string) || 10
 
-            const result = await GetColaboradoresPaginateService.execute(page, limit)
+            // Extracción de filtros opcionales de req.query
+            const {
+                id_tipodocumento,
+                id_empresa,
+                id_cargo,
+                numero_documento,
+                nombre_completo
+            } = req.query;
+
+            // Construir el objeto de filtros
+            const filters: IColaboradorFilter = {
+                id_tipodocumento: id_tipodocumento as string,
+                id_empresa: id_empresa as string,
+                id_cargo: id_cargo as string,
+                numero_documento: numero_documento as string,
+                nombre_completo: nombre_completo as string
+            }
+
+            const result = await GetColaboradoresPaginateService.execute(page, limit, filters)
 
             res.status(result.status || 200).json(result)
         } catch (error) {

@@ -16,10 +16,11 @@ class GetCargosPaginateService {
      * Ejecuta la operación para obtener cargos paginadas
      * @param {number} page - El número de la página actual
      * @param {number} limit - El número de ítems por página
+     * @param {string} filter - Parámetro a enviar para buscar
      * @returns {Promise<CargoResponsePaginate>} La respuesta de obtener los cargos
      */
-    async execute(page: number, limit: number): Promise<CargoResponsePaginate> {
-        return await this.cargoRepository.getAllWithPaginate(page, limit)
+    async execute(page: number, limit: number, filter: string): Promise<CargoResponsePaginate> {
+        return await this.cargoRepository.getAllWithPaginate(page, limit, filter)
     }
 }
 

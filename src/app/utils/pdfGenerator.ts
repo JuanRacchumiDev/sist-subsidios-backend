@@ -1,6 +1,12 @@
+import { THeaderColumn } from '../types/Reportes/THeader';
 import PDFDocument from 'pdfkit';
 
-export const generatePdfReport = (headers: string[], data: any[]): Promise<Buffer> => {
+export const generatePdfReport = (
+    title: string,
+    // headers: string[],
+    headersColumn: THeaderColumn[],
+    data: any[]
+): Promise<Buffer> => {
     return new Promise((resolve, reject) => {
         const doc = new PDFDocument({ margin: 30 });
         let buffers: any[] = [];
@@ -13,17 +19,18 @@ export const generatePdfReport = (headers: string[], data: any[]): Promise<Buffe
         doc.on('error', reject);
 
         // Título
-        doc.fontSize(16).text('Reporte de Descansos Médicos', { align: 'center' });
+        doc.fontSize(16).text(title, { align: 'center' });
         doc.moveDown();
 
         // Tabla de datos
         const table = {
-            headers: headers.map(header => ({
+            headers: headersColumn.map(header => ({
                 label: header,
-                property: header.replace(/ /g, '_').toLowerCase(),
+                property: header.nameColumn.replace(/ /g, '_').toLowerCase(),
                 width: 70,
                 renderer: null
             })),
+            // headers,
             datas: data,
         };
 
@@ -33,8 +40,8 @@ export const generatePdfReport = (headers: string[], data: any[]): Promise<Buffe
 
         // Dibuja los encabezados
         doc.fontSize(10).font('Helvetica-Bold');
-        headers.forEach((header, i) => {
-            doc.text(header, doc.page.margins.left + i * columnWidth, tableTop, { width: columnWidth, align: 'left' });
+        headersColumn.forEach((header, i) => {
+            doc.text(header.nameColumn, doc.page.margins.left + i * columnWidth, tableTop, { width: columnWidth, align: 'left' });
         });
         doc.y = tableTop + rowHeight;
 

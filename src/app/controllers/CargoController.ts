@@ -24,7 +24,10 @@ class CargoController {
 
             const limit = parseInt(req.query.limit as string) || 10
 
-            const result = await GetCargosPaginateService.execute(page, limit)
+            // Extracción de filtros opcionales de req.query
+            const filter = req.query.filter as string || ""
+
+            const result = await GetCargosPaginateService.execute(page, limit, filter)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

@@ -1,4 +1,9 @@
-import { DescansoMedicoResponse, DescansoMedicoResponsePaginate, IDescansoMedico, IDescansoMedicoPaginate } from "../../interfaces/DescansoMedico/IDescansoMedico";
+import {
+    DescansoMedicoResponse,
+    DescansoMedicoResponsePaginate,
+    IDescansoMedico,
+    IDescansoMedicoPaginate
+} from "../../interfaces/DescansoMedico/IDescansoMedico";
 import { Colaborador } from "../../models/Colaborador";
 import { DescansoMedico } from "../../models/DescansoMedico";
 import { Diagnostico } from "../../models/Diagnostico";
@@ -18,14 +23,25 @@ import { Op, WhereOptions } from 'sequelize';
 import HDate from "../../../helpers/HDate"
 import { ADJUNTO_INCLUDE } from "../../../includes/AdjuntoInclude";
 import { EDescansoMedico } from "../../enums/EDescansoMedico";
-import { TItemReport } from "../../types/DescansoMedico/TItemReport";
+import {
+    TItemReportDescansos,
+    TItemReportSubsidios
+} from "../../types/DescansoMedico/TItemReport";
 import { Canje } from "../../models/Canje";
 import { IDescansoMedicoFilter } from '../../interfaces/DescansoMedico/IDescansoMedicoFilter';
 
-type TReportResponse = {
+type TReportDescansosResponse = {
     result: boolean
     message?: string
-    data?: TItemReport | TItemReport[]
+    data?: TItemReportDescansos | TItemReportDescansos[]
+    error?: string
+    status?: number
+}
+
+type TReportCanjesResponse = {
+    result: boolean
+    message?: string
+    data?: TItemReportSubsidios | TItemReportSubsidios[]
     error?: string
     status?: number
 }
@@ -450,7 +466,9 @@ class DescansoMedicoRepository {
 
             const ultimoDescanso = await DescansoMedico.findOne({
                 where: { id_colaborador: idColaborador },
-                order: [['fecha_final', 'DESC']],
+                order: [
+                    ['fecha_final', 'DESC']
+                ],
                 limit: 1
             });
 
@@ -463,8 +481,10 @@ class DescansoMedicoRepository {
 
             const { fecha_final } = ultimoDescanso
 
+            const fechaFinal = fecha_final as string
+
             // Convertir las fechas a objetos Date
-            const fechaFinalAnterior = parseISO(fecha_final as string);
+            const fechaFinalAnterior = parseISO(fechaFinal);
 
             const fechaInicioNueva = parseISO(fechaInicioNuevo);
 
@@ -497,11 +517,20 @@ class DescansoMedicoRepository {
      * @returns {Promise<DescansoMedicoResponse>} Respuesta con el descanso médico creado o error
      */
     async create(data: IDescansoMedico): Promise<DescansoMedicoResponse> {
-        const { id_colaborador, fecha_inicio, fecha_final } = data
+        const {
+            id_colaborador,
+            fecha_inicio,
+            fecha_final
+        } = data
+
         console.log('fecha_inicio create data one descanso', fecha_inicio)
         console.log('fecha_final create data one descanso', fecha_final)
 
-        const esContinuo = await this.isDescansoConsecutivo(id_colaborador!, fecha_inicio!)
+        const idColaborador = id_colaborador as string
+        const fechaInicio = fecha_inicio as string
+        const fechaFinal = fecha_final as string
+
+        const esContinuo = await this.isDescansoConsecutivo(idColaborador, fechaInicio)
 
         console.log({ esContinuo })
 
@@ -526,25 +555,22 @@ class DescansoMedicoRepository {
 
         // data.fecha_final = fechaFinal
 
-        const fechaInicio = fecha_inicio as string
-        const fechaFinal = fecha_final as string
-
         data.total_dias = HDate.differenceDates(fechaInicio, fechaFinal) + 1
 
         const [
             anioFechaInicio,
             mesFechaInicio,
             diaFechaInicio
-        ] = (fechaInicio).split("-") as string[]
+        ] = fechaInicio.split("-") as string[]
 
         const [
             anioFechaFinal,
             mesFechaFinal,
             diaFechaFinal
-        ] = (fechaFinal).split("-") as string[]
+        ] = fechaFinal.split("-") as string[]
 
         // Obtener el mes de devengado
-        const monthName = HDate.getMonthName(fecha_final as string)
+        const monthName = HDate.getMonthName(fechaFinal)
 
         const payload: IDescansoMedico = {
             ...data,
@@ -614,12 +640,20 @@ class DescansoMedicoRepository {
             console.log({ dataArray })
 
             for (const data of dataArray) {
-                const { id_colaborador, fecha_inicio, fecha_final } = data
+                const {
+                    id_colaborador,
+                    fecha_inicio,
+                    fecha_final
+                } = data
 
                 console.log({ fecha_inicio })
                 console.log({ fecha_final })
 
-                const esContinuo = await this.isDescansoConsecutivo(id_colaborador!, fecha_inicio!)
+                const idColaborador = id_colaborador as string
+                const fechaInicio = fecha_inicio as string
+                const fechaFinal = fecha_final as string
+
+                const esContinuo = await this.isDescansoConsecutivo(idColaborador, fechaInicio)
 
                 console.log({ esContinuo })
 
@@ -628,16 +662,13 @@ class DescansoMedicoRepository {
                     anioFechaInicio,
                     mesFechaInicio,
                     diaFechaInicio
-                ] = fecha_inicio?.split("-") as string[]
+                ] = fechaInicio.split("-") as string[]
 
                 const [
                     anioFechaFinal,
                     mesFechaFinal,
                     diaFechaFinal
-                ] = fecha_final?.split("-") as string[]
-
-                const fechaInicio = fecha_inicio as string
-                const fechaFinal = fecha_final as string
+                ] = fechaFinal.split("-") as string[]
 
                 // Obtener el mes de devengado
                 const monthName = HDate.getMonthName(fechaFinal)
@@ -845,6 +876,8 @@ class DescansoMedicoRepository {
             const { id_colaborador, fecha_inicio, fecha_final } = newDescanso;
 
             const idColaborador = id_colaborador as string
+            const fechaInicio = fecha_inicio as string
+            const fechaFinal = fecha_final as string
 
             // Asegurar que las fechas existan antes de la consulta.
             if (!fecha_inicio || !fecha_final) {
@@ -875,9 +908,9 @@ class DescansoMedicoRepository {
             });
 
             if (existingDescansos.length > 0) {
-                let adjustedStartDate = new Date(fecha_inicio as string);
+                let adjustedStartDate = new Date(fechaInicio);
 
-                let adjustedEndDate = new Date(fecha_final as string);
+                let adjustedEndDate = new Date(fechaFinal);
 
                 existingDescansos.forEach(existingDescanso => {
                     const existingStart = new Date(existingDescanso.fecha_inicio as string);
@@ -905,34 +938,50 @@ class DescansoMedicoRepository {
         return processedDescansos;
     }
 
-    async getAllFilteredForReports(startDate: string = "", endDate: string = ""): Promise<TReportResponse> {
+    async getDescansosReport(): Promise<TReportDescansosResponse> {
         try {
             let descansos: IDescansoMedico[] = []
 
-            if (startDate && endDate) {
-                descansos = await DescansoMedico.findAll({
-                    where: {
-                        fecha_inicio: {
-                            [Op.between]: [startDate, endDate]
-                        }
-                    },
-                    attributes: DESCANSOMEDICO_ATTRIBUTES,
-                    include: [
-                        TIPODM_INCLUDE,
-                        TIPO_CONTINGENCIA_INCLUDE,
-                        DIAGNOSTICO_INCLUDE
-                    ]
-                })
-            } else {
-                descansos = await DescansoMedico.findAll({
-                    attributes: DESCANSOMEDICO_ATTRIBUTES,
-                    include: [
-                        TIPODM_INCLUDE,
-                        TIPO_CONTINGENCIA_INCLUDE,
-                        DIAGNOSTICO_INCLUDE
-                    ]
-                })
-            }
+            descansos = await DescansoMedico.findAll({
+                attributes: DESCANSOMEDICO_ATTRIBUTES,
+                include: [
+                    COLABORADOR_DM_INCLUDE,
+                    TIPODM_INCLUDE,
+                    TIPO_CONTINGENCIA_INCLUDE,
+                    DIAGNOSTICO_INCLUDE
+                ],
+                order: [
+                    ['fecha_otorgamiento', 'ASC']
+                ]
+            })
+
+            // if (startDate && endDate) {
+            //     descansos = await DescansoMedico.findAll({
+            //         where: {
+            //             fecha_inicio: {
+            //                 [Op.between]: [startDate, endDate]
+            //             }
+            //         },
+            //         attributes: DESCANSOMEDICO_ATTRIBUTES,
+            //         include: [
+            //             TIPODM_INCLUDE,
+            //             TIPO_CONTINGENCIA_INCLUDE,
+            //             DIAGNOSTICO_INCLUDE
+            //         ]
+            //     })
+            // } else {
+            //     descansos = await DescansoMedico.findAll({
+            //         attributes: DESCANSOMEDICO_ATTRIBUTES,
+            //         include: [
+            //             TIPODM_INCLUDE,
+            //             TIPO_CONTINGENCIA_INCLUDE,
+            //             DIAGNOSTICO_INCLUDE
+            //         ]
+            //     })
+            // }
+
+            console.log('report descansos')
+            console.log({ descansos })
 
             // Mapear los datos para el reporte
             const data = descansos.map(descanso => ({
@@ -947,9 +996,7 @@ class DescansoMedicoRepository {
                 codigo_citt: descanso.codigo_citt
             }))
 
-            const descansosReport = data as TItemReport[]
-
-            console.log({ descansosReport })
+            const descansosReport = data as TItemReportDescansos[]
 
             return {
                 result: true,
@@ -959,6 +1006,67 @@ class DescansoMedicoRepository {
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+
+            return {
+                result: false,
+                data: [],
+                error: errorMessage,
+                status: 500
+            }
+        }
+    }
+
+    async getDescansosWithCanjesReports(): Promise<TReportCanjesResponse> {
+        try {
+            let descansos: IDescansoMedico[] = []
+
+            descansos = await DescansoMedico.findAll({
+                attributes: DESCANSOMEDICO_ATTRIBUTES,
+                include: [
+                    COLABORADOR_DM_INCLUDE,
+                    TIPODM_INCLUDE,
+                    TIPO_CONTINGENCIA_INCLUDE,
+                    DIAGNOSTICO_INCLUDE,
+                    {
+                        model: Canje,
+                        as: 'canje'
+                    }
+                ],
+                order: [
+                    ['fecha_otorgamiento', 'ASC']
+                ]
+            })
+
+            console.log({ descansos })
+
+            // Mapear los datos para el reporte
+            const data = descansos.map(descanso => ({
+                numero_documento: descanso.colaborador_dm?.numero_documento,
+                nombre_colaborador: descanso.nombre_colaborador,
+                fecha_ingreso: HDate.formatDate(descanso.colaborador_dm?.fecha_ingreso, "dd/MM/yyyy"),
+                puesto: descanso.colaborador_dm?.nombre_area,
+                sede: descanso.colaborador_dm?.nombre_sede,
+                mes_devengado_dm: descanso.mes_devengado,
+                tipo_contingencia: descanso.nombre_tipocontingencia,
+                fecha_inicio_dm: HDate.formatDate(descanso.fecha_inicio, "dd/MM/yyyy"),
+                fecha_final_dm: HDate.formatDate(descanso.fecha_final, "dd/MM/yyyy"),
+                total_dias_dm: descanso.total_dias,
+                fecha_inicio_subsidio: (descanso.canje && descanso.canje.is_reembolsable ? HDate.formatDate(descanso.canje.fecha_inicio_subsidio, "dd/MM/yyyy") : ""),
+                fecha_final_subsidio: (descanso.canje && descanso.canje.is_reembolsable ? HDate.formatDate(descanso.canje.fecha_final_subsidio, "dd/MM/yyyy") : ""),
+                total_dias: (descanso.canje && descanso.canje.is_reembolsable ? descanso.canje.total_dias : "")
+            }))
+
+            const descansosReport = data as TItemReportSubsidios[]
+
+            return {
+                result: true,
+                data: descansosReport,
+                message: "Descansos obtenidos correctamente",
+                status: 200
+            }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+
             return {
                 result: false,
                 data: [],

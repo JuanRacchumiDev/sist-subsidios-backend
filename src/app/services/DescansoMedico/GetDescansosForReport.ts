@@ -1,11 +1,11 @@
 import DescansoMedicoRepository from "../../repositories/DescansoMedico/DescansoMedicoRepository";
 import { DescansoMedicoResponse } from '../../interfaces/DescansoMedico/IDescansoMedico';
-import { TItemReport } from "../../types/DescansoMedico/TItemReport";
+import { TItemReportDescansos } from "../../types/DescansoMedico/TItemReport";
 
-type TReportResponse = {
+type TReportDescansosResponse = {
     result: boolean
     message?: string
-    data?: TItemReport | TItemReport[]
+    data?: TItemReportDescansos | TItemReportDescansos[]
     error?: string
     status?: number
 }
@@ -23,10 +23,10 @@ class GetDescansosForReportService {
 
     /**
      * Ejecuta la operación para obtener descansos médicos
-     * @returns {Promise<TReportResponse>} La respuesta de obtener los descansos médicos
+     * @returns {Promise<TReportDescansosResponse>} La respuesta de obtener los descansos médicos
      */
-    async execute(): Promise<TReportResponse> {
-        return await this.descansoMedicoRepository.getAllFilteredForReports()
+    async execute(): Promise<TReportDescansosResponse> {
+        return await this.descansoMedicoRepository.getDescansosReport()
     }
 }
 

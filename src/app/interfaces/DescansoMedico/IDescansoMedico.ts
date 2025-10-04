@@ -1,4 +1,5 @@
 import { EDescansoMedico } from "../../enums/EDescansoMedico"
+import { ICanje } from "../Canje/ICanje"
 import { IColaborador } from "../Colaborador/IColaborador"
 import { IDiagnostico } from "../Diagnostico/IDiagnostico"
 import { ITipoContingencia } from "../TipoContingencia/ITipoContingencia"
@@ -53,6 +54,7 @@ export interface IDescansoMedico {
     tipoDescansoMedico?: ITipoDescansoMedico
     tipoContingencia?: ITipoContingencia
     diagnostico?: IDiagnostico
+    canje?: ICanje
     id_usuario?: string
     slug_perfil?: string
 }

@@ -5,7 +5,7 @@ import TipoDescansoMedicoRepository from '../../repositories/TipoDescansoMedico/
 import TipoContingenciaRepository from '../../repositories/TipoContingencia/TipoContingenciaRepository';
 import DiagnosticoRepository from '../../repositories/Diagnostico/DiagnosticoRepository';
 import { IColaborador } from '../../interfaces/Colaborador/IColaborador';
-import { TOTAL_DIAS_DESCANSO_MEDICO } from '../../../helpers/HParameter';
+import { FECHA_MAXIMA_CANJE, TOTAL_DIAS_DESCANSO_MEDICO } from '../../../helpers/HParameter';
 import CanjeRepository from '../../repositories/Canje/CanjeRepository';
 import { ICanje, CanjeResponse } from '../../interfaces/Canje/ICanje';
 import HDate from '../../../helpers/HDate';
@@ -58,9 +58,9 @@ class CreateDescansoService {
 
         let descansoMedico: IDescansoMedico = {}
 
-        const recordsToCreate: IDescansoMedico[] = []
+        const recordsToCreateDM: IDescansoMedico[] = []
 
-        let results: DescansoMedicoResponse | DescansoMedicoResponse[]
+        let responsesDM: DescansoMedicoResponse | DescansoMedicoResponse[]
 
         const {
             id_colaborador,
@@ -107,42 +107,56 @@ class CreateDescansoService {
 
         const responseColaborador = await this.colaboradorRepository.getById(id_colaborador)
 
-        const { result: resultColaborador, data: dataColaborador } = responseColaborador
+        const {
+            result: resultColaborador,
+            data: dataColaborador
+        } = responseColaborador
 
-        if (!resultColaborador || !dataColaborador) return {
-            result: false,
-            message: 'Colaborador no encontrado',
-            status: 404
+        if (!resultColaborador || !dataColaborador) {
+            return {
+                result: false,
+                message: 'Colaborador no encontrado',
+                status: 404
+            }
         }
 
         const responseTipoDM = await this.tipoDescansoMedicoRepository.getById(id_tipodescansomedico)
 
         const { result: resultTipoDM, data: dataTipoDM } = responseTipoDM
 
-        if (!resultTipoDM || !dataTipoDM) return {
-            result: false,
-            message: 'Tipo de descanso médico no encontrado',
-            status: 404
+        if (!resultTipoDM || !dataTipoDM) {
+            return {
+                result: false,
+                message: 'Tipo de descanso médico no encontrado',
+                status: 404
+            }
         }
 
         const responseTipoContingencia = await this.tipoContingenciaRepository.getById(id_tipocontingencia)
 
-        const { result: resultTipoContingencia, data: dataTipoContingencia } = responseTipoContingencia
+        const {
+            result: resultTipoContingencia,
+            data: dataTipoContingencia
+        } = responseTipoContingencia
 
-        if (!resultTipoContingencia || !dataTipoContingencia) return {
-            result: false,
-            message: 'Tipo de contingencia no encontrado',
-            status: 404
+        if (!resultTipoContingencia || !dataTipoContingencia) {
+            return {
+                result: false,
+                message: 'Tipo de contingencia no encontrado',
+                status: 404
+            }
         }
 
         const responseDiagnostico = await this.diagnosticoRepository.getByCodigo(codcie10_diagnostico)
 
         const { result: resultDiagnostico, data: dataDiagnostico } = responseDiagnostico
 
-        if (!resultDiagnostico || !dataDiagnostico) return {
-            result: false,
-            message: 'Diagnóstico no encontrado',
-            status: 404
+        if (!resultDiagnostico || !dataDiagnostico) {
+            return {
+                result: false,
+                message: 'Diagnóstico no encontrado',
+                status: 404
+            }
         }
 
         const {
@@ -177,7 +191,7 @@ class CreateDescansoService {
                     ...data
                 }
 
-                recordsToCreate.push(newRecord)
+                recordsToCreateDM.push(newRecord)
             } else {
                 console.log('fechas en meses distintos')
                 let currentStartDate = startDate
@@ -204,16 +218,16 @@ class CreateDescansoService {
                         total_dias: differenceInCalendarDays(currentEndDate, currentStartDate) + 1
                     }
 
-                    recordsToCreate.push(newRecord)
+                    recordsToCreateDM.push(newRecord)
 
-                    console.log({ recordsToCreate })
+                    console.log({ recordsToCreateDM })
 
                     currentStartDate = addMonths(startOfMonth(currentStartDate), 1)
                 }
             }
 
             // Aquí se llama a la función para gestionar los solapamientos de fechas
-            const recordsToCreateWithOverlapHandling = await this.descansoMedicoRepository.validateSolapamientoFechas(recordsToCreate)
+            const recordsToCreateWithOverlapHandling = await this.descansoMedicoRepository.validateSolapamientoFechas(recordsToCreateDM)
             console.log('aplicando métodos de solapamiento en fechas de descanso médico')
             console.log({ recordsToCreateWithOverlapHandling })
 
@@ -223,19 +237,19 @@ class CreateDescansoService {
             console.log('descansos médicos filtrados')
             console.log({ finalRecordsToCreate })
 
-            if (recordsToCreate.length === 1) {
+            if (recordsToCreateDM.length === 1) {
                 console.log('único registro recordsToCreate')
-                results = await this.descansoMedicoRepository.create(finalRecordsToCreate[0]) as DescansoMedicoResponse
+                responsesDM = await this.descansoMedicoRepository.create(finalRecordsToCreate[0]) as DescansoMedicoResponse
             } else {
                 console.log('múltiples registros recordsToCreate')
-                console.log({ recordsToCreate })
-                results = await this.descansoMedicoRepository.createMultiple(finalRecordsToCreate) as DescansoMedicoResponse[]
+                console.log({ recordsToCreateDM })
+                responsesDM = await this.descansoMedicoRepository.createMultiple(finalRecordsToCreate) as DescansoMedicoResponse[]
             }
 
-            if (Array.isArray(results)) {
+            if (Array.isArray(responsesDM)) {
                 console.log('results varios registros')
-                // Case: results is an array of DescansoMedicoResponse
-                const allSuccessful = results.every(res => res.result);
+                // Caso: responsesDM es un array de DescansoMedicoResponse
+                const allSuccessful = responsesDM.every(res => res.result);
 
                 if (!allSuccessful) {
                     return {
@@ -246,15 +260,16 @@ class CreateDescansoService {
                 }
 
                 // Obteniendo el descanso médico creado
-                const firstDescansoMedico = results[0]
+                const firstDescansoMedico = responsesDM[0]
 
                 const { data: dataResult } = firstDescansoMedico
 
                 descansoMedico = dataResult as IDescansoMedico
             } else {
                 console.log('un solo registro')
-                // Case: results is a single DescansoMedicoResponse
-                const responseDescansoMedico = results;
+
+                // Caso: responseDM es un único DescansoMedicoResponse
+                const responseDescansoMedico = responsesDM;
 
                 const {
                     result: resultDM,
@@ -280,9 +295,9 @@ class CreateDescansoService {
 
             const idDescansoMedico = id as string
 
-            if (Array.isArray(results)) {
+            if (Array.isArray(responsesDM)) {
                 // Obtener los IDs de los descansos médicos creados
-                const createIds = results
+                const createIds = responsesDM
                     .filter(res => res.data && 'id' in res.data)
                     .map(res => (res.data as IDescansoMedico).id as string)
 
@@ -380,7 +395,7 @@ class CreateDescansoService {
                             fecha_final_subsidio: fechaFinalSubsidio,
                             fecha_inicio_dm: fecha_inicio,
                             fecha_final_dm: fecha_final,
-                            fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, 30),
+                            fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, FECHA_MAXIMA_CANJE),
                             fecha_registro: fechaActual,
                             is_reembolsable: isReembolsable,
                             estado_registro: ECanje.CANJE_REGISTRADO,
@@ -418,7 +433,7 @@ class CreateDescansoService {
                                 total_dias: differenceInCalendarDays(currentEndDateCanje, currentStartDateCanje) + 1,
                                 fecha_inicio_dm: fecha_inicio,
                                 fecha_final_dm: fecha_final,
-                                fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, 30),
+                                fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, FECHA_MAXIMA_CANJE),
                                 fecha_registro: fechaActual,
                                 is_reembolsable: true,
                                 estado_registro: ECanje.CANJE_REGISTRADO,
@@ -429,7 +444,7 @@ class CreateDescansoService {
 
                             recordsToCreateCanje.push(payloadCanjeMaternidad)
 
-                            console.log({ recordsToCreate })
+                            console.log({ recordsToCreateDM })
 
                             currentStartDateCanje = addMonths(startOfMonth(currentStartDateCanje), 1)
                         }
@@ -461,7 +476,9 @@ class CreateDescansoService {
                         };
                     }
 
-                    const diasAcumulados = typeof totalDiasAcumulados === 'string' ? parseInt(totalDiasAcumulados) : totalDiasAcumulados as number;
+                    const diasAcumulados = typeof totalDiasAcumulados === 'string'
+                        ? parseInt(totalDiasAcumulados)
+                        : totalDiasAcumulados as number;
                     // const totalDiasActual = total_dias as number;
 
                     console.log({ diasAcumulados })
@@ -475,11 +492,11 @@ class CreateDescansoService {
                         console.log('creando canjes desde create descanso')
                         console.log('bb')
 
-                        if (Array.isArray(results)) {
-                            return results[0]
+                        if (Array.isArray(responsesDM)) {
+                            return responsesDM[0]
                         }
 
-                        return results
+                        return responsesDM
                     }
 
                     console.log('creando canjes desde update descanso')
@@ -510,7 +527,7 @@ class CreateDescansoService {
                             fecha_final_subsidio: fechaFinalSubsidio,
                             fecha_inicio_dm: fecha_inicio,
                             fecha_final_dm: fecha_final,
-                            fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, 30),
+                            fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, FECHA_MAXIMA_CANJE),
                             fecha_registro: fechaActual,
                             is_reembolsable: false,
                             estado_registro: ECanje.CANJE_REGISTRADO,
@@ -565,7 +582,7 @@ class CreateDescansoService {
                             fecha_final_subsidio: fechaFinalSubsidio,
                             fecha_inicio_dm: fecha_inicio,
                             fecha_final_dm: fecha_final,
-                            fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, 30),
+                            fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, FECHA_MAXIMA_CANJE),
                             fecha_registro: fechaActual,
                             is_reembolsable: true,
                             estado_registro: ECanje.CANJE_REGISTRADO,
@@ -578,7 +595,6 @@ class CreateDescansoService {
 
                         recordsToCreateCanje.push(payloadCanjeWithSubsidio);
                     }
-
                 }
 
                 // Aquí se llama a la función para gestionar los solapamientos de fechas
@@ -600,23 +616,24 @@ class CreateDescansoService {
                             message: "Canjes registrados con éxito",
                             status: 200
                         };
-                    } else {
-                        return {
-                            result: false,
-                            error: "Error al registrar uno o más canjes",
-                            status: 500
-                        };
                     }
+
+                    return {
+                        result: false,
+                        error: "Error al registrar uno o más canjes",
+                        status: 500
+                    };
                 }
             }
 
-            if (Array.isArray(results)) {
-                return results[0]
+            if (Array.isArray(responsesDM)) {
+                return responsesDM[0]
             }
 
-            return results
+            return responsesDM
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+
             return {
                 result: false,
                 error: errorMessage,

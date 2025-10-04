@@ -1,11 +1,11 @@
 import { DocumentoTipoCont } from "../../models/DocumentoTipoCont";
-import { TipoContingencia } from "../../models/TipoContingencia";
 import { DocumentoTipoContResponse, DocumentoTipoContResponsePaginate, IDocumentoTipoCont, IDocumentoTipoContPaginate } from '../../interfaces/DocumentoTipoCont/IDocumentoTipoCont';
-import sequelize from '../../../config/database'
 import HString from "../../../helpers/HString";
 import { DOCUMENTO_TIPO_CONT_ATTRIBUTES } from "../../../constants/DocumentoConstant";
 import { TIPO_CONTINGENCIA_INCLUDE } from "../../../includes/TipoContingenciaInclude";
 import HPagination from "../../../helpers/HPagination";
+import { Op, WhereOptions } from "sequelize";
+import { IDocumentoTipoContFilter } from "../../interfaces/DocumentoTipoCont/IDocumentoTipoContFilter";
 
 class DocumentoTipoContRepository {
     /**
@@ -31,16 +31,33 @@ class DocumentoTipoContRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number): Promise<DocumentoTipoContResponsePaginate> {
+    async getAllWithPaginate(
+        page: number,
+        limit: number,
+        filters: IDocumentoTipoContFilter
+    ): Promise<DocumentoTipoContResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
+
+            const where: WhereOptions = {}
+
+            if (filters.id_tipocontingencia !== undefined) {
+                where.id_tipocontingencia = filters.id_tipocontingencia
+            }
+
+            if (filters.nombre !== undefined) {
+                where.nombre = {
+                    [Op.like]: `%${filters.nombre}%`
+                }
+            }
 
             const { count, rows } = await DocumentoTipoCont.findAndCountAll({
                 attributes: DOCUMENTO_TIPO_CONT_ATTRIBUTES,
                 include: [
                     TIPO_CONTINGENCIA_INCLUDE
                 ],
+                where,
                 order: [
                     ['nombre', 'ASC']
                 ],

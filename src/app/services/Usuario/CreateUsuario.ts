@@ -26,59 +26,80 @@ class CreateUsuarioService {
     async execute(data: IUsuario): Promise<UsuarioResponse> {
         let fullName: string = ""
 
-        // Generar una contraseña temporal antes de hashearla
-        const tempPassword: string = generateTemporaryPassword()
+        const { id_persona, username, email } = data
 
-        data.password = tempPassword
+        const userNameStr = username as string
 
-        const response = await this.usuarioRepository.create(data);
+        const emailStr = email as string
 
-        const { result: resultUsuario, data: dataUsuario } = response
-
-        if (resultUsuario && dataUsuario) {
-
-            const usuario = dataUsuario as IUsuario
-
-            const { username, email, id_persona } = usuario
+        try {
 
             // Obteniendo la persona registrada
             if (id_persona) {
                 const responsePersona = await this.personaRepository.getById(id_persona)
 
-                const { data } = responsePersona
+                const { data: dataPersona } = responsePersona
 
-                const dataPersona = data as IPersona
+                const detailPersona = dataPersona as IPersona
 
-                const { nombres, apellido_paterno, apellido_materno } = dataPersona
+                const { nombres, apellido_paterno, apellido_materno } = detailPersona
                 fullName = `${nombres} ${apellido_paterno} ${apellido_materno}`
+
+                data.nombre_persona = fullName
             } else {
-                fullName = username as string
+                fullName = userNameStr
             }
 
-            const dataEmail = {
-                name: fullName,
-                email: email as string,
-                temporaryPassword: tempPassword,
-                appUrl: process.env.APP_URL || 'http://localhost:3000',
-            }
+            // Generar una contraseña temporal antes de hashearla
+            const tempPassword: string = generateTemporaryPassword()
 
-            const mailOptions = {
-                from: process.env.EMAIL_USER_GMAIL,
-                to: email,
-                subject: '¡Bienvenido a la plataforma',
-                html: newUserNotificationTemplate(dataEmail)
-            }
+            data.password = tempPassword
 
-            try {
+            const response = await this.usuarioRepository.create(data);
+
+            const { result: resultUsuario, data: dataUsuario } = response
+
+            if (resultUsuario && dataUsuario) {
+
+                const dataEmail = {
+                    name: fullName,
+                    email: emailStr,
+                    temporaryPassword: tempPassword,
+                    appUrl: process.env.APP_URL || 'http://localhost:3000',
+                }
+
+                const mailOptions = {
+                    from: process.env.EMAIL_USER_GMAIL,
+                    to: email,
+                    subject: '¡Bienvenido a la plataforma',
+                    html: newUserNotificationTemplate(dataEmail)
+                }
+
                 const responseEmail = await transporter.sendMail(mailOptions);
+                console.log({ responseEmail })
                 console.log(`Correo de bienvenida enviado a ${username}`);
-            } catch (emailError) {
-                console.error(`Error al enviar el correo a ${email}:`, emailError);
-                // Opcional: Podrías manejar el error aquí sin afectar la respuesta de la API.
+
+                return response
+            }
+
+            return {
+                result: false,
+                status: 422,
+                message: "No se pudo crear el nuevo usuario",
+                data: []
+            }
+
+        } catch (error) {
+            console.log(typeof error)
+            console.error(`Error al enviar el correo a ${email}:`, error);
+
+            return {
+                result: false,
+                status: 422,
+                message: "Error al crear el nuevo usuario",
+                data: [],
             }
         }
-
-        return response
     }
 }
 

@@ -26,13 +26,37 @@ class CargoRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number): Promise<CargoResponsePaginate> {
+    async getAllWithPaginate(
+        page: number,
+        limit: number,
+        filter: string
+    ): Promise<CargoResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
+            const whereClause: any = {}
+
+            if (filter) {
+                const filterValue = `%${filter}%`
+
+                whereClause[Op.or] = [
+                    {
+                        nombre: {
+                            [Op.like]: filterValue
+                        }
+                    },
+                    {
+                        nombre_url: {
+                            [Op.like]: filterValue
+                        }
+                    }
+                ]
+            }
+
             const { count, rows } = await Cargo.findAndCountAll({
                 attributes: CARGO_ATTRIBUTES,
+                where: whereClause,
                 order: [
                     ['nombre', 'ASC']
                 ],

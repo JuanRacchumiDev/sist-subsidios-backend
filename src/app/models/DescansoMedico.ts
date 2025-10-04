@@ -7,6 +7,7 @@ import { TipoContingencia } from './TipoContingencia';
 import { Diagnostico } from './Diagnostico';
 import sequelize from '../../config/database'
 import { Adjunto } from './Adjunto';
+import { Canje } from './Canje';
 
 interface DescansoMedicoCreationAttributes extends Optional<IDescansoMedico, 'id'> { }
 
@@ -56,6 +57,8 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public sistema?: boolean | undefined;
     public estado?: boolean | undefined;
 
+    public canje?: Canje
+
     // Timestamps
     public readonly created_at!: Date
     public readonly updated_at!: Date
@@ -67,6 +70,7 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public getTipoContingencia!: () => Promise<TipoContingencia>
     public getDiagnostico!: () => Promise<Diagnostico>
     public getAdjuntos?: () => Promise<Adjunto[]>
+    public getCanje?: () => Promise<Canje>
 }
 
 DescansoMedico.init({

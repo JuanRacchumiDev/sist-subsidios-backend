@@ -33,6 +33,7 @@ export const DESCANSOMEDICO_ADJ_INCLUDE = {
         'is_subsidio',
         'is_acepta_responsabilidad',
         'is_acepta_politica',
+        'is_continuo',
         'estado_registro',
         'sistema',
         'estado'

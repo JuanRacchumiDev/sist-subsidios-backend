@@ -35,6 +35,7 @@ export class Canje extends Model<ICanje, CanjeCreationAttributes> implements ICa
     public anio_fecha_final_subsidio?: number | undefined;
     public total_dias?: number | undefined;
     public is_reembolsable?: boolean | undefined;
+    public is_continuo?: boolean | undefined;
     public observacion?: string | undefined;
     public mes_devengado?: string | undefined;
     public nombre_colaborador?: string | undefined;
@@ -179,6 +180,11 @@ Canje.init({
         allowNull: false
     },
     is_reembolsable: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    is_continuo: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false

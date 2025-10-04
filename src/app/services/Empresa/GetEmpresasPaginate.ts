@@ -16,10 +16,11 @@ class GetEmpresasPaginateService {
      * Ejecuta la operación para obtener empresas paginadas
      * @param {number} page - El número de la página actual
      * @param {number} limit - El número de ítems por página
+     * @param {string} filter - Parámetro a enviar para buscar
      * @returns {Promise<EmpresaResponsePaginate>} La respuesta de obtener las empresas
      */
-    async execute(page: number, limit: number): Promise<EmpresaResponsePaginate> {
-        return await this.empresaRepository.getAllWithPaginate(page, limit)
+    async execute(page: number, limit: number, filter: string): Promise<EmpresaResponsePaginate> {
+        return await this.empresaRepository.getAllWithPaginate(page, limit, filter)
     }
 }
 

@@ -20,6 +20,7 @@ export class Usuario extends Model<IUsuario, UsuarioCreationAttributes> implemen
     public username?: string | undefined;
     public email?: string | undefined;
     public password?: string | undefined;
+    public nombre_persona?: string | undefined;
     public remember_token?: string | undefined;
     public user_crea?: string | undefined;
     public user_actualiza?: string | undefined;
@@ -82,7 +83,7 @@ Usuario.init({
         }
     },
     username: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.STRING(12),
         allowNull: false,
         unique: true
     },
@@ -94,6 +95,10 @@ Usuario.init({
     password: {
         type: DataTypes.STRING(255),
         allowNull: false
+    },
+    nombre_persona: {
+        type: DataTypes.STRING(80),
+        allowNull: true
     },
     remember_token: {
         type: DataTypes.STRING(10),

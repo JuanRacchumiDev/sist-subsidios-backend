@@ -5,6 +5,7 @@ import GetUsuarioService from '../services/Usuario/GetUsuario'
 import CreateUsuarioService from '../services/Usuario/CreateUsuario'
 import UpdateUsuarioService from '../services/Usuario/UpdateUsuario'
 import { IUsuario } from "../interfaces/Usuario/IUsuario";
+import { IUsuarioFilter } from "../interfaces/Usuario/IUsuarioFilter";
 
 class UsuarioController {
     async getAllUsuarios(req: Request, res: Response, next: NextFunction) {
@@ -23,7 +24,19 @@ class UsuarioController {
 
             const limit = parseInt(req.query.limit as string) || 10
 
-            const result = await GetUsuariosPaginateService.execute(page, limit)
+            // Extracción de filtros opcionales de req.query
+            const {
+                id_perfil,
+                nombre_persona
+            } = req.query
+
+            // Construir el objeto de filtros
+            const filter: IUsuarioFilter = {
+                id_perfil: id_perfil as string,
+                nombre_persona: nombre_persona as string
+            }
+
+            const result = await GetUsuariosPaginateService.execute(page, limit, filter)
 
             res.status(result.status || 200).json(result)
         } catch (error) {

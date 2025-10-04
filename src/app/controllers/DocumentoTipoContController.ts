@@ -6,6 +6,7 @@ import GetDocumentosTipoContService from '../services/DocumentoTipoCont/GetDocum
 import UpdateDocumentoTipoContService from '../services/DocumentoTipoCont/UpdateDocumentoTipoCont'
 import GetDocumentosTipoContPaginateService from "../services/DocumentoTipoCont/GetDocumentosTipoContPaginate"
 import { IDocumentoTipoCont } from '../interfaces/DocumentoTipoCont/IDocumentoTipoCont';
+import { IDocumentoTipoContFilter } from '../interfaces/DocumentoTipoCont/IDocumentoTipoContFilter'
 
 class DocumentoTipoContController {
     async getAllDocumentos(req: Request, res: Response, next: NextFunction) {
@@ -24,7 +25,17 @@ class DocumentoTipoContController {
 
             const limit = parseInt(req.query.limit as string) || 10
 
-            const result = await GetDocumentosTipoContPaginateService.execute(page, limit)
+            const {
+                id_tipocontingencia,
+                nombre
+            } = req.query
+
+            const filters: IDocumentoTipoContFilter = {
+                id_tipocontingencia: id_tipocontingencia as string,
+                nombre: nombre as string
+            }
+
+            const result = await GetDocumentosTipoContPaginateService.execute(page, limit, filters)
 
             res.status(result.status || 200).json(result)
         } catch (error) {

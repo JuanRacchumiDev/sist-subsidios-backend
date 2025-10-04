@@ -1,3 +1,4 @@
+import { addDays, parseISO } from "date-fns"
 import {
     CanjeResponse,
     CanjeResponsePaginate,
@@ -9,11 +10,24 @@ import { DescansoMedico } from "../../models/DescansoMedico"
 import sequelize from "../../../config/database"
 import { CANJE_ATTRIBUTES } from "../../../constants/CanjeConstant"
 import HPagination from "../../../helpers/HPagination"
-import { Op, Transaction, WhereOptions } from "sequelize"
+import { Op, Transaction, WhereOptions, literal, fn, col } from "sequelize"
 import { DESCANSOMEDICO_INCLUDE } from "../../../includes/DescansoMedicoInclude"
 import HDate from "../../../helpers/HDate"
 import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude"
 import { ICanjeFilter } from "../../interfaces/Canje/ICanjeFilter"
+import { TItemReport } from '../../types/Canje/TItemReport'
+
+type TReportResponse = {
+    result: boolean
+    message?: string
+    data?: TItemReport | TItemReport[]
+    error?: string
+    status?: number
+}
+
+const TOTAL_DIAS_NO_CONSECUTIVOS = 'total_dias_no_consecutivos';
+const TOTAL_DIAS_CONSECUTIVOS = 'total_dias_consecutivos';
+const TOTAL_DIAS_GLOBAL = 'total_dias_global';
 
 class CanjeRepository {
     /**
@@ -176,35 +190,100 @@ class CanjeRepository {
     }
 
     /**
+     * Valida si un nuevo canje es consecutivo al anterior
+     * @param {string} idColaborador - El ID del colaborador 
+     * @param {string} fechaInicioNuevo - La fecha de inicio del nuevo canje (formato 'YYYY-MM-DD')
+     * @returns {Promise<boolean>} Retorna true si es consecutivo o si no hay registros previos, de lo contrario false 
+     */
+    async isCanjeConsecutivo(idColaborador: string, fechaInicioNuevo: string): Promise<boolean> {
+        try {
+            const ultimoCanje = await Canje.findOne({
+                where: { id_colaborador: idColaborador },
+                order: [
+                    ['fecha_final_subsidio', 'DESC']
+                ],
+                limit: 1
+            });
+
+            if (!ultimoCanje) {
+                return true
+            }
+
+            const { fecha_final_subsidio } = ultimoCanje
+
+            const fechaFinalSubsidio = fecha_final_subsidio as string
+
+            // Convertir las fechas a objetoss Date
+            const fechaFinalAnterior = parseISO(fechaFinalSubsidio)
+
+            const fechaInicioNueva = parseISO(fechaInicioNuevo)
+
+            // Sumar 1 día a la fecha final del canje anterior
+            const diaSiguiente = addDays(fechaFinalAnterior, 1)
+
+            console.log('fechaFinalAnterior', fechaFinalAnterior)
+            console.log('fechaInicioNueva', fechaInicioNueva)
+            console.log('diaSiguiente', diaSiguiente)
+            console.log('fechaInicioNueva.getTime()', fechaInicioNueva.getTime())
+            console.log('diaSiguiente.getTime()', diaSiguiente.getTime())
+
+            // Comparar si la nueva fecha de inicio es igual al día siguiente de la fecha final anterior.
+            // Para la comparación, solo nos interesa la fecha, no la hora, lo cual parseISO ya maneja.
+            const esMismoDia = fechaInicioNueva.getTime() === diaSiguiente.getTime();
+
+            console.log({ esMismoDia })
+
+            return esMismoDia;
+        } catch (error) {
+            console.error('Error al validar la continuidad del canje:', error);
+            // En caso de error, retornamos false para evitar registros incorrectos.
+            return false;
+        }
+    }
+
+    /**
      * Crea un canje
      * @param {ICanje} data - Los datos del canje a crear
      * @returns {Promise<CanjeResponse>} Respuesta con el canje creado o error
      */
     async create(data: ICanje): Promise<CanjeResponse> {
         const {
+            id_colaborador,
             fecha_inicio_subsidio,
             fecha_final_subsidio,
         } = data
+
+        console.log('fecha_inicio_subsidio create data one descanso', fecha_inicio_subsidio)
+        console.log('fecha_final_subsidio create data one descanso', fecha_final_subsidio)
+
+        const idColaborador = id_colaborador as string
+        const fechaInicioSubsidio = fecha_inicio_subsidio as string
+        const fechaFinalSubsidio = fecha_final_subsidio as string
+
+        const esContinuo = await this.isCanjeConsecutivo(idColaborador, fechaInicioSubsidio)
+
+        console.log({ esContinuo })
+
+        data.total_dias = HDate.differenceDates(fechaInicioSubsidio, fechaFinalSubsidio) + 1
 
         const [
             anioFechaInicioSubsidio,
             mesFechaInicioSubsidio,
             diaFechaInicioSubsidio
-        ] = (fecha_inicio_subsidio as string).split("-") as string[]
+        ] = fechaInicioSubsidio.split("-") as string[]
 
         const [
             anioFechaFinalSubsidio,
             mesFechaFinalSubsidio,
             diaFechaFinalSubsidio
-        ] = (fecha_final_subsidio as string).split("-") as string[]
-
-        data.total_dias = HDate.differenceDates(fecha_inicio_subsidio as string, fecha_final_subsidio as string) + 1
+        ] = fechaFinalSubsidio.split("-") as string[]
 
         // Obtener el mes de devengado
-        const monthName = HDate.getMonthName(fecha_final_subsidio as string)
+        const monthName = HDate.getMonthName(fechaFinalSubsidio)
 
         const payload: ICanje = {
             ...data,
+            is_continuo: esContinuo,
             dia_fecha_inicio_subsidio: parseInt(diaFechaInicioSubsidio, 10),
             mes_fecha_inicio_subsidio: parseInt(mesFechaInicioSubsidio, 10),
             anio_fecha_inicio_subsidio: parseInt(anioFechaInicioSubsidio, 10),
@@ -256,31 +335,41 @@ class CanjeRepository {
         try {
             for (const data of dataArray) {
                 const {
+                    id_colaborador,
                     fecha_inicio_subsidio,
                     fecha_final_subsidio,
                 } = data
 
                 // console.log({ esContinuo })
 
+                const idColaborador = id_colaborador as string
+                const fechaInicioSubsidio = fecha_inicio_subsidio as string
+                const fechaFinalSubsidio = fecha_final_subsidio as string
+
+                const esContinuo = await this.isCanjeConsecutivo(idColaborador, fechaInicioSubsidio)
+
+                console.log({ esContinuo })
+
                 const [
                     anioFechaInicioSubsidio,
                     mesFechaInicioSubsidio,
                     diaFechaInicioSubsidio
-                ] = (fecha_inicio_subsidio as string).split("-") as string[]
+                ] = fechaInicioSubsidio.split("-") as string[]
 
                 const [
                     anioFechaFinalSubsidio,
                     mesFechaFinalSubsidio,
                     diaFechaFinalSubsidio
-                ] = (fecha_final_subsidio as string).split("-") as string[]
-
-                data.total_dias = HDate.differenceDates(fecha_inicio_subsidio as string, fecha_final_subsidio as string) + 1
+                ] = fechaFinalSubsidio.split("-") as string[]
 
                 // Obtener el mes de devengado
-                const monthName = HDate.getMonthName(fecha_final_subsidio as string)
+                const monthName = HDate.getMonthName(fechaFinalSubsidio)
+
+                data.total_dias = HDate.differenceDates(fechaInicioSubsidio, fechaFinalSubsidio) + 1
 
                 const payload: ICanje = {
                     ...data,
+                    is_continuo: esContinuo,
                     dia_fecha_inicio_subsidio: parseInt(diaFechaInicioSubsidio, 10),
                     mes_fecha_inicio_subsidio: parseInt(mesFechaInicioSubsidio, 10),
                     anio_fecha_inicio_subsidio: parseInt(anioFechaInicioSubsidio, 10),
@@ -352,59 +441,6 @@ class CanjeRepository {
             return { result: false, error: errorMessage, status: 500 }
         }
     }
-
-    // async generateCorrelativo(): Promise<string> {
-    //     // const transaction = await sequelize.transaction();
-    //     try {
-    //         const anioActual = new Date().getFullYear()
-
-    //         const prefijo = 'CANJ'
-
-    //         const formatoCodigo = `${prefijo}-${anioActual}-%`
-
-    //         // 1. Encontrar el último registro para el año actual
-    //         const ultimoCanje = await Canje.findOne({
-    //             where: {
-    //                 codigo: {
-    //                     [Op.like]: formatoCodigo
-    //                 }
-    //             },
-    //             order: [
-    //                 ['codigo', 'DESC']
-    //             ],
-    //             // transaction,
-    //             // lock: transaction.LOCK.UPDATE
-    //         })
-
-    //         let nuevoNumero = 1;
-
-    //         if (ultimoCanje) {
-
-    //             const { codigo } = ultimoCanje
-
-    //             const codigoStr = codigo as string
-
-    //             // 2. Extraer y aumentar el número correlativo
-    //             const [, , numero] = codigoStr.split('-') as string[];
-
-    //             const ultimoNumero = parseInt(numero, 10);
-
-    //             nuevoNumero = ultimoNumero + 1;
-    //         }
-
-    //         // 3. Formatear el nuevo correlativo
-    //         const numeroFormateado = String(nuevoNumero).padStart(4, '0');
-
-    //         const nuevoCorrelativo = `${prefijo}-${anioActual}-${numeroFormateado}`;
-
-    //         // await transaction.commit();
-    //         return nuevoCorrelativo;
-    //     } catch (error) {
-    //         // await transaction.rollback();
-    //         console.error('Error al generar el correlativo:', error);
-    //         throw new Error('No se pudo generar el correlativo del canje');
-    //     }
-    // }
 
     /**
      * 
@@ -522,6 +558,8 @@ class CanjeRepository {
             const { id_colaborador, fecha_inicio_subsidio, fecha_final_subsidio } = newCanje;
 
             const idColaborador = id_colaborador as string
+            const fechaInicioSubsidio = fecha_inicio_subsidio as string
+            const fechaFinalSubsidio = fecha_final_subsidio as string
 
             // Asegurar que las fechas existan antes de la consulta.
             if (!fecha_inicio_subsidio || !fecha_final_subsidio) {
@@ -552,8 +590,8 @@ class CanjeRepository {
             });
 
             if (existingCanjes.length > 0) {
-                let adjustedStartDate = new Date(fecha_inicio_subsidio as string);
-                let adjustedEndDate = new Date(fecha_final_subsidio as string);
+                let adjustedStartDate = new Date(fechaInicioSubsidio);
+                let adjustedEndDate = new Date(fechaFinalSubsidio);
 
                 existingCanjes.forEach(existingCanje => {
                     const existingStart = new Date(existingCanje.fecha_inicio_subsidio as string);
@@ -577,6 +615,149 @@ class CanjeRepository {
             }
         }
         return processedCanjes;
+    }
+
+    /**
+     * Obtiene canjes o subsidios que superan un límite de días de subsidio,
+     * agrupando por colaborador de manera óptima en la BD.
+     * * @param type - El tipo de reporte a ejecutar: 
+     * 'non_consecutive' (90 días) | 'consecutive' (150 días) | 'global' (340 días)
+     * @param limit - El límite de días a superar.
+     * @returns {Promise<CanjeResponse>} - Respuesta con la lista de canjes de los colaboradores identificados.
+     */
+    async getSubsidiosOverLimit(
+        type: 'non_consecutive' | 'consecutive' | 'global',
+        limit: number
+    ): Promise<CanjeResponse> {
+        try {
+            let havingCondition: string;
+
+            // 1. Definir la cláusula HAVING para filtrar colaboradores por acumulación de días.
+            switch (type) {
+                case 'non_consecutive':
+                    // Reporte 1: > 90 días NO CONSECUTIVOS (is_continuo = false / 0)
+                    havingCondition = `SUM(CASE WHEN Canje.is_continuo = 0 THEN Canje.total_dias ELSE 0 END) > ${limit}`;
+                    break;
+                case 'consecutive':
+                    // Reporte 2: > 150 días CONSECUTIVOS (is_continuo = true / 1)
+                    havingCondition = `SUM(CASE WHEN Canje.is_continuo = 1 THEN Canje.total_dias ELSE 0 END) > ${limit}`;
+                    break;
+                case 'global':
+                    // Reporte 3: > 340 días TOTALES
+                    havingCondition = `SUM(Canje.total_dias) > ${limit}`;
+                    break;
+                default:
+                    return { result: false, message: 'Tipo de reporte inválido.', status: 400 };
+            }
+
+            // Definiciones de agregación para incluir las sumas como metadata en la primera consulta
+            const aggregations = [
+                // Suma de Días No Consecutivos (para el reporte 1)
+                [
+                    literal(`SUM(CASE WHEN Canje.is_continuo = 0 THEN Canje.total_dias ELSE 0 END)`),
+                    TOTAL_DIAS_NO_CONSECUTIVOS
+                ],
+                // Suma de Días Consecutivos (para el reporte 2)
+                [
+                    literal(`SUM(CASE WHEN Canje.is_continuo = 1 THEN Canje.total_dias ELSE 0 END)`),
+                    TOTAL_DIAS_CONSECUTIVOS
+                ],
+                // Suma de Días Globales (para el reporte 3)
+                [
+                    fn('SUM', col('total_dias')),
+                    TOTAL_DIAS_GLOBAL
+                ]
+            ];
+
+            // 2. Consulta optimizada: Obtener IDs de colaboradores que superan el límite.
+            const collaboratorsOverLimit = await Canje.findAll({
+                attributes: [
+                    'id_colaborador',
+                    ...aggregations as any // Incluye las sumas para usarlas en la metadata del reporte final
+                ],
+                where: {
+                    // Criterio para subsidio: is_reembolsable = true
+                    is_reembolsable: true,
+                    estado: true // Solo registros activos
+                },
+                group: ['id_colaborador'],
+                having: literal(havingCondition) // Aplicar el filtro de acumulación de días
+            });
+
+            // 3. Extraer los IDs de colaboradores
+            const colaboradorIds = collaboratorsOverLimit.map(c => (c.get('id_colaborador') as string));
+
+            if (colaboradorIds.length === 0) {
+                return {
+                    result: true,
+                    message: `Ningún colaborador con canjes subsidiados supera los ${limit} días (${type}).`,
+                    data: [],
+                    status: 200
+                };
+            }
+
+            // 4. Obtener todos los registros de Canje para los colaboradores identificados.
+            const finalCanjes = await Canje.findAll({
+                attributes: CANJE_ATTRIBUTES,
+                where: {
+                    id_colaborador: {
+                        [Op.in]: colaboradorIds // Filtrar por los IDs que cumplen la condición
+                    },
+                    estado: true
+                },
+                include: [
+                    DESCANSOMEDICO_INCLUDE,
+                    // COLABORADOR_INCLUDE
+                ],
+                order: [
+                    ['id_colaborador', 'ASC'],
+                    ['fecha_inicio_subsidio', 'ASC']
+                ]
+            });
+
+            // 5. Enriquecer los datos: Adjuntar los totales calculados a cada registro.
+            const canjesWithMetadata = finalCanjes.map(canje => ({
+                // const collaboratorSummary = collaboratorsOverLimit.find(c => c.get('id_colaborador') === canje.id_colaborador);
+                numero_documento: "--",
+                nombre_colaborador: canje.nombre_colaborador,
+                mes_devengado: canje.mes_devengado,
+                nombre_tipodescansomedico: canje.nombre_tipodescansomedico,
+                nombre_tipocontingencia: canje.nombre_tipocontingencia,
+                fecha_otorgamiento: canje.fecha_otorgamiento,
+                fecha_inicio_dm: canje.fecha_inicio_dm,
+                fecha_final_dm: canje.fecha_final_dm,
+                fecha_inicio_subsidio: canje.fecha_inicio_subsidio,
+                fecha_final_subsidio: canje.fecha_final_subsidio,
+                total_dias_subsidio: canje.total_dias,
+                // return {
+                //     ...canje.get({ plain: true }),
+                //     // Campos de metadata para el reporte
+                //     [TOTAL_DIAS_NO_CONSECUTIVOS]: collaboratorSummary ? collaboratorSummary.get(TOTAL_DIAS_NO_CONSECUTIVOS) : 0,
+                //     [TOTAL_DIAS_CONSECUTIVOS]: collaboratorSummary ? collaboratorSummary.get(TOTAL_DIAS_CONSECUTIVOS) : 0,
+                //     [TOTAL_DIAS_GLOBAL]: collaboratorSummary ? collaboratorSummary.get(TOTAL_DIAS_GLOBAL) : 0,
+                // }
+            }))
+            // as ICanje[]; // El array resultante contiene ICanje con propiedades extra
+
+            const canjesReport = canjesWithMetadata as TItemReport[]
+
+            return {
+                result: true,
+                message: `Reporte de subsidios que superan ${limit} días (${type}) generado con éxito.`,
+                data: canjesReport,
+                status: 200
+            };
+
+        } catch (error) {
+            console.error('Error al obtener el reporte de subsidios:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            return {
+                result: false,
+                message: 'Ocurrió un error al generar el reporte.',
+                error: errorMessage,
+                status: 500
+            };
+        }
     }
 }
 

@@ -36,21 +36,21 @@ export default class HDate {
    * @returns {string} La nueva fecha en formato 'YYYY-MM-DD'.
    */
     static addDaysToDate(dateString: string, dias: number): string {
-        console.log('----------------------');
-        console.log('addDaysToDate')
-        console.log('----------------------');
-        console.log({ dateString })
+        // console.log('----------------------');
+        // console.log('addDaysToDate')
+        // console.log('----------------------');
+        // console.log({ dateString })
         // const date = new Date(dateString)
         const date = parseISO(dateString)
         const dateLima = toZonedTime(date, TIME_ZONE_AMERICA_LIMA)
         // const newDate = addDays(date, dias)
         const newDate = addDays(dateLima, dias)
-        console.log('----------------------');
-        console.log('newDate with format')
-        console.log('----------------------');
+        // console.log('----------------------');
+        // console.log('newDate with format')
+        // console.log('----------------------');
         const newDateFormat = format(newDate, 'yyyy-MM-dd')
-        console.log({ newDate })
-        console.log({ newDateFormat })
+        // console.log({ newDate })
+        // console.log({ newDateFormat })
         return newDateFormat
     }
 

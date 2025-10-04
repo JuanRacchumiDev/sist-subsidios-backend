@@ -17,6 +17,7 @@ export const CANJE_INCLUDE = {
         'fecha_maxima_canje',
         'fecha_registro',
         'is_reembolsable',
+        'is_continuo',
         'mes_devengado',
         'nombre_colaborador',
         'nombre_tipodescansomedico',

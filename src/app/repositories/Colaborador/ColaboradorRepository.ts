@@ -8,7 +8,7 @@ import { Colaborador } from "../../models/Colaborador";
 import { Persona } from "../../models/Persona"
 import sequelize from '../../../config/database'
 import { TValidateFields } from "../../types/TTypeFields";
-import { Op } from "sequelize";
+import { Op, WhereOptions } from "sequelize";
 import { COLABORADOR_ATTRIBUTES } from "../../../constants/ColaboradorConstant";
 import HPagination from "../../../helpers/HPagination";
 import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
@@ -18,6 +18,7 @@ import { SEDE_INCLUDE } from "../../../includes/SedeInclude";
 import { PAIS_INCLUDE } from "../../../includes/PaisInclude";
 import PersonaRepository from "../Persona/PersonaRepository";
 import { IPersona } from "../../interfaces/Persona/IPersona";
+import { IColaboradorFilter } from '../../interfaces/Colaborador/IColaboradorFilter'
 
 class ColaboradorRepository {
     protected personaRepository: PersonaRepository
@@ -53,10 +54,39 @@ class ColaboradorRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number): Promise<ColaboradorResponsePaginate> {
+    async getAllWithPaginate(
+        page: number,
+        limit: number,
+        filters: IColaboradorFilter
+    ): Promise<ColaboradorResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
+
+            // Construcción dinámica de la claúsula WHERE
+            const where: WhereOptions = {}
+
+            if (filters.id_tipodocumento !== undefined) {
+                where.id_tipodocumento = filters.id_tipodocumento
+            }
+
+            if (filters.id_empresa !== undefined) {
+                where.id_empresa = filters.id_empresa
+            }
+
+            if (filters.id_cargo !== undefined) {
+                where.id_cargo = filters.id_cargo
+            }
+
+            if (filters.numero_documento !== undefined) {
+                where.numero_documento = filters.numero_documento
+            }
+
+            if (filters.nombre_completo !== undefined) {
+                where.nombre_completo = {
+                    [Op.like]: `%${filters.nombre_completo}%`
+                }
+            }
 
             const { count, rows } = await Colaborador.findAndCountAll({
                 attributes: COLABORADOR_ATTRIBUTES,
@@ -67,6 +97,7 @@ class ColaboradorRepository {
                     SEDE_INCLUDE,
                     PAIS_INCLUDE
                 ],
+                where,
                 order: [
                     ['apellido_paterno', 'ASC']
                 ],
@@ -201,7 +232,6 @@ class ColaboradorRepository {
     * @returns {Promise<ColaboradorResponse>} Respuesta con el colaborador creado o error
     */
     async create(data: IColaborador): Promise<ColaboradorResponse> {
-
         // Accede a la instancia de Sequelize a través de db.sequelize
         // const transaction = await sequelize.transaction()
 

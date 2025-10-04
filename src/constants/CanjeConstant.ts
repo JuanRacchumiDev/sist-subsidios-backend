@@ -16,6 +16,7 @@ export const CANJE_ATTRIBUTES = [
     'fecha_registro',
     'total_dias',
     'is_reembolsable',
+    'is_continuo',
     'observacion',
     'mes_devengado',
     'nombre_colaborador',

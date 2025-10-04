@@ -10,8 +10,17 @@ import { REPRESENTANTE_LEGAL_ATTRIBUTES } from "../../../constants/Representante
 import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
 import { EMPRESA_INCLUDE } from "../../../includes/EmpresaInclude";
 import { CARGO_INCLUDE } from "../../../includes/CargoInclude";
+import PersonaRepository from "../Persona/PersonaRepository";
+import { IPersona } from "../../interfaces/Persona/IPersona";
+import { Persona } from "../../models/Persona";
 
 class RepresentanteRepository {
+    protected personaRepository: PersonaRepository
+
+    constructor() {
+        this.personaRepository = new PersonaRepository()
+    }
+
     /**
     * Obtiene todos los representantes legales
     * @returns {Promise<RepresentanteLegalResponse>}
@@ -166,6 +175,7 @@ class RepresentanteRepository {
 
         try {
             const {
+                id_tipodocumento,
                 numero_documento,
                 id_empresa,
                 id_cargo,
@@ -173,6 +183,7 @@ class RepresentanteRepository {
             } = data
 
             if (
+                !id_tipodocumento ||
                 !numero_documento ||
                 !id_empresa ||
                 !id_cargo ||
@@ -204,8 +215,27 @@ class RepresentanteRepository {
             const { id } = newRepresentante
 
             if (id) {
+                // Actualizamos el email de la persona
+                const responsePersona = await this.personaRepository.getByIdTipoDocAndNumDoc(id_tipodocumento, numero_documento)
+
+                const { result, data } = responsePersona
+
+                if (result && data) {
+                    const payloadUpdate: IPersona = {
+                        email: correo
+                    }
+
+                    const persona = data as Persona
+
+                    await persona.update(payloadUpdate)
+                }
+
                 return { result: true, message: 'Representante legal registrado con éxito', data: newRepresentante, status: 200 }
             }
+
+            // if (id) {
+            //     return { result: true, message: 'Representante legal registrado con éxito', data: newRepresentante, status: 200 }
+            // }
 
             return { result: false, error: 'Error al registrar al representante legal', data: [], status: 500 }
         } catch (error) {

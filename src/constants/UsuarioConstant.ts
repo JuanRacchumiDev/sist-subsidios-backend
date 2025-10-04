@@ -7,5 +7,6 @@ export const USUARIO_ATTRIBUTES = [
     'username',
     'email',
     'password',
+    'nombre_persona',
     'estado'
 ]

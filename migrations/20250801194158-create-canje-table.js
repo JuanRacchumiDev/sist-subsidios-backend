@@ -127,6 +127,11 @@ module.exports = {
         allowNull: false,
         defaultValue: false
       },
+      is_continuo: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
       observacion: {
         type: Sequelize.TEXT,
         allowNull: true

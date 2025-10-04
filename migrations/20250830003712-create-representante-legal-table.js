@@ -18,7 +18,7 @@ module.exports = {
       },
       id_tipodocumento: {
         type: Sequelize.UUID,
-        allowNull: true,
+        allowNull: false,
         references: {
           model: 'tipo_documento',
           key: 'id'

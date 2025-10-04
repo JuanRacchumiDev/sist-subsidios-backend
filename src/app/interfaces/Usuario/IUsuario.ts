@@ -12,6 +12,7 @@ export interface IUsuario {
     username?: string
     email?: string
     password?: string
+    nombre_persona?: string
     remember_token?: string
     user_crea?: string
     user_actualiza?: string

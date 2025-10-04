@@ -17,6 +17,8 @@ export const DESCANSOMEDICO_ATTRIBUTES = [
     'fecha_elimina',
     'fecha_maxima_subsanar',
     'numero_colegiatura',
+    'anio_fecha_inicio',
+    'anio_fecha_final',
     'mes_devengado',
     'medico_tratante',
     'nombre_colaborador',

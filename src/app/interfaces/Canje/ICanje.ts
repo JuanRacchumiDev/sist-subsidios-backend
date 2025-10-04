@@ -29,6 +29,7 @@ export interface ICanje {
     anio_fecha_final_subsidio?: number
     total_dias?: number
     is_reembolsable?: boolean
+    is_continuo?: boolean
     observacion?: string
     mes_devengado?: string
     nombre_colaborador?: string
