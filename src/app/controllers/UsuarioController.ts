@@ -4,6 +4,7 @@ import GetUsuariosPaginateService from '../services/Usuario/GetUsuariosPaginate'
 import GetUsuarioService from '../services/Usuario/GetUsuario'
 import CreateUsuarioService from '../services/Usuario/CreateUsuario'
 import UpdateUsuarioService from '../services/Usuario/UpdateUsuario'
+import UpdateEstadoService from '../services/Usuario/UpdateEstado'
 import { IUsuario } from "../interfaces/Usuario/IUsuario";
 import { IUsuarioFilter } from "../interfaces/Usuario/IUsuarioFilter";
 
@@ -72,6 +73,17 @@ class UsuarioController {
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);
+        }
+    }
+
+    async updateEstado(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params
+            const usuarioData: IUsuario = req.body
+            const result = await UpdateEstadoService.execute(id, usuarioData)
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error)
         }
     }
 }

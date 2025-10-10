@@ -3,6 +3,9 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+    // Establecer el modo DEFERRED para la sesión (requiere FKs DEFERRABLE)
+    await queryInterface.sequelize.query('SET CONSTRAINTS ALL DEFERRED;');
+
     /**
      * Add altering commands here.
      *
@@ -58,7 +61,7 @@ module.exports = {
       updated_at: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP') // MySQL: auto-update
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') // MySQL: auto-update
         // For older Sequelize versions or other DBs, you might just use CURRENT_TIMESTAMP and let Sequelize handle updates.
         // For MySQL, `ON UPDATE CURRENT_TIMESTAMP` is common for `updated_at`.
       },

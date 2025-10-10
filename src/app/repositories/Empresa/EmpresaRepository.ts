@@ -271,7 +271,7 @@ class EmpresaRepository {
             empresa.estado = estado
             await empresa.save()
 
-            return { result: true, message: 'Estado actualizadp con éxito', data: empresa, status: 200 }
+            return { result: true, message: 'Estado actualizado con éxito', data: empresa, status: 200 }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }

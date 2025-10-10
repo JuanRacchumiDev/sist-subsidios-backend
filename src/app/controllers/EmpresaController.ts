@@ -5,6 +5,7 @@ import GetEmpresaService from '../services/Empresa/GetEmpresa'
 import GetInfoApiService from '../services/Empresa/GetInfoApi'
 import CreateEmpresaService from '../services/Empresa/CreateEmpresa'
 import UpdateEmpresaService from '../services/Empresa/UpdateEmpresa'
+import UpdateEstadoService from '../services/Empresa/UpdateEstado'
 import DeleteEmpresaService from '../services/Empresa/DeleteEmpresa'
 import { IEmpresa } from '../interfaces/Empresa/IEmpresa'
 
@@ -88,6 +89,17 @@ class EmpresaController {
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);
+        }
+    }
+
+    async updateEstado(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params
+            const empresaData: IEmpresa = req.body
+            const result = await UpdateEstadoService.execute(id, empresaData)
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error)
         }
     }
 

@@ -72,7 +72,7 @@ module.exports = {
       },
       fecha_canje: {
         type: Sequelize.STRING(12),
-        allowNull: false
+        allowNull: true
       },
       fecha_maxima_canje: {
         type: Sequelize.STRING(12),
@@ -184,11 +184,13 @@ module.exports = {
       },
       updated_at: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       deleted_at: {
+        type: Sequelize.DATE,
         allowNull: true,
-        type: Sequelize.DATE
+        // defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     }, {
       // Opciones de la tabla (opcional pero recomendado para la consistencia de la base de datos)

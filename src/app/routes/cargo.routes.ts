@@ -16,6 +16,8 @@ router.post('/', authToken, CargoController.createCargo)
 
 router.patch('/:id', authToken, CargoController.updateCargo)
 
+router.patch('/update-estado/:id', authToken, CargoController.updateEstado)
+
 router.delete('/:id', authToken, CargoController.deleteCargo)
 
 export default router

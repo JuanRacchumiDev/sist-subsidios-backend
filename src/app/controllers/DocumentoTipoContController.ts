@@ -4,6 +4,7 @@ import DeleteDocumentoTipoContService from '../services/DocumentoTipoCont/Delete
 import GetDocumentoTipoContService from '../services/DocumentoTipoCont/GetDocumentoTipoCont'
 import GetDocumentosTipoContService from '../services/DocumentoTipoCont/GetDocumentosTipoCont'
 import UpdateDocumentoTipoContService from '../services/DocumentoTipoCont/UpdateDocumentoTipoCont'
+import UpdateEstadoService from '../services/DocumentoTipoCont/UpdateEstado'
 import GetDocumentosTipoContPaginateService from "../services/DocumentoTipoCont/GetDocumentosTipoContPaginate"
 import { IDocumentoTipoCont } from '../interfaces/DocumentoTipoCont/IDocumentoTipoCont';
 import { IDocumentoTipoContFilter } from '../interfaces/DocumentoTipoCont/IDocumentoTipoContFilter'
@@ -71,6 +72,17 @@ class DocumentoTipoContController {
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);
+        }
+    }
+
+    async updateEstado(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params
+            const documentoData: IDocumentoTipoCont = req.body
+            const result = await UpdateEstadoService.execute(id, documentoData)
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error)
         }
     }
 

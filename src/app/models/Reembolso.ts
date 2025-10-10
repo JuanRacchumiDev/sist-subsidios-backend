@@ -56,8 +56,8 @@ Reembolso.init({
         autoIncrement: true
     },
     codigo: {
-        type: new DataTypes.STRING(12),
-        allowNull: false
+        type: new DataTypes.STRING(20),
+        allowNull: true
     },
     codigo_reembolso: {
         type: new DataTypes.STRING(30),

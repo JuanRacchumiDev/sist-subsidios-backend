@@ -14,4 +14,6 @@ router.post('/', authToken, DocumentoTipoContController.createDocumento)
 
 router.patch('/:id', authToken, DocumentoTipoContController.updateDocumento)
 
+router.patch('/update-estado/:id', authToken, DocumentoTipoContController.updateEstado)
+
 export default router

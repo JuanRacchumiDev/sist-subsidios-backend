@@ -8,7 +8,7 @@ class GetCanjesForReportService {
     }
 
     async execute(
-        type: 'non_consecutive' | 'consecutive' | 'global',
+        type: 'no_consecutivos' | 'consecutivos' | 'global',
         limit: number
     ) {
         return await this.canjeRepository.getSubsidiosOverLimit(type, limit)

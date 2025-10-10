@@ -3,6 +3,7 @@ import GetColaboradorService from "../services/Colaborador/GetColaborador"
 import GetColaboradoresPaginateService from "../services/Colaborador/GetColaboradoresPaginate"
 import CreateColaboradorService from "../services/Colaborador/CreateColaborador"
 import UpdateColaboradorService from "../services/Colaborador/UpdateColaborador"
+import UpdateEstadoService from '../services/Colaborador/UpdateEstado'
 import DeleteColaboradorService from "../services/Colaborador/DeleteColaborador"
 import GetColaboradoresByEmpresaService from "../services/Colaborador/GetColaboradoresByIdEmpresa"
 import GetByIdTipoAndNumDocService from "../services/Colaborador/GetByIdTipoAndNumDoc"
@@ -138,6 +139,17 @@ class ColaboradorController {
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);
+        }
+    }
+
+    async updateEstado(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params
+            const colaboradorData: IColaborador = req.body
+            const result = await UpdateEstadoService.execute(id, colaboradorData)
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error)
         }
     }
 

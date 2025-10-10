@@ -57,7 +57,7 @@ module.exports = {
       updated_at: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP') // MySQL-specific
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') // MySQL-specific
       },
       // `deleted_at` for `paranoid: true`
       deleted_at: {

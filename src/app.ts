@@ -39,6 +39,7 @@ const allowedOrigin = process.env.CORS_ALLOWED_ORIGIN || '*'
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('public'))
 
@@ -68,7 +69,7 @@ const setupDatabase = async () => {
         Canje.belongsTo(DescansoMedico, { foreignKey: 'id_descansomedico', as: 'descansoMedico' })
         Canje.belongsTo(Colaborador, { foreignKey: 'id_colaborador', as: 'colaborador' })
 
-        Cobro.hasOne(Reembolso, { foreignKey: 'id_cobro', as: 'reembolso' })
+        // Cobro.hasOne(Reembolso, { foreignKey: 'id_cobro', as: 'reembolso' })
         Cobro.hasMany(Adjunto, { foreignKey: 'id_cobro', as: 'adjuntos' })
 
         Cargo.hasMany(Colaborador, { foreignKey: 'id_cargo', as: 'colaboradores' })
@@ -115,7 +116,7 @@ const setupDatabase = async () => {
         Perfil.hasMany(Usuario, { foreignKey: 'id_perfil', as: 'usuarios' })
 
         // Reembolso.hasOne(Canje, { foreignKey: 'id_reembolso', as: 'canje' })
-        Reembolso.belongsTo(Cobro, { foreignKey: 'id_cobro', as: 'cobro' })
+        // Reembolso.belongsTo(Cobro, { foreignKey: 'id_cobro', as: 'cobro' })
         Reembolso.belongsTo(Canje, { foreignKey: 'id_canje', as: 'canje' })
         Reembolso.hasMany(Adjunto, { foreignKey: 'id_reembolso', as: 'adjuntos' })
 

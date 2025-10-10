@@ -18,6 +18,8 @@ router.post('/', authToken, ColaboradorController.createColaborador)
 
 router.patch('/:id', authToken, ColaboradorController.updateColaborador)
 
+router.patch('/update-estado/:id', authToken, ColaboradorController.updateEstado)
+
 router.delete('/:id', authToken, ColaboradorController.deleteColaborador)
 
 export default router

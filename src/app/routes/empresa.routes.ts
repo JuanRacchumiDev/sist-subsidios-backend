@@ -16,4 +16,6 @@ router.post('/', authToken, EmpresaController.createEmpresa)
 
 router.patch('/:id', authToken, EmpresaController.updateEmpresa)
 
+router.patch('/update-estado/:id', authToken, EmpresaController.updateEstado)
+
 export default router

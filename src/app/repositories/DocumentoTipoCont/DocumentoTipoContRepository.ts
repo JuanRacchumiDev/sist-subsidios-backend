@@ -1,4 +1,4 @@
-import { DocumentoTipoCont } from "../../models/DocumentoTipoCont";
+import { DocumentoTipoCont } from '../../models/DocumentoTipoCont';
 import { DocumentoTipoContResponse, DocumentoTipoContResponsePaginate, IDocumentoTipoCont, IDocumentoTipoContPaginate } from '../../interfaces/DocumentoTipoCont/IDocumentoTipoCont';
 import HString from "../../../helpers/HString";
 import { DOCUMENTO_TIPO_CONT_ATTRIBUTES } from "../../../constants/DocumentoConstant";
@@ -184,6 +184,30 @@ class DocumentoTipoContRepository {
         } catch (error) {
             // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    /**
+     * Actualiza el estado de un documento de tipo de contingencia
+     * @param {string} id - El ID del documento de tipo de contingencia
+     * @param {boolean} estado - El nuevo estado del documento de tipo de contingencia
+     * @returns {Promise<DocumentoTipoContResponse>} Respuesta con la empresa actualizada
+     */
+    async updateEstado(id: string, estado: boolean): Promise<DocumentoTipoContResponse> {
+        try {
+            const documento = await DocumentoTipoCont.findByPk(id)
+
+            if (!documento) {
+                return { result: false, message: 'Documento no encontrada', status: 404 }
+            }
+
+            documento.estado = estado
+            await documento.save()
+
+            return { result: true, message: 'Estado actualizado con éxito', data: documento, status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
         }
     }

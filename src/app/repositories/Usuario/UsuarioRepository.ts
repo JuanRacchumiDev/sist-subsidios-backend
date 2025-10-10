@@ -237,6 +237,30 @@ class UsuarioRepository {
             }
         }
     }
+
+    /**
+     * Actualiza el estado de un usuario
+     * @param {string} id - El ID del usuario 
+     * @param {boolean} estado - El nuevo estado del usuario 
+     * @returns {Promise<UsuarioResponse>} Respuesta con el usuario actualizado
+     */
+    async updateEstado(id: string, estado: boolean): Promise<UsuarioResponse> {
+        try {
+            const usuario = await Usuario.findByPk(id)
+
+            if (!usuario) {
+                return { result: false, message: 'Usuario no encontrado', status: 404 }
+            }
+
+            usuario.estado = estado
+            await usuario.save()
+
+            return { result: true, message: 'Estado actualizado con éxito', data: usuario, status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
 }
 
 export default UsuarioRepository

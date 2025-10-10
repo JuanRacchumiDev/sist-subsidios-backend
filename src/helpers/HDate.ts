@@ -83,7 +83,8 @@ export default class HDate {
 
     /**
      * Obtiene la fecha actual
-     * @returns {string} La fecha en formato 'YYYY-MM-DD'
+     * @param {string} formatDate - La fecha en formato 'YYYY-MM-DD'
+     * @returns {string} Devuelve la fecha actual en un formato
      */
     static getCurrentDateToString(formatDate: string): string {
         const now = new Date();
@@ -94,6 +95,18 @@ export default class HDate {
         return format(dateLima, formatDate)
     }
 
+    static getCurrentYear(): string {
+        const now = new Date()
+        const dateLima = toZonedTime(now, TIME_ZONE_AMERICA_LIMA)
+        return format(dateLima, 'yyy')
+    }
+
+    /**
+     * Formatea una fecha de acuerdo a un formato de salid
+     * @param {string} dateString - La fecha a ser evaluada 
+     * @param {string} dateFormat - El formato de salida de fecha
+     * @returns {string} Devuelte la fecha en un formato definido
+     */
     static formatDate(dateString: string | null | undefined, dateFormat: string): string {
         if (!dateString) {
             return ''

@@ -14,4 +14,6 @@ router.post('/', authToken, UsuarioController.createUsuario)
 
 router.patch('/:id', authToken, UsuarioController.updateUsuario)
 
+router.patch('/update-estado/:id', authToken, UsuarioController.updateEstado)
+
 export default router

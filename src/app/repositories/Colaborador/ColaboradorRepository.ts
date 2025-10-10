@@ -354,6 +354,30 @@ class ColaboradorRepository {
     }
 
     /**
+     * Actualiza el estado de un colaborador
+     * @param {string} id - El ID del colaborador 
+     * @param {boolean} estado - El nuevo estado del colaborador 
+     * @returns {Promise<ColaboradorResponse>} Respuesta con el colaborador actualizado
+     */
+    async updateEstado(id: string, estado: boolean): Promise<ColaboradorResponse> {
+        try {
+            const colaborador = await Colaborador.findByPk(id)
+
+            if (!colaborador) {
+                return { result: false, message: 'Colaborador no encontrado', status: 404 }
+            }
+
+            colaborador.estado = estado
+            await colaborador.save()
+
+            return { result: true, message: 'Estado actualizado con éxito', data: colaborador, status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    /**
      * Elimina (lógicamente) un colaborador con su ID
      * @param {string} id - El ID del colaborador a eliminar 
      * @returns {Promise<ColaboradorResponse>} Respuesta de la eliminación

@@ -6,6 +6,7 @@ import GetCargosService from '../services/Cargo/GetCargos'
 import GetCargoByNombreService from '../services/Cargo/GetByNombre'
 import GetCargosPaginateService from '../services/Cargo/GetCargosPaginate'
 import UpdateCargoService from '../services/Cargo/UpdateCargo'
+import UpdateEstadoService from '../services/Cargo/UpdateEstado'
 import { ICargo } from '../interfaces/Cargo/ICargo';
 
 class CargoController {
@@ -90,6 +91,17 @@ class CargoController {
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);
+        }
+    }
+
+    async updateEstado(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params
+            const cargoData: ICargo = req.body
+            const result = await UpdateEstadoService.execute(id, cargoData)
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error)
         }
     }
 

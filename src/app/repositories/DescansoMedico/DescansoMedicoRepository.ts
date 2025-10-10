@@ -389,7 +389,7 @@ class DescansoMedicoRepository {
                 //     null
                 // ),
                 plain: false,
-                logging: console.log
+                // logging: console.log
             });
 
             // Suma los 'total_dias' de los resultados obtenidos
@@ -517,6 +517,8 @@ class DescansoMedicoRepository {
      * @returns {Promise<DescansoMedicoResponse>} Respuesta con el descanso médico creado o error
      */
     async create(data: IDescansoMedico): Promise<DescansoMedicoResponse> {
+        console.log('data descanso médico create', data)
+
         const {
             id_colaborador,
             fecha_inicio,
@@ -927,8 +929,15 @@ class DescansoMedicoRepository {
                 });
 
                 if (adjustedStartDate <= adjustedEndDate) {
-                    newDescanso.fecha_inicio = adjustedStartDate.toISOString().split("T")[0];
-                    newDescanso.fecha_final = adjustedEndDate.toISOString().split("T")[0];
+                    // newDescanso.fecha_inicio = adjustedStartDate.toISOString().split("T")[0];
+                    // newDescanso.fecha_final = adjustedEndDate.toISOString().split("T")[0];
+                    const newFechaInicio: string = adjustedStartDate.toISOString().split("T")[0]
+                    const newFechaFinal: string = adjustedEndDate.toISOString().split("T")[0]
+
+                    newDescanso.fecha_inicio = newFechaInicio
+                    newDescanso.fecha_final = newFechaFinal
+                    newDescanso.total_dias = HDate.differenceDates(newFechaInicio, newFechaFinal) + 1
+
                     processedDescansos.push(newDescanso);
                 }
             } else {
