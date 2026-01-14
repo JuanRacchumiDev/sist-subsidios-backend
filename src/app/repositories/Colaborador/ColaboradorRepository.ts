@@ -287,7 +287,7 @@ class ColaboradorRepository {
 
                 if (result && data) {
                     const payloadUpdate: IPersona = {
-                        email: correo_personal
+                        email_personal: correo_personal
                     }
 
                     const persona = data as Persona

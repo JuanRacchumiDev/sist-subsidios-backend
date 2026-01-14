@@ -222,7 +222,7 @@ class RepresentanteRepository {
 
                 if (result && data) {
                     const payloadUpdate: IPersona = {
-                        email: correo
+                        email_personal: correo
                     }
 
                     const persona = data as Persona
