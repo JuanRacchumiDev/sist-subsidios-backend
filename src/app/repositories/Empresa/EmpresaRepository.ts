@@ -2,12 +2,16 @@ import { TValidateFields } from '../../types/TTypeFields';
 import sequelize from '../../../config/database'
 import { IEmpresa, IEmpresaPaginate, EmpresaResponse, EmpresaResponsePaginate } from "../../interfaces/Empresa/IEmpresa"
 import { Empresa } from "../../models/Empresa"
-import { RepresentanteLegal } from "../../models/RepresentanteLegal"
-import { Cargo } from "../../models/Cargo"
+// import { RepresentanteLegal } from "../../models/RepresentanteLegal"
+import { Persona } from "../../models/Persona"
+// import { Cargo } from "../../models/Cargo"
+import { DetalleParametro } from '../../models/DetalleParametro'
 import { Op } from "sequelize";
 import { EMPRESA_ATTRIBUTES } from '../../../constants/EmpresaConstant';
-import { REPRESENTANTE_LEGAL_ATTRIBUTES } from '../../../constants/RepresentanteLegalConstant';
-import { CARGO_ATTRIBUTES } from '../../../constants/CargoConstant';
+// import { REPRESENTANTE_LEGAL_ATTRIBUTES } from '../../../constants/RepresentanteLegalConstant';
+import { PERSONA_ATTRIBUTES } from "../../../constants/PersonaConstant"
+// import { CARGO_ATTRIBUTES } from '../../../constants/CargoConstant';
+import { DETALLE_PARAMETRO_ATTRIBUTES } from '../../../constants/DetalleParametroConstant'
 import HPagination from '../../../helpers/HPagination';
 
 class EmpresaRepository {
@@ -129,14 +133,14 @@ class EmpresaRepository {
             const empresa = await Empresa.findByPk(id, {
                 attributes: EMPRESA_ATTRIBUTES,
                 include: [{
-                    model: RepresentanteLegal,
+                    model: Persona,
                     as: 'representantes',
-                    attributes: REPRESENTANTE_LEGAL_ATTRIBUTES,
-                    include: [{
-                        model: Cargo,
-                        as: 'cargo',
-                        attributes: CARGO_ATTRIBUTES
-                    }]
+                    attributes: PERSONA_ATTRIBUTES,
+                    // include: [{
+                    //     model: DetalleParametro,
+                    //     as: 'cargo',
+                    //     attributes: DETALLE_PARAMETRO_ATTRIBUTES
+                    // }]
                 }]
             })
 
@@ -182,7 +186,7 @@ class EmpresaRepository {
      * @returns {Promise<EmpresaResponse>} Respuesta con la empresa creada o error
      */
     async create(data: IEmpresa): Promise<EmpresaResponse> {
-        // const transaction = await sequelize.transaction()
+        const transaction = await sequelize.transaction()
 
         try {
             const { nombre_o_razon_social, numero } = data
@@ -193,7 +197,11 @@ class EmpresaRepository {
 
             const fields = { nombre: nombre_o_razon_social, numero }
 
+            console.log({ fields })
+
             const validateFields = await this.validateFieldsRegistered(fields, "crear")
+
+            console.log({ validateFields })
 
             const { result: resultValidate, message: messageValidate } = validateFields
 
@@ -201,9 +209,13 @@ class EmpresaRepository {
                 return { result: !resultValidate, message: messageValidate, status: 409 }
             }
 
+            console.log({ data })
+
             const newEmpresa = await Empresa.create(data)
 
-            // await transaction.commit()
+            console.log({ newEmpresa })
+
+            await transaction.commit()
 
             if (newEmpresa.id) {
                 return { result: true, message: 'Empresa registrada con éxito', data: newEmpresa, status: 200 }
@@ -211,7 +223,7 @@ class EmpresaRepository {
 
             return { result: false, error: 'Error al registrar la empresa', data: [], status: 500 }
         } catch (error) {
-            // await transaction.rollback()
+            await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }

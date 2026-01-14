@@ -5,6 +5,9 @@ import GetPersonaService from '../services/Persona/GetPersona'
 import UpdatePersonaService from '../services/Persona/UpdatePersona'
 import GetInfoApiService from '../services/Persona/GetInfoApi'
 import GetByIdTipoAndNumDocService from '../services/Persona/GetByIdTipoAndNumDoc'
+import GetPersonasByEmpresaService from '../services/Persona/GetPersonasByEmpresa'
+import GetPersonasByEmpresaAndGrupoService from '../services/Persona/GetPersonasByEmpresaAndGrupo'
+import GetPersonasByGrupoPaginateService from '../services/Persona/GetPersonasByGrupoPaginate'
 import { IPersona } from '../interfaces/Persona/IPersona';
 
 class PersonaController {
@@ -28,6 +31,8 @@ class PersonaController {
 
             const result = await GetInfoApiService.execute(abreviaturaStr, numeroDocumentoStr)
 
+            console.log({ result })
+
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)
@@ -43,10 +48,71 @@ class PersonaController {
         }
     }
 
+    async getAllPersonasByEmpresa(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { idEmpresa } = req.params;
+            const result = await GetPersonasByEmpresaService.execute(idEmpresa)
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error) // Pasa al error al middleware de manejo de errores
+        }
+    }
+
+    async getAllPersonaByEmpresaWithGrupo(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { query: { idEmpresa, nombreGrupo } } = req
+
+            if (!idEmpresa || !nombreGrupo) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'El identificador de empresa y nombre del grupo son requeridos como parámetros de consulta'
+                    }
+                );
+            }
+
+            const idEmpresaStr = idEmpresa as string
+            const nombreGrupoStr = nombreGrupo as string
+
+            const result = await GetPersonasByEmpresaAndGrupoService.execute(idEmpresaStr, nombreGrupoStr)
+
+            res.status(result.status || 200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async getPersonaById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
             const result = await GetPersonaService.execute(id);
+            res.status(result.status || 200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getPersonasByGrupoPaginated(req: Request, res: Response, next: NextFunction) {
+        try {
+            const page = parseInt(req.query.page as string) || 1
+
+            const limit = parseInt(req.query.limit as string) || 10
+
+            const { query: { nombreGrupo } } = req
+
+            if (!nombreGrupo) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'El nombre del grupo es requerido como parámetro de consulta'
+                    }
+                );
+            }
+
+            const nombreGrupoStr = nombreGrupo as string
+
+            const result = await GetPersonasByGrupoPaginateService.execute(page, limit, nombreGrupoStr)
+
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

@@ -3,31 +3,25 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Establecer el modo DEFERRED para la sesión (requiere FKs DEFERRABLE)
-    await queryInterface.sequelize.query('SET CONSTRAINTS ALL DEFERRED;');
-
-    /**
-     * Add altering commands here.
-     *
-     * Example:
-     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
-     */
-    await queryInterface.createTable('area', {
-      id: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+    await queryInterface.createTable('parametro', {
+      clase: {
+        type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false
       },
       nombre: {
-        type: Sequelize.STRING(40),
+        type: Sequelize.STRING(100),
         allowNull: false,
         unique: true
       },
       nombre_url: {
-        type: Sequelize.STRING(50),
+        type: Sequelize.STRING(120),
         allowNull: false,
         unique: true
+      },
+      descripcion: {
+        type: Sequelize.STRING(100),
+        allowNull: true
       },
       user_crea: {
         type: Sequelize.UUID,
@@ -83,6 +77,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.dropTable('area');
+    await queryInterface.dropTable('parametro');
   }
 };

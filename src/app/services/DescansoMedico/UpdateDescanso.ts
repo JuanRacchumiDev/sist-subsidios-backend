@@ -1,13 +1,16 @@
 import DescansoMedicoRepository from '../../repositories/DescansoMedico/DescansoMedicoRepository';
 import { IDescansoMedico, DescansoMedicoResponse } from '../../interfaces/DescansoMedico/IDescansoMedico';
-import { IColaborador } from '../../interfaces/Colaborador/IColaborador';
+// import { IColaborador } from '../../interfaces/Colaborador/IColaborador';
+import { IPersona } from '../../interfaces/Persona/IPersona'
 import { EDescansoMedico } from '../../enums/EDescansoMedico';
 import { notificationDescansoMedicoIncorrecto } from '../../utils/emailTemplate';
 import { TDetalleEmail } from '../../types/DescansoMedico/TDetalleEmail';
 import transporter from '../../../config/mailer';
 import { DescansoMedico } from '../../models/DescansoMedico';
-import ColaboradorRepository from '../../repositories/Colaborador/ColaboradorRepository';
-import { Colaborador } from '../../models/Colaborador';
+import PersonaRepository from '../../repositories/Persona/PersonaRepository'
+import { Persona } from '../../models/Persona'
+// import ColaboradorRepository from '../../repositories/Colaborador/ColaboradorRepository';
+// import { Colaborador } from '../../models/Colaborador';
 import { TOTAL_DIAS_DESCANSO_MEDICO } from '../../../helpers/HParameter';
 import HDate from '../../../helpers/HDate';
 import { CanjeResponse, ICanje } from '../../interfaces/Canje/ICanje';
@@ -15,10 +18,10 @@ import { ECanje } from '../../enums/ECanje';
 import CanjeRepository from '../../repositories/Canje/CanjeRepository';
 import { addMonths, differenceInCalendarDays, endOfMonth, format, isSameMonth, parseISO, startOfMonth } from 'date-fns';
 
-type TFechas = {
-    fechaInicio: string
-    fechaFinal: string
-}
+// type TFechas = {
+//     fechaInicio: string
+//     fechaFinal: string
+// }
 
 /**
  * @class UpdateDescansoService
@@ -26,12 +29,14 @@ type TFechas = {
  */
 class UpdateDescansoService {
     protected descansoMedicoRepository: DescansoMedicoRepository
-    protected colaboradorRepository: ColaboradorRepository
+    protected personaRepository: PersonaRepository
+    // protected colaboradorRepository: ColaboradorRepository
     protected canjeRepository: CanjeRepository
 
     constructor() {
         this.descansoMedicoRepository = new DescansoMedicoRepository()
-        this.colaboradorRepository = new ColaboradorRepository()
+        this.personaRepository = new PersonaRepository()
+        // this.colaboradorRepository = new ColaboradorRepository()
         this.canjeRepository = new CanjeRepository()
     }
 
@@ -78,7 +83,8 @@ class UpdateDescansoService {
             } = descanso
 
             if (estado_registro === EDescansoMedico.DOCUMENTACION_INCORRECTA) {
-                const { correo_personal, nombre_completo } = colaborador_dm as IColaborador
+                // const { correo_personal, nombre_completo } = colaborador_dm as IColaborador
+                const { email_personal: correo_personal, nombre_completo } = colaborador_dm as IPersona
                 nombreCompleto = nombre_completo as string
                 email = correo_personal as string
 
@@ -127,7 +133,8 @@ class UpdateDescansoService {
                 const totalDiasActual = total_dias as number;
 
                 // Obteniendo datos del colaborador
-                const responseColaborador = await this.colaboradorRepository.getById(idColaborador)
+                // const responseColaborador = await this.colaboradorRepository.getById(idColaborador)
+                const responseColaborador = await this.personaRepository.getById(idColaborador)
 
                 const { result: resultColaborador, data: dataColaborador } = responseColaborador
 
@@ -141,8 +148,8 @@ class UpdateDescansoService {
                     nombres,
                     apellido_paterno,
                     apellido_materno,
-                    correo_personal
-                } = dataColaborador as IColaborador
+                    email_personal: correo_personal
+                } = dataColaborador as IPersona
 
                 const nombreColaborador = `${nombres} ${apellido_paterno} ${apellido_materno}`
 

@@ -1,7 +1,9 @@
 import DescansoMedicoRepository from '../../repositories/DescansoMedico/DescansoMedicoRepository';
 import { IDescansoMedico, DescansoMedicoResponse } from '../../interfaces/DescansoMedico/IDescansoMedico';
-import ColaboradorRepository from '../../repositories/Colaborador/ColaboradorRepository';
-import TipoDescansoMedicoRepository from '../../repositories/TipoDescansoMedico/TipoDescansoMedicoRepository';
+// import ColaboradorRepository from '../../repositories/Colaborador/ColaboradorRepository';
+import PersonaRepository from '../../repositories/Persona/PersonaRepository'
+// import TipoDescansoMedicoRepository from '../../repositories/TipoDescansoMedico/TipoDescansoMedicoRepository';
+import DetalleRepository from '../../repositories/DetalleParametro/DetalleParametroRepository'
 import TipoContingenciaRepository from '../../repositories/TipoContingencia/TipoContingenciaRepository';
 import DiagnosticoRepository from '../../repositories/Diagnostico/DiagnosticoRepository';
 import { IColaborador } from '../../interfaces/Colaborador/IColaborador';
@@ -34,21 +36,25 @@ import { IDiagnostico } from '../../interfaces/Diagnostico/IDiagnostico';
  */
 class CreateDescansoService {
     private descansoMedicoRepository: DescansoMedicoRepository;
-    private colaboradorRepository: ColaboradorRepository;
+    // private colaboradorRepository: ColaboradorRepository;
     private adjuntoRepository: AdjuntoRepository;
-    private tipoDescansoMedicoRepository: TipoDescansoMedicoRepository
+    // private tipoDescansoMedicoRepository: TipoDescansoMedicoRepository
+    private detalleRepository: DetalleRepository
     private tipoContingenciaRepository: TipoContingenciaRepository
     private diagnosticoRepository: DiagnosticoRepository
     private canjeRepository: CanjeRepository
+    private personaRepository: PersonaRepository
 
     constructor() {
         this.descansoMedicoRepository = new DescansoMedicoRepository();
-        this.colaboradorRepository = new ColaboradorRepository();
+        // this.colaboradorRepository = new ColaboradorRepository();
         this.adjuntoRepository = new AdjuntoRepository();
-        this.tipoDescansoMedicoRepository = new TipoDescansoMedicoRepository()
+        // this.tipoDescansoMedicoRepository = new TipoDescansoMedicoRepository()
         this.tipoContingenciaRepository = new TipoContingenciaRepository()
         this.diagnosticoRepository = new DiagnosticoRepository()
         this.canjeRepository = new CanjeRepository()
+        this.personaRepository = new PersonaRepository()
+        this.detalleRepository = new DetalleRepository()
     }
 
     /**
@@ -116,7 +122,9 @@ class CreateDescansoService {
             status: 400
         }
 
-        const responseColaborador = await this.colaboradorRepository.getById(id_colaborador)
+        // const responseColaborador = await this.colaboradorRepository.getById(id_colaborador)
+        const responseColaborador = await this.personaRepository.getById(id_colaborador)
+        console.log({ responseColaborador })
 
         const {
             result: resultColaborador,
@@ -131,7 +139,8 @@ class CreateDescansoService {
             }
         }
 
-        const responseTipoDM = await this.tipoDescansoMedicoRepository.getById(id_tipodescansomedico)
+        // const responseTipoDM = await this.tipoDescansoMedicoRepository.getById(id_tipodescansomedico)
+        const responseTipoDM = await this.detalleRepository.getById(id_tipodescansomedico)
 
         const { result: resultTipoDM, data: dataTipoDM } = responseTipoDM
 
@@ -145,7 +154,8 @@ class CreateDescansoService {
 
         nombreTipoDescansoMedico = (dataTipoDM as ITipoDescansoMedico).nombre as string
 
-        const responseTipoContingencia = await this.tipoContingenciaRepository.getById(id_tipocontingencia)
+        // const responseTipoContingencia = await this.tipoContingenciaRepository.getById(id_tipocontingencia)
+        const responseTipoContingencia = await this.detalleRepository.getById(id_tipocontingencia)
 
         const {
             result: resultTipoContingencia,

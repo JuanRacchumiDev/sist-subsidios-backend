@@ -1,4 +1,5 @@
-import { ITipoContingencia } from "../TipoContingencia/ITipoContingencia"
+// import { ITipoContingencia } from "../TipoContingencia/ITipoContingencia"
+import { IDetalleParametro } from "../DetalleParametro/IDetalleParametro"
 
 export interface IDocumentoTipoCont {
     id?: string
@@ -10,7 +11,8 @@ export interface IDocumentoTipoCont {
     user_elimina?: string
     sistema?: boolean
     estado?: boolean
-    tipoContingencia?: ITipoContingencia
+    tipoContingencia?: IDetalleParametro
+    // tipoContingencia?: ITipoContingencia
 }
 
 export interface DocumentoTipoContResponse {

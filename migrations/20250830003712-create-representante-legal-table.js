@@ -20,7 +20,7 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'tipo_documento',
+          model: 'detalle_parametro',
           key: 'id'
         }
       },
@@ -36,7 +36,7 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'cargo',
+          model: 'detalle_parametro',
           key: 'id'
         }
       },

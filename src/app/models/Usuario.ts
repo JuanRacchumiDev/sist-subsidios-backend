@@ -3,8 +3,10 @@ import sequelize from '../../config/database'
 import { IUsuario } from "../interfaces/Usuario/IUsuario";
 import { Colaborador } from './Colaborador';
 import { TrabajadorSocial } from './TrabajadorSocial';
-import { Perfil } from './Perfil';
-import { IPerfil } from '../interfaces/Perfil/IPerfil';
+// import { Perfil } from './Perfil';
+// import { IPerfil } from '../interfaces/Perfil/IPerfil';
+import { DetalleParametro } from './DetalleParametro'
+import { IDetalleParametro } from "../interfaces/DetalleParametro/IDetalleParametro"
 import { IColaborador } from '../interfaces/Colaborador/IColaborador';
 import { ITrabajadorSocial } from '../interfaces/TrabajadorSocial/ITrabajadorSocial';
 import { Persona } from './Persona';
@@ -27,7 +29,8 @@ export class Usuario extends Model<IUsuario, UsuarioCreationAttributes> implemen
     public user_elimina?: string | undefined;
     public sistema?: boolean | undefined;
     public estado?: boolean | undefined;
-    public perfil?: IPerfil | undefined;
+    // public perfil?: IPerfil | undefined;
+    public perfil?: IDetalleParametro | undefined;
     public colaborador?: IColaborador | undefined;
     public trabajadorSocial?: ITrabajadorSocial | undefined;
 
@@ -37,7 +40,8 @@ export class Usuario extends Model<IUsuario, UsuarioCreationAttributes> implemen
     public readonly deleted_at!: Date
 
     // Asociaciones
-    public getPerfil?: () => Promise<Perfil>
+    // public getPerfil?: () => Promise<Perfil>
+    public getPerfil?: () => Promise<DetalleParametro>
     public getPersona?: () => Promise<Persona>
     public getColaborador?: () => Promise<Colaborador>
     public getTrabajadorSocial?: () => Promise<TrabajadorSocial>
@@ -54,7 +58,8 @@ Usuario.init({
         type: DataTypes.UUID,
         allowNull: true,
         references: {
-            model: Perfil,
+            // model: Perfil,
+            model: DetalleParametro,
             key: "id"
         }
     },

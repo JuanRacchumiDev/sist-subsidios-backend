@@ -6,6 +6,7 @@ import { IDocumentoTipoCont } from "../DocumentoTipoCont/IDocumentoTipoCont"
 import { IReembolso } from "../Reembolso/IReembolso"
 import { ITipoAdjunto } from "../TipoAdjunto/ITipoAdjunto"
 import { ITrabajadorSocial } from "../TrabajadorSocial/ITrabajadorSocial"
+import { IPersona } from "../Persona/IPersona"
 
 export interface IAdjunto {
     id?: string
@@ -14,6 +15,7 @@ export interface IAdjunto {
     id_canje?: string
     id_cobro?: string
     id_reembolso?: string
+    id_persona?: string
     id_colaborador?: string
     id_trabajadorsocial?: string
     id_documento?: string
@@ -33,6 +35,7 @@ export interface IAdjunto {
     cobro?: ICobro
     reembolso?: IReembolso
     colaborador?: IColaborador
+    persona?: IPersona
     trabajadorSocial?: ITrabajadorSocial
     documento?: IDocumentoTipoCont
 }

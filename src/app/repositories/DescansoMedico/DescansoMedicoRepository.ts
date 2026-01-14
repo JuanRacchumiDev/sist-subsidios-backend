@@ -29,6 +29,7 @@ import {
 } from "../../types/DescansoMedico/TItemReport";
 import { Canje } from "../../models/Canje";
 import { IDescansoMedicoFilter } from '../../interfaces/DescansoMedico/IDescansoMedicoFilter';
+import { DETALLE_PARAMETRO_INCLUDE } from "../../../includes/DetalleParametroInclude"
 
 type TReportDescansosResponse = {
     result: boolean
@@ -57,8 +58,9 @@ class DescansoMedicoRepository {
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
                 include: [
                     COLABORADOR_DM_INCLUDE,
-                    TIPODM_INCLUDE,
-                    TIPO_CONTINGENCIA_INCLUDE,
+                    // TIPODM_INCLUDE,
+                    // TIPO_CONTINGENCIA_INCLUDE,
+                    DETALLE_PARAMETRO_INCLUDE,
                     DIAGNOSTICO_INCLUDE
                 ],
                 order: [
@@ -136,8 +138,9 @@ class DescansoMedicoRepository {
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
                 include: [
                     COLABORADOR_DM_INCLUDE,
-                    TIPODM_INCLUDE,
-                    TIPO_CONTINGENCIA_INCLUDE,
+                    // TIPODM_INCLUDE,
+                    // TIPO_CONTINGENCIA_INCLUDE,
+                    DETALLE_PARAMETRO_INCLUDE,
                     DIAGNOSTICO_INCLUDE
                 ],
                 where,
@@ -185,8 +188,9 @@ class DescansoMedicoRepository {
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
                 include: [
                     COLABORADOR_DM_INCLUDE,
-                    TIPODM_INCLUDE,
-                    TIPO_CONTINGENCIA_INCLUDE,
+                    // TIPODM_INCLUDE,
+                    // TIPO_CONTINGENCIA_INCLUDE,
+                    DETALLE_PARAMETRO_INCLUDE,
                     DIAGNOSTICO_INCLUDE
                 ],
                 where: {
@@ -265,8 +269,9 @@ class DescansoMedicoRepository {
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
                 include: [
                     COLABORADOR_DM_INCLUDE,
-                    TIPODM_INCLUDE,
-                    TIPO_CONTINGENCIA_INCLUDE,
+                    // TIPODM_INCLUDE,
+                    // TIPO_CONTINGENCIA_INCLUDE,
+                    DETALLE_PARAMETRO_INCLUDE,
                     DIAGNOSTICO_INCLUDE
                 ],
                 where,
@@ -419,8 +424,9 @@ class DescansoMedicoRepository {
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
                 include: [
                     COLABORADOR_DM_INCLUDE,
-                    TIPODM_INCLUDE,
-                    TIPO_CONTINGENCIA_INCLUDE,
+                    // TIPODM_INCLUDE,
+                    // TIPO_CONTINGENCIA_INCLUDE,
+                    DETALLE_PARAMETRO_INCLUDE,
                     DIAGNOSTICO_INCLUDE,
                     ADJUNTO_INCLUDE
                 ]

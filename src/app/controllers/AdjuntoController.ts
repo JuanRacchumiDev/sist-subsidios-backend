@@ -41,22 +41,49 @@ class AdjuntoController {
 
             const response = await GetAdjuntoService.execute(id);
 
+            console.log('---- response getAdjuntoById ----')
+            console.log({ response })
+
             const { status, data } = response
 
             if (!status || !data) {
                 return res.status(status || 404).json(response)
             }
 
+            console.log({ data })
+
             const { file_path, file_type, file_name } = data as IAdjunto
+
+            console.log({ file_path })
+            console.log({ file_type })
+            console.log({ file_name })
 
             if (!file_path) {
                 return res.status(404).json({ result: false, message: 'Archivo no encontrado.', status: 404 });
             }
 
+            let finalPath = file_path
+
+            const normalizedPath = path.normalize(file_path)
+
+            if (!normalizedPath.startsWith('public' + path.sep) && !normalizedPath.startsWith('public/')) {
+                finalPath = path.join('public', file_path)
+            }
+
+            console.log({ finalPath })
+
             res.setHeader('Content-Type', file_type as string)
             res.setHeader('Content-Disposition', `inline; filename="${file_name}"`)
 
-            const fileStream = fs.createReadStream(file_path)
+            const fileStream = fs.createReadStream(finalPath)
+
+            fileStream.on('error', (err) => {
+                console.error('Error en el stream: ', err)
+                if (!res.headersSent) {
+                    res.status(500).json({ message: 'Error al leer el archivo físico' })
+                }
+            })
+
             fileStream.pipe(res)
         } catch (error) {
             next(error);
@@ -106,19 +133,30 @@ class AdjuntoController {
             const currentYear = HDate.getCurrentYear(); // Asumiendo que esta función está disponible
 
             if (ruc && numero_documento) {
+                console.log('---- existe ruc y numero_documento ----')
+                console.log({ ruc })
+                console.log({ numero_documento })
                 // Se asume que 'public' está en el mismo nivel que 'src' y 'app'
-                const baseUploadDir = path.join(process.cwd(), 'public', 'uploads');
+                // const baseUploadDir = path.join(process.cwd(), 'public', 'uploads');
 
                 // Definición del path y creación de directorios
                 relativePath = path.join('uploads', ruc, currentYear, numero_documento, filename);
                 finalPath = path.join(process.cwd(), 'public', relativePath);
 
+                console.log({ relativePath })
+                console.log({ finalPath })
+
                 const dir = path.dirname(finalPath);
                 fs.mkdirSync(dir, { recursive: true });
 
             } else {
+                console.log('---- no existe ruc y numero_documento ----')
+
                 relativePath = path.join('uploads', filename);
                 finalPath = path.join(process.cwd(), 'public', relativePath);
+
+                console.log({ relativePath })
+                console.log({ finalPath })
             }
 
             // Guardar el archivo en el disco
@@ -147,8 +185,11 @@ class AdjuntoController {
                 file_type: mimetype,
                 file_data: buffer,
                 file_path: relativePath,
+                // file_path: finalPath,
                 codigo_temp
             }
+
+            console.log({ fileData })
 
             const result = await CreateAdjuntoService.execute(fileData);
             res.status(result.status || 201).json(result);

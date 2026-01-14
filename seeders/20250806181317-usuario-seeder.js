@@ -17,10 +17,13 @@ module.exports = {
      * }], {});
     */
     // Obtener el ID del perfil administrador
-    const query = `SELECT id FROM perfil WHERE nombre = 'ADMINISTRADOR' LIMIT 1`;
+    // const queryAdmin = `SELECT id FROM perfil WHERE nombre = 'ADMINISTRADOR' LIMIT 1`;
+    let queryAdmin = `SELECT dp.id `;
+    queryAdmin += `FROM detalle_parametro dp INNER JOIN parametro pr ON pr.clase = dp.parametro_clase `;
+    queryAdmin += `WHERE pr.nombre = 'PERFIL' and dp.nombre = 'ADMINISTRADOR' LIMIT 1`;
 
     const perfilAdmin = await queryInterface.sequelize.query(
-      query,
+      queryAdmin,
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     );
 
@@ -32,7 +35,10 @@ module.exports = {
     }
 
     // Obtener el ID del perfil especialista
-    const queryEsp = `SELECT id FROM perfil WHERE nombre = 'ESPECIALISTA' LIMIT 1`;
+    // const queryEsp = `SELECT id FROM perfil WHERE nombre = 'ESPECIALISTA' LIMIT 1`;
+    let queryEsp = `SELECT dp.id `;
+    queryEsp += `FROM detalle_parametro dp INNER JOIN parametro pr ON pr.clase = dp.parametro_clase `;
+    queryEsp += `WHERE pr.nombre = 'PERFIL' and dp.nombre = 'ESPECIALISTA SOPHIA HUMAN' LIMIT 1`;
 
     const perfilEsp = await queryInterface.sequelize.query(
       queryEsp,

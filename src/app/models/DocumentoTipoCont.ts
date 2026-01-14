@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { IDocumentoTipoCont } from '../interfaces/DocumentoTipoCont/IDocumentoTipoCont';
-import { TipoContingencia } from './TipoContingencia';
+// import { TipoContingencia } from './TipoContingencia';
+import { DetalleParametro } from './DetalleParametro'
 import sequelize from '../../config/database'
 import HString from '../../helpers/HString';
 
@@ -23,7 +24,8 @@ export class DocumentoTipoCont extends Model<IDocumentoTipoCont, DocumentoTipoCo
     public readonly deleted_at!: Date
 
     // Asociaciones
-    public getTipoContingencia!: () => Promise<TipoContingencia>
+    public getTipoContingencia!: () => Promise<DetalleParametro>
+    // public getTipoContingencia!: () => Promise<TipoContingencia>
 }
 
 DocumentoTipoCont.init({
@@ -37,7 +39,8 @@ DocumentoTipoCont.init({
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-            model: TipoContingencia,
+            // model: TipoContingencia,
+            model: DetalleParametro,
             key: 'id'
         }
     },

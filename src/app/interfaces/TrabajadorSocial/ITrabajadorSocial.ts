@@ -49,3 +49,21 @@ export interface TrabajadorSocialResponse {
     error?: string
     status?: number
 }
+
+export interface ITrabajadorSocialPaginate {
+    currentPage: number
+    limit: number
+    totalPages: number
+    totalItems: number
+    nextPage: number | null
+    previousPage: number | null
+}
+
+export interface TrabajadorSocialResponsePaginate {
+    result: boolean
+    message?: string
+    data?: ITrabajadorSocial[]
+    pagination?: ITrabajadorSocialPaginate
+    error?: string
+    status?: number
+}

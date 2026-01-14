@@ -1,4 +1,4 @@
-import { ITrabajadorSocial, TrabajadorSocialResponse } from "../../interfaces/TrabajadorSocial/ITrabajadorSocial";
+import { ITrabajadorSocial, ITrabajadorSocialPaginate, TrabajadorSocialResponse, TrabajadorSocialResponsePaginate } from "../../interfaces/TrabajadorSocial/ITrabajadorSocial";
 import { Area } from "../../models/Area";
 import { Cargo } from "../../models/Cargo";
 import { Empresa } from "../../models/Empresa";
@@ -8,7 +8,7 @@ import { TipoDocumento } from "../../models/TipoDocumento";
 import { TrabajadorSocial } from "../../models/TrabajadorSocial";
 import sequelize from '../../../config/database'
 import { TValidateFields } from "../../types/TTypeFields";
-import { Op } from "sequelize";
+import { Op, WhereOptions } from "sequelize";
 import { TRABAJADOR_SOCIAL_ATTRIBUTES } from "../../../constants/TrabajadorSocialAttributes";
 import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
 import { CARGO_INCLUDE } from "../../../includes/CargoInclude";
@@ -16,6 +16,8 @@ import { EMPRESA_INCLUDE } from "../../../includes/EmpresaInclude";
 import { AREA_INCLUDE } from "../../../includes/AreaInclude";
 import { SEDE_INCLUDE } from "../../../includes/SedeInclude";
 import { PAIS_INCLUDE } from "../../../includes/PaisInclude";
+import { ITrabajadorSocialFilter } from "@/interfaces/TrabajadorSocial/ITrabajadorSocialFilter";
+import HPagination from "../../../helpers/HPagination";
 
 class TrabajadorSocialRepository {
     /**
@@ -40,6 +42,84 @@ class TrabajadorSocialRepository {
             })
 
             return { result: true, data: trabSociales, status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getAllWithPaginate(
+        page: number,
+        limit: number,
+        filters: ITrabajadorSocialFilter
+    ): Promise<TrabajadorSocialResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            // Construcción dinámica de la claúsula WHERE
+            const where: WhereOptions = {}
+
+            if (filters.id_tipodocumento !== undefined) {
+                where.id_tipodocumento = filters.id_tipodocumento
+            }
+
+            if (filters.id_empresa !== undefined) {
+                where.id_empresa = filters.id_empresa
+            }
+
+            if (filters.id_cargo !== undefined) {
+                where.id_cargo = filters.id_cargo
+            }
+
+            if (filters.numero_documento !== undefined) {
+                where.numero_documento = filters.numero_documento
+            }
+
+            if (filters.nombre_completo !== undefined) {
+                where.nombre_completo = {
+                    [Op.like]: `%${filters.nombre_completo}%`
+                }
+            }
+
+            const { count, rows } = await TrabajadorSocial.findAndCountAll({
+                attributes: TRABAJADOR_SOCIAL_ATTRIBUTES,
+                include: [
+                    TIPO_DOCUMENTO_INCLUDE,
+                    CARGO_INCLUDE,
+                    EMPRESA_INCLUDE,
+                    AREA_INCLUDE,
+                    SEDE_INCLUDE,
+                    PAIS_INCLUDE
+                ],
+                where,
+                order: [
+                    ['apellido_paterno', 'ASC']
+                ],
+                limit,
+                offset
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: ITrabajadorSocialPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }

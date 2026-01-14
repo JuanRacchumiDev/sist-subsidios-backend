@@ -18,8 +18,14 @@ class EmpresaApiRepository {
     async getInfoApi(ruc: string): Promise<EmpresaResponse> {
         try {
             const urlApi = `${API_RUC}${ruc}`
+            console.log({ urlApi })
+
             const { env } = process
             const { TOKEN_API_DOCS } = env
+
+            console.log({ env })
+
+            console.log({ TOKEN_API_DOCS })
 
             const response = await axios.get(`${urlApi}`, {
                 headers: {
@@ -27,9 +33,14 @@ class EmpresaApiRepository {
                 }
             })
 
+            console.log('---- response getInfoApi ----')
+            console.log({ response })
+
             const { status, data: apiData } = response
 
             if (status === 200) {
+                console.log({ status })
+                console.log(apiData.data)
                 const {
                     numero,
                     nombre_o_razon_social,
@@ -59,6 +70,8 @@ class EmpresaApiRepository {
                     sistema: true
                 }
 
+                console.log({ empresaToCreate })
+
                 const {
                     result: createdEmpresaResult,
                     data: createdEmpresaData,
@@ -66,6 +79,12 @@ class EmpresaApiRepository {
                     error: createdEmpresaError,
                     status: createdEmpresaStatus
                 } = await this.empresaRepository.create(empresaToCreate)
+
+                console.log({ createdEmpresaResult })
+                console.log({ createdEmpresaData })
+                console.log({ createdEmpresaMessage })
+                console.log({ createdEmpresaError })
+                console.log({ createdEmpresaStatus })
 
                 if (createdEmpresaResult) {
                     return {
@@ -82,6 +101,8 @@ class EmpresaApiRepository {
                     status: createdEmpresaStatus
                 }
             }
+
+            console.log('---- error crear empresa ----')
 
             return {
                 result: false,

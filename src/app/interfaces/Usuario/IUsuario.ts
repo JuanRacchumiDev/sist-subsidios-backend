@@ -1,7 +1,8 @@
 import { IColaborador } from "../Colaborador/IColaborador"
-import { IPerfil } from "../Perfil/IPerfil"
+// import { IPerfil } from "../Perfil/IPerfil"
 import { ITrabajadorSocial } from "../TrabajadorSocial/ITrabajadorSocial"
 import { IPersona } from "../Persona/IPersona"
+import { IDetalleParametro } from "../DetalleParametro/IDetalleParametro"
 
 export interface IUsuario {
     id?: string
@@ -19,7 +20,8 @@ export interface IUsuario {
     user_elimina?: string
     sistema?: boolean
     estado?: boolean
-    perfil?: IPerfil
+    // perfil?: IPerfil
+    perfil?: IDetalleParametro
     colaborador?: IColaborador
     trabajadorSocial?: ITrabajadorSocial
     persona?: IPersona

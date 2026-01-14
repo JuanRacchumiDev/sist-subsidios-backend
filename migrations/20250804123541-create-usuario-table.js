@@ -20,7 +20,7 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: true,
         references: {
-          model: 'perfil',
+          model: 'detalle_parametro',
           key: 'id'
         }
       },

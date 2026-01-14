@@ -1,9 +1,11 @@
 import { DataTypes, Model, Optional } from 'sequelize'
 import { IDescansoMedico } from '../interfaces/DescansoMedico/IDescansoMedico';
 import { EDescansoMedico } from '../enums/EDescansoMedico';
-import { Colaborador } from './Colaborador';
-import { TipoDescansoMedico } from './TipoDescansoMedico';
-import { TipoContingencia } from './TipoContingencia';
+// import { Colaborador } from './Colaborador';
+import { Persona } from './Persona'
+// import { TipoDescansoMedico } from './TipoDescansoMedico';
+// import { TipoContingencia } from './TipoContingencia';
+import { DetalleParametro } from './DetalleParametro'
 import { Diagnostico } from './Diagnostico';
 import sequelize from '../../config/database'
 import { Adjunto } from './Adjunto';
@@ -65,9 +67,12 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
     public readonly deleted_at!: Date
 
     // Asociaciones
-    public getColaborador!: () => Promise<Colaborador>
-    public getTipoDescansoMedico!: () => Promise<TipoDescansoMedico>
-    public getTipoContingencia!: () => Promise<TipoContingencia>
+    public getColaborador!: () => Promise<Persona>
+    // public getColaborador!: () => Promise<Colaborador>
+    public getTipoDescansoMedico!: () => Promise<DetalleParametro>
+    public getTipoContingencia!: () => Promise<DetalleParametro>
+    // public getTipoDescansoMedico!: () => Promise<TipoDescansoMedico>
+    // public getTipoContingencia!: () => Promise<TipoContingencia>
     public getDiagnostico!: () => Promise<Diagnostico>
     public getAdjuntos?: () => Promise<Adjunto[]>
     public getCanje?: () => Promise<Canje>
@@ -84,7 +89,8 @@ DescansoMedico.init({
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-            model: Colaborador,
+            // model: Colaborador,
+            model: Persona,
             key: 'id'
         }
     },
@@ -92,7 +98,8 @@ DescansoMedico.init({
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-            model: DescansoMedico,
+            // model: DescansoMedico,
+            model: DetalleParametro,
             key: 'id'
         }
     },
@@ -100,7 +107,8 @@ DescansoMedico.init({
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-            model: TipoContingencia,
+            // model: TipoContingencia,
+            model: DetalleParametro,
             key: 'id'
         }
     },

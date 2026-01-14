@@ -1,16 +1,50 @@
 import GetTrabajadoresSocialesService from "../services/TrabajadorSocial/GetTrabajadoresSociales";
 import GetTrabajadorSocialService from "../services/TrabajadorSocial/GetTrabajadorSocial"
+import GetTrabajadoresSocialesPaginateService from "../services/TrabajadorSocial/GetTrabajadoresSocialesPaginate"
 import CreateTrabajadorSocialService from "../services/TrabajadorSocial/CreateTrabajadorSocial"
 import UpdateTrabajadorSocialService from "../services/TrabajadorSocial/UpdateTrabajadorSocial"
 import DeleteTrabajadorSocialService from "../services/TrabajadorSocial/DeleteTrabajadorSocial"
 import GetTrabajadorSocialByIdTipoDocAndNumDocService from '../services/TrabajadorSocial/GetByTipoDocAndNumDoc'
 import { NextFunction, Request, Response } from "express";
 import { ITrabajadorSocial } from "../interfaces/TrabajadorSocial/ITrabajadorSocial";
+import { ITrabajadorSocialFilter } from "../interfaces/TrabajadorSocial/ITrabajadorSocialFilter";
 
 class TrabajadorSocialController {
     async getTrabajadoresSociales(req: Request, res: Response, next: NextFunction) {
         try {
             const result = await GetTrabajadoresSocialesService.execute()
+
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async getAllTrabajadoresSocialesPaginated(req: Request, res: Response, next: NextFunction) {
+        try {
+            const page = parseInt(req.query.page as string) || 1
+
+            const limit = parseInt(req.query.limit as string) || 10
+
+            // Extracción de filtros opcionales de req.query
+            const {
+                id_tipodocumento,
+                id_empresa,
+                id_cargo,
+                numero_documento,
+                nombre_completo
+            } = req.query;
+
+            // Construir el objeto de filtros
+            const filters: ITrabajadorSocialFilter = {
+                id_tipodocumento: id_tipodocumento as string,
+                id_empresa: id_empresa as string,
+                id_cargo: id_cargo as string,
+                numero_documento: numero_documento as string,
+                nombre_completo: nombre_completo as string
+            }
+
+            const result = await GetTrabajadoresSocialesPaginateService.execute(page, limit, filters)
 
             res.status(result.status || 200).json(result)
         } catch (error) {

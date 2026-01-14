@@ -1,19 +1,23 @@
 import axios from 'axios';
 import { API_DNI, API_CEE } from '../../../helpers/HApi';
-import TipoDocumentoRepository from '../TipoDocumento/TipoDocumentoRepository';
+// import TipoDocumentoRepository from '../TipoDocumento/TipoDocumentoRepository';
+import DetalleRepository from "../DetalleParametro/DetalleParametroRepository"
 import HDate from '../../../helpers/HDate';
 import { IPersona, PersonaResponse } from '../../interfaces/Persona/IPersona';
-import { ITipoDocumento } from '../../interfaces/TipoDocumento/ITipoDocumento';
+// import { ITipoDocumento } from '../../interfaces/TipoDocumento/ITipoDocumento';
+import { IDetalleParametro } from "../../interfaces/DetalleParametro/IDetalleParametro"
 import PersonaRepository from '../Persona/PersonaRepository'
 import { EOrigen } from '../../enums/EOrigen';
 
 class PersonaApiRepository {
     private personaRepository: PersonaRepository
-    private tipoDocumentoRepository: TipoDocumentoRepository
+    private detalleRepository: DetalleRepository
+    // private tipoDocumentoRepository: TipoDocumentoRepository
 
     constructor() {
         this.personaRepository = new PersonaRepository()
-        this.tipoDocumentoRepository = new TipoDocumentoRepository()
+        this.detalleRepository = new DetalleRepository()
+        // this.tipoDocumentoRepository = new TipoDocumentoRepository()
     }
 
     /**
@@ -25,12 +29,23 @@ class PersonaApiRepository {
     async getInfoApi(abreviatura: string, numeroDocumento: string): Promise<PersonaResponse> {
         try {
             // Verificando si existe tipo de documento
+            // const {
+            //     result: tipoDocResult,
+            //     data: dataTipoDocumento,
+            //     message: tipoDocMessage,
+            //     status: tipoDocStatus
+            // } = await this.tipoDocumentoRepository.getBySearch({ abreviatura })
+
+            console.log('getInfoApi PersonaApiRepository')
+            console.log({ abreviatura })
+            console.log({ numeroDocumento })
+
             const {
                 result: tipoDocResult,
                 data: dataTipoDocumento,
                 message: tipoDocMessage,
                 status: tipoDocStatus
-            } = await this.tipoDocumentoRepository.getBySearch({ abreviatura })
+            } = await this.detalleRepository.getByAbreviatura(abreviatura)
 
             if (!tipoDocResult && !dataTipoDocumento) {
                 return {
@@ -40,12 +55,15 @@ class PersonaApiRepository {
                 }
             }
 
-            const { id: idTipoDocumento } = dataTipoDocumento as ITipoDocumento
+            // const { id: idTipoDocumento } = dataTipoDocumento as ITipoDocumento
+            const { id: idTipoDocumento } = dataTipoDocumento as IDetalleParametro
 
             // Definiendo la url de consulta a la API
             const urlApi = (abreviatura === 'DNI')
                 ? `${API_DNI}${numeroDocumento}`
                 : `${API_CEE}${numeroDocumento}`
+
+            console.log({ urlApi })
 
             const { env } = process
 
@@ -57,10 +75,14 @@ class PersonaApiRepository {
                 }
             })
 
+            console.log({ response })
+
             const { status, data: apiData } = response
 
             if (status === 200) {
                 const { data } = apiData
+
+                console.log({ data })
 
                 const {
                     numero,
@@ -106,6 +128,8 @@ class PersonaApiRepository {
                     estado: true
                 }
 
+                console.log({ personaToCreate })
+
                 const {
                     result: createdPersonaResult,
                     data: createdPersonaData,
@@ -117,10 +141,11 @@ class PersonaApiRepository {
                 if (!createdPersonaResult) {
                     return {
                         result: createdPersonaResult,
+                        data: createdPersonaData,
                         error: createdPersonaError,
+                        message: createdPersonaMessage,
                         status: createdPersonaStatus
                     }
-
                 }
 
                 return {
@@ -133,8 +158,8 @@ class PersonaApiRepository {
 
             return {
                 result: false,
-                message: "Error al obtener datos de la persona",
                 data: [],
+                message: "Error al obtener datos de la persona",
                 status
             }
 

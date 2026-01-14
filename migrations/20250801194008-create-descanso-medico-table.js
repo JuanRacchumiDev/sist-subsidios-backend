@@ -22,7 +22,7 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'colaborador',
+          model: 'persona',
           key: 'id'
         }
       },
@@ -30,7 +30,7 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'tipo_descansomedico',
+          model: 'detalle_parametro',
           key: 'id'
         }
       },
@@ -38,7 +38,7 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'tipo_contingencia',
+          model: 'detalle_parametro',
           key: 'id'
         }
       },

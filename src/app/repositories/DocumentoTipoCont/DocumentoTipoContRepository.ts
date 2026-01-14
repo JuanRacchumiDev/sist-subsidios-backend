@@ -2,7 +2,8 @@ import { DocumentoTipoCont } from '../../models/DocumentoTipoCont';
 import { DocumentoTipoContResponse, DocumentoTipoContResponsePaginate, IDocumentoTipoCont, IDocumentoTipoContPaginate } from '../../interfaces/DocumentoTipoCont/IDocumentoTipoCont';
 import HString from "../../../helpers/HString";
 import { DOCUMENTO_TIPO_CONT_ATTRIBUTES } from "../../../constants/DocumentoConstant";
-import { TIPO_CONTINGENCIA_INCLUDE } from "../../../includes/TipoContingenciaInclude";
+// import { TIPO_CONTINGENCIA_INCLUDE } from "../../../includes/TipoContingenciaInclude";
+import { DETALLE_PARAMETRO_INCLUDE } from "../../../includes/DetalleParametroInclude"
 import HPagination from "../../../helpers/HPagination";
 import { Op, WhereOptions } from "sequelize";
 import { IDocumentoTipoContFilter } from "../../interfaces/DocumentoTipoCont/IDocumentoTipoContFilter";
@@ -17,7 +18,8 @@ class DocumentoTipoContRepository {
             const documentos = await DocumentoTipoCont.findAll({
                 attributes: DOCUMENTO_TIPO_CONT_ATTRIBUTES,
                 include: [
-                    TIPO_CONTINGENCIA_INCLUDE
+                    DETALLE_PARAMETRO_INCLUDE
+                    // TIPO_CONTINGENCIA_INCLUDE
                 ],
                 order: [
                     ['nombre', 'ASC']
@@ -55,7 +57,8 @@ class DocumentoTipoContRepository {
             const { count, rows } = await DocumentoTipoCont.findAndCountAll({
                 attributes: DOCUMENTO_TIPO_CONT_ATTRIBUTES,
                 include: [
-                    TIPO_CONTINGENCIA_INCLUDE
+                    DETALLE_PARAMETRO_INCLUDE
+                    // TIPO_CONTINGENCIA_INCLUDE
                 ],
                 where,
                 order: [
@@ -101,7 +104,8 @@ class DocumentoTipoContRepository {
             const documento = await DocumentoTipoCont.findByPk(id, {
                 attributes: DOCUMENTO_TIPO_CONT_ATTRIBUTES,
                 include: [
-                    TIPO_CONTINGENCIA_INCLUDE
+                    DETALLE_PARAMETRO_INCLUDE
+                    // TIPO_CONTINGENCIA_INCLUDE
                 ]
             })
 

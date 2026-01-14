@@ -1,7 +1,9 @@
-import { Colaborador } from "../app/models/Colaborador";
+// import { Colaborador } from "../app/models/Colaborador";
+import { Persona } from '../app/models/Persona'
 
 export const COLABORADOR_DM_INCLUDE = {
-    model: Colaborador,
+    // model: Colaborador,
+    model: Persona,
     as: 'colaborador_dm',
     attributes: [
         'id',
@@ -14,8 +16,8 @@ export const COLABORADOR_DM_INCLUDE = {
         'fecha_ingreso',
         'nombre_area',
         'nombre_sede',
-        'correo_institucional',
-        'correo_personal',
-        'numero_celular'
+        'email_institucional',
+        'email_personal',
+        'telefono'
     ]
 }

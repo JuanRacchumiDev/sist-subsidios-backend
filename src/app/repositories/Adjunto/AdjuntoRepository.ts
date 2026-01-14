@@ -115,6 +115,8 @@ class AdjuntoRepository {
                 attributes: ADJUNTO_ATTRIBUTES
             }) as IAdjunto
 
+            console.log({ adjunto })
+
             if (!adjunto) {
                 return { result: false, data: [], message: 'Adjunto no encontrado', status: 404 }
             }

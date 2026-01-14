@@ -65,6 +65,7 @@ class EmpresaController {
         try {
             const { id } = req.params;
             const result = await GetEmpresaService.execute(id);
+            console.log({ result })
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);

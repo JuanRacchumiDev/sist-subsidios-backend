@@ -1,5 +1,9 @@
 import PersonaRepository from '../../repositories/Persona/PersonaRepository';
+import DetalleRepository from '../../repositories/DetalleParametro/DetalleParametroRepository'
 import { IPersona, PersonaResponse } from '../../interfaces/Persona/IPersona';
+import { IDetalleParametro } from '../../interfaces/DetalleParametro/IDetalleParametro'
+import GrupoPersonaRepository from '../../repositories/GrupoPersona/GrupoPersonaRepository';
+import { IGrupoPersona } from '../../interfaces/GrupoPersona/IGrupoPersona';
 
 /**
  * @class UpdatePersonaService
@@ -7,9 +11,13 @@ import { IPersona, PersonaResponse } from '../../interfaces/Persona/IPersona';
  */
 class UpdatePersonaService {
     protected personaRepository: PersonaRepository
+    protected detalleRepository: DetalleRepository
+    protected grupoPersonaRepository: GrupoPersonaRepository
 
     constructor() {
         this.personaRepository = new PersonaRepository()
+        this.detalleRepository = new DetalleRepository()
+        this.grupoPersonaRepository = new GrupoPersonaRepository()
     }
 
     /**
@@ -20,7 +28,41 @@ class UpdatePersonaService {
      * @returns {Promise<PersonaResponse>} La respuesta de la operación.
      */
     async execute(id: string, data: IPersona): Promise<PersonaResponse> {
-        return await this.personaRepository.update(id, data);
+        let idGrupo: string = ""
+
+        console.log('---- dataPersona execure UpdatePersonaService ----')
+        console.log({ data })
+
+        const { nombre_grupo } = data
+
+        const response = await this.detalleRepository.getByNombre(nombre_grupo as string)
+        console.log('---- response updatePersona ----')
+        console.log({ response })
+
+        const { result: resultDetalle, data: dataDetalle } = response
+
+        if (resultDetalle && dataDetalle) {
+            const { id } = dataDetalle as IDetalleParametro
+            idGrupo = id as string
+        }
+
+        const responseUpdate = await this.personaRepository.update(id, data)
+
+        const { result: resultUpdate, data: dataUpdate } = responseUpdate
+
+        if (resultUpdate && dataUpdate) {
+            const payloadGrupoPersona: IGrupoPersona = {
+                id_persona: id,
+                id_grupo: idGrupo
+            }
+
+            await this.grupoPersonaRepository.create(payloadGrupoPersona)
+
+            return responseUpdate
+        }
+
+        return responseUpdate
+        // return await this.personaRepository.update(id, data);
     }
 }
 

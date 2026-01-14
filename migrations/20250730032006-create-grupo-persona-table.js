@@ -9,56 +9,28 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.createTable('empresa', {
+    await queryInterface.createTable('grupo_persona', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
         allowNull: false
       },
-      numero: {
-        type: Sequelize.STRING(13),
-        allowNull: false
+      id_persona: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'persona', // Nombre de la tabla a la que hace referencia
+          key: 'id',
+        },
       },
-      nombre_o_razon_social: {
-        type: Sequelize.STRING(100),
-        allowNull: false
-      },
-      tipo_contribuyente: {
-        type: Sequelize.STRING(50),
-        allowNull: false
-      },
-      estado_sunat: {
-        type: Sequelize.STRING(20),
-        allowNull: false
-      },
-      condicion_sunat: {
-        type: Sequelize.STRING(20),
-        allowNull: false
-      },
-      departamento: {
-        type: Sequelize.STRING(50),
-        allowNull: true
-      },
-      provincia: {
-        type: Sequelize.STRING(50),
-        allowNull: true
-      },
-      distrito: {
-        type: Sequelize.STRING(50),
-        allowNull: true
-      },
-      direccion: {
-        type: Sequelize.STRING(80),
-        allowNull: false
-      },
-      direccion_completa: {
-        type: Sequelize.STRING(150),
-        allowNull: false
-      },
-      ubigeo_sunat: {
-        type: Sequelize.STRING(10),
-        allowNull: true
+      id_grupo: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'detalle_parametro', // Nombre de la tabla a la que hace referencia
+          key: 'id',
+        },
       },
       user_crea: {
         type: Sequelize.UUID,
@@ -80,7 +52,7 @@ module.exports = {
       estado: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: false
       },
       created_at: {
         allowNull: false,
@@ -111,6 +83,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.dropTable('empresa');
+    await queryInterface.dropTable('grupo_persona');
   }
 };

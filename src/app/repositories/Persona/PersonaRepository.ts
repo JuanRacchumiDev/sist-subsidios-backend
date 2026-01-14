@@ -1,10 +1,14 @@
 import sequelize from '../../../config/database'
-import { PERFIL_ATTRIBUTES } from '../../../constants/PerfilConstant';
+// import { PERFIL_ATTRIBUTES } from '../../../constants/PerfilConstant';
 import { PERSONA_ATTRIBUTES } from '../../../constants/PersonaConstant';
-import { TIPO_DOCUMENTO_INCLUDE } from '../../../includes/TipoDocumentoInclude';
-import { IPersona, PersonaResponse } from "../../interfaces/Persona/IPersona";
+import { DETALLE_PARAMETRO_INCLUDE } from '../../../includes/DetalleParametroInclude'
+// import { TIPO_DOCUMENTO_INCLUDE } from '../../../includes/TipoDocumentoInclude';
+import { IPersona, IPersonaPaginate, PersonaResponse, PersonaResponsePaginate } from "../../interfaces/Persona/IPersona";
 import { Persona } from "../../models/Persona";
-import { TipoDocumento } from "../../models/TipoDocumento";
+import { DetalleParametro } from "../../models/DetalleParametro"
+import { Op } from 'sequelize';
+import HPagination from "../../../helpers/HPagination";
+// import { TipoDocumento } from "../../models/TipoDocumento";
 
 class PersonaRepository {
     /**
@@ -15,7 +19,7 @@ class PersonaRepository {
         try {
             const personas = await Persona.findAll({
                 attributes: PERSONA_ATTRIBUTES,
-                include: [TIPO_DOCUMENTO_INCLUDE],
+                // include: [DETALLE_PARAMETRO_INCLUDE],
                 order: [
                     ['apellido_paterno', 'ASC']
                 ]
@@ -53,16 +57,207 @@ class PersonaRepository {
     }
 
     /**
+     * Obtiene todas las personas por estado
+     * @param {string} idEmpresa - El ID de la empresa a buscar
+     * @returns {Promise<PersonaResponse>}>} Respuesta con la lista de personas filtrados
+     */
+    async getAllByEmpresa(idEmpresa: string): Promise<PersonaResponse> {
+        try {
+            const personas = await Persona.findAll({
+                where: {
+                    id_empresa: idEmpresa
+                },
+                attributes: PERSONA_ATTRIBUTES,
+                order: [
+                    ['apellido_paterno', 'ASC']
+                ]
+            })
+
+            return { result: true, data: personas, status: 200 }
+        } catch (error: any) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getAllByEmpresaWithGrupo(
+        idEmpresa: string,
+        nombreGrupo: string
+    ): Promise<PersonaResponse> {
+        try {
+            const queryData = `
+                SELECT dp2.abreviatura, e.nombre_o_razon_social, dp3.nombre as nombre_cargo, p.*
+                FROM persona p INNER JOIN grupo_persona gp ON gp.id_persona  = p.id
+                INNER JOIN detalle_parametro dp on dp.id = gp.id_grupo
+                INNER JOIN detalle_parametro dp2 on dp2.id = p.id_tipodocumento
+                INNER JOIN detalle_parametro dp3 on dp3.id = p.id_cargo
+                INNER JOIN empresa e on e.id = p.id_empresa
+                WHERE dp.nombre = :nombreGrupo
+                AND p.id_empresa = :idEmpresa
+                ORDER BY p.apellido_paterno ASC;
+            `
+
+            const rows = await sequelize.query(queryData, {
+                replacements: { nombreGrupo, idEmpresa },
+                type: 'SELECT',
+                model: Persona,
+                mapToModel: true
+            });
+
+            return { result: true, data: rows, status: 200 }
+        } catch (error: any) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getAllByGrupoWithPaginate(
+        page: number,
+        limit: number,
+        nombreGrupo: string
+    ): Promise<PersonaResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const queryData = `
+                SELECT dp2.abreviatura, e.nombre_o_razon_social, dp3.nombre as nombre_cargo, p.*
+                FROM persona p INNER JOIN grupo_persona gp ON gp.id_persona  = p.id
+                INNER JOIN detalle_parametro dp on dp.id = gp.id_grupo
+                INNER JOIN detalle_parametro dp2 on dp2.id = p.id_tipodocumento
+                INNER JOIN detalle_parametro dp3 on dp3.id = p.id_cargo
+                INNER JOIN empresa e on e.id = p.id_empresa
+                WHERE dp.nombre = :nombreGrupo
+                ORDER BY p.apellido_paterno ASC
+                LIMIT :limit OFFSET :offset;
+            `
+
+            // const queryCount = `
+            //     SELECT COUNT(p.id) as total
+            //     FROM persona p
+            //     INNER JOIN grupo_persona gp ON gp.id_persona = p.id
+            //     INNER JOIN detalle_parametro dp ON dp.id = gp.id_grupo
+            //     WHERE dp.nombre = :nombreGrupo
+            // `
+
+            const queryCount = `
+                SELECT COUNT(p.id) as total
+                FROM persona p INNER JOIN grupo_persona gp ON gp.id_persona  = p.id
+                INNER JOIN detalle_parametro dp on dp.id = gp.id_grupo
+                INNER JOIN detalle_parametro dp2 on dp2.id = p.id_tipodocumento
+                INNER JOIN detalle_parametro dp3 on dp3.id = p.id_cargo
+                INNER JOIN empresa e on e.id = p.id_empresa
+                WHERE dp.nombre = :nombreGrupo
+            `
+
+            const rows = await sequelize.query(queryData, {
+                replacements: { nombreGrupo, limit, offset },
+                type: 'SELECT',
+                model: Persona,
+                mapToModel: true
+            });
+
+            const [{ total }] = await sequelize.query(queryCount, {
+                replacements: { nombreGrupo },
+                type: 'SELECT'
+            }) as any
+
+            const totalPages = Math.ceil(total / limit)
+            const nextPage = HPagination.getNextPage(page, limit, total)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IPersonaPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: total,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                data: rows,
+                pagination,
+                status: 200
+            }
+
+            // const { count, rows } = await Persona.findAndCountAll({
+            //     attributes: PERSONA_ATTRIBUTES,
+            //     include: [
+            //         {
+            //             model: DetalleParametro,
+            //             as: 'grupos', // Mismo alias definido en setupDatabase
+            //             where: {
+            //                 nombre: nombreGrupo // Filtro: 'GRUPO TRABAJADOR SOCIAL'
+            //             },
+            //             attributes: [], // No traemos columnas de la tabla de grupos
+            //             through: {
+            //                 attributes: [] // No traemos columnas de la tabla intermedia
+            //             },
+            //             required: true // Fuerza el INNER JOIN
+            //         }
+            //     ],
+            //     subQuery: false,
+            //     distinct: true,
+            //     col: 'id',
+            //     order: [
+            //         ['apellido_paterno', 'ASC']
+            //     ],
+            //     limit,
+            //     offset
+            // })
+
+            // const totalPages = Math.ceil(count / limit)
+            // const nextPage = HPagination.getNextPage(page, limit, count)
+            // const previousPage = HPagination.getPreviousPage(page)
+
+            // const pagination: IPersonaPaginate = {
+            //     currentPage: page,
+            //     limit,
+            //     totalPages,
+            //     totalItems: total,
+            //     nextPage,
+            //     previousPage
+            // }
+
+            // return {
+            //     result: true,
+            //     data: rows,
+            //     pagination,
+            //     status: 200
+            // }
+
+            // return { result: true, data: personas, status: 200 }
+        } catch (error: any) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    /**
      * Obtiene una persona por su ID
      * @param {string} id - El ID UUID de la persona a buscar
      * @returns {Promise<PersonaResponse>} Respuesta con la persona encontrada o mensaje de no encontrado
      */
+    // async getById(id: string): Promise<PersonaResponse> {
+    //     try {
+
+    //     } catch (error) {
+    //         const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    //         return { result: false, error: errorMessage, status: 500 }
+    //     }
+    // }
+
     async getById(id: string): Promise<PersonaResponse> {
         try {
             const persona = await Persona.findByPk(id, {
                 attributes: PERSONA_ATTRIBUTES,
-                include: [TIPO_DOCUMENTO_INCLUDE]
+                // include: [DETALLE_PARAMETRO_INCLUDE]
             })
+
+            console.log('---- getById PersonaRepository ----')
+            console.log({ persona })
 
             if (!persona) {
                 return { result: false, data: [], message: 'Persona no encontrada', status: 404 }
@@ -89,7 +284,7 @@ class PersonaRepository {
                     numero_documento: numDoc
                 },
                 attributes: PERSONA_ATTRIBUTES,
-                include: [TIPO_DOCUMENTO_INCLUDE]
+                include: [DETALLE_PARAMETRO_INCLUDE]
             })
 
             if (!persona) {
@@ -154,7 +349,7 @@ class PersonaRepository {
     async update(id: string, data: IPersona): Promise<PersonaResponse> {
 
         // Accede a la instancia de Sequelize a travé de db.sequelize
-        const transaction = await sequelize.transaction()
+        // const transaction = await sequelize.transaction()
 
         try {
             const { numero_documento } = data
@@ -167,15 +362,21 @@ class PersonaRepository {
                 return { result: false, data: [], message: 'Persona no encontrada', status: 404 }
             }
 
-            // Verificar si el número de documento existe en otra persona
-            const existingPersona = await Persona.findOne({
-                where: {
-                    numero_documento
-                }
-            })
+            if (numero_documento) {
+                // Verificar si el número de documento existe en otra persona
+                const existingPersona = await Persona.findOne({
+                    where: {
+                        numero_documento,
+                        id: {
+                            [Op.ne]: id
+                        }
+                    }
+                })
 
-            if (existingPersona) {
-                return { result: false, message: 'El número de documento ya existe', status: 409 }
+                if (existingPersona) {
+                    // await transaction.rollback()
+                    return { result: false, message: 'El número de documento ya existe', status: 409 }
+                }
             }
 
             const dataUpdatePersona: Partial<IPersona> = data

@@ -4,6 +4,8 @@ import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
+router.get('/paginate', authToken, TrabajadorSocialController.getAllTrabajadoresSocialesPaginated)
+
 router.get('/buscar-por-tipodoc-numdoc', authToken, TrabajadorSocialController.getTrabajadorSocialByIdTipoDocAndNumDoc)
 
 router.get('/', authToken, TrabajadorSocialController.getTrabajadoresSociales)

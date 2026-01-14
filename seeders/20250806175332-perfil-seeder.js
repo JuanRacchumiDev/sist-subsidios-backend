@@ -52,6 +52,15 @@ module.exports = {
         estado: true,
         created_at: now,
         updated_at: now
+      },
+      {
+        id: uuidv4(),
+        nombre: 'TRABAJADOR SOCIAL',
+        nombre_url: 'trabajador-social',
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
       }
     ], {})
   },

@@ -1,9 +1,11 @@
 import { DescansoMedico } from "../app/models/DescansoMedico";
 import { COLABORADOR_DM_INCLUDE } from "./ColaboradorDMInclude";
+// import { PERSONA_INCLUDE } from "./PersonaInclude"
 // import { COLABORADOR_INCLUDE } from "./ColaboradorInclude";
 import { DIAGNOSTICO_INCLUDE } from "./DiagnosticoInclude";
-import { TIPO_CONTINGENCIA_INCLUDE } from "./TipoContingenciaInclude";
-import { TIPODM_INCLUDE } from "./TipoDescansoMedicoInclude";
+// import { TIPO_CONTINGENCIA_INCLUDE } from "./TipoContingenciaInclude";
+// import { TIPODM_INCLUDE } from "./TipoDescansoMedicoInclude";
+import { DETALLE_PARAMETRO_INCLUDE } from "./DetalleParametroInclude"
 
 export const DESCANSOMEDICO_INCLUDE = {
     model: DescansoMedico,
@@ -40,8 +42,9 @@ export const DESCANSOMEDICO_INCLUDE = {
     ],
     include: [
         COLABORADOR_DM_INCLUDE,
-        TIPODM_INCLUDE,
-        TIPO_CONTINGENCIA_INCLUDE,
+        // TIPODM_INCLUDE,
+        // TIPO_CONTINGENCIA_INCLUDE,
+        DETALLE_PARAMETRO_INCLUDE,
         DIAGNOSTICO_INCLUDE
     ]
 }
