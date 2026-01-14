@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx tsc",
+    "build": "cross-env NODE_ENV=production npx tsc",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "migrate": "npx sequelize-cli db:migrate",
@@ -33,6 +33,7 @@
     "@types/swagger-ui-express": "^4.1.8",
     "@types/uuidv4": "^5.0.0",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "sequelize-cli": "^6.6.3",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
@@ -41,6 +42,7 @@
   "dependencies": {
     "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "dotenv": "^17.2.2",
