@@ -16,7 +16,7 @@ import { COLABORADOR_INCLUDE } from '../../../includes/ColaboradorInclude';
 import { TRABAJADOR_SOCIAL_INCLUDE } from '../../../includes/TrabSocialInclude';
 import { PERSONA_INCLUDE } from '../../../includes/PersonaInclude';
 import { IUsuarioFilter } from '../../interfaces/Usuario/IUsuarioFilter';
-import { Op, WhereOptions } from 'sequelize';
+import { Op, QueryTypes, WhereOptions } from 'sequelize';
 
 class UsuarioRepository {
     /**
@@ -54,47 +54,112 @@ class UsuarioRepository {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            // Construcción dinámica de la claúsula WHERE
-            const where: WhereOptions = {}
+            // Definiendo los campos de la query de datos
+            const selectData = `dp.nombre as nombre_perfil, p.id as id_persona, p.nombres, p.apellido_paterno, p.apellido_materno, p.nombre_completo,
+                u.id, u.id_perfil, u.id_persona, u.username, u.email, u.estado `;
+
+            // Definiendo el total de usuarios de la consulta
+            const selectCount = `COUNT (u.id) as total `;
+
+            // Definiendo el detalle de la consulta
+            let detailData = `FROM usuario u inner join detalle_parametro dp on dp.id = u.id_perfil
+                LEFT JOIN persona p on p.id = u.id_persona `;
+
+            // Construcción dinámica de WHERE y preparación de replacements
+            const replacements: any = {
+                limit,
+                offset,
+                nombre_persona: filters.nombre_persona ? `%${filters.nombre_persona}%` : null,
+                id_perfil: filters.id_perfil
+            }
+
+            let conditions: string[] = []
 
             if (filters.id_perfil !== undefined) {
-                where.id_perfil = filters.id_perfil
+                conditions.push(`u.id_perfil = :id_perfil`)
             }
 
             if (filters.nombre_persona !== undefined) {
-                where.nombre_persona = {
-                    [Op.like]: `%${filters.nombre_persona}%`
-                }
+                conditions.push(`p.nombre_completo LIKE :nombre_persona`)
             }
 
-            const { count, rows } = await Usuario.findAndCountAll({
-                attributes: USUARIO_ATTRIBUTES,
-                include: [
-                    PERFIL_INCLUDE,
-                    PERSONA_INCLUDE,
-                    COLABORADOR_INCLUDE,
-                    TRABAJADOR_SOCIAL_INCLUDE
-                ],
-                where,
-                order: [
-                    ['email', 'ASC']
-                ],
-                limit,
-                offset
+            if (conditions.length > 0) {
+                detailData += `WHERE ` + conditions.join(' AND ')
+            }
+
+            const queryData = `SELECT ${selectData} ${detailData} ORDER BY u.email ASC LIMIT :limit OFFSET :offset;`;
+
+            console.log({ queryData })
+
+            // if (filters.id_perfil !== undefined && filters.nombre_persona === undefined) {
+            //     detailData += `WHERE u.id_perfil = :filters.id_perfil `
+            // }
+
+            // if (filters.id_perfil === undefined && filters.nombre_persona !== undefined) {
+            //     detailData += `WHERE p.nombre_completo LIKE :filters.nombre_persona `
+            // }
+
+            // if (filters.id_perfil !== undefined && filters.nombre_persona !== undefined) {
+            //     detailData += `WHERE u.id_perfil = :filters.id_perfil AND p.nombre_completo LIKE :filters.nombre_persona `
+            // }
+
+            // // Definiendo la consulta de datos
+            // let queryData = `SELECT  `;
+
+            // queryData += selectData;
+
+            // queryData += detailData;
+
+            // queryData += `ORDER BY u.email ASC`;
+
+            // queryData += `LIMIT :limit OFFSET :offset;`
+
+            // console.log({ queryData })
+
+            // // Definiendo la consulta de total de resultados
+            // let queryCount = `SELECT `;
+
+            // queryCount += selectCount;
+
+            // queryCount += detailData;
+
+            const rows = await sequelize.query(queryData, {
+                replacements: replacements,
+                type: QueryTypes.SELECT,
+                model: Usuario,
+                mapToModel: true
             })
 
-            const totalPages = Math.ceil(count / limit)
-            const nextPage = HPagination.getNextPage(page, limit, count)
+            const queryCount = `SELECT ${selectCount} ${detailData}`
+
+            console.log({ queryCount })
+
+            // const [{ total }] = await sequelize.query(queryCount, {
+            //     replacements: { filters.id_perfil, filters.nombre_persona, limit, offset },
+            //     type: 'SELECT'
+            // }) as any
+
+            const [countResult]: any = await sequelize.query(queryCount, {
+                replacements: replacements,
+                type: QueryTypes.SELECT
+            })
+
+            const total = parseInt(countResult.total)
+
+            const totalPages = Math.ceil(total / limit)
+            const nextPage = HPagination.getNextPage(page, limit, total)
             const previousPage = HPagination.getPreviousPage(page)
 
             const pagination: IUsuarioPaginate = {
                 currentPage: page,
                 limit,
                 totalPages,
-                totalItems: count,
+                totalItems: total,
                 nextPage,
                 previousPage
             }
+
+            console.log({ pagination })
 
             return {
                 result: true,
@@ -102,12 +167,75 @@ class UsuarioRepository {
                 pagination,
                 status: 200
             }
-
-        } catch (error) {
+        } catch (error: any) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
         }
     }
+
+    // async getAllWithPaginate(
+    //     page: number,
+    //     limit: number,
+    //     filters: IUsuarioFilter
+    // ): Promise<UsuarioResponsePaginate> {
+    //     try {
+    //         // Obtenemos los parámetros de consulta
+    //         const offset = HPagination.getOffset(page, limit)
+
+    //         // Construcción dinámica de la claúsula WHERE
+    //         const where: WhereOptions = {}
+
+    //         if (filters.id_perfil !== undefined) {
+    //             where.id_perfil = filters.id_perfil
+    //         }
+
+    //         if (filters.nombre_persona !== undefined) {
+    //             where.nombre_persona = {
+    //                 [Op.like]: `%${filters.nombre_persona}%`
+    //             }
+    //         }
+
+    //         const { count, rows } = await Usuario.findAndCountAll({
+    //             attributes: USUARIO_ATTRIBUTES,
+    //             include: [
+    //                 PERFIL_INCLUDE,
+    //                 PERSONA_INCLUDE,
+    //                 COLABORADOR_INCLUDE,
+    //                 TRABAJADOR_SOCIAL_INCLUDE
+    //             ],
+    //             where,
+    //             order: [
+    //                 ['email', 'ASC']
+    //             ],
+    //             limit,
+    //             offset
+    //         })
+
+    //         const totalPages = Math.ceil(count / limit)
+    //         const nextPage = HPagination.getNextPage(page, limit, count)
+    //         const previousPage = HPagination.getPreviousPage(page)
+
+    //         const pagination: IUsuarioPaginate = {
+    //             currentPage: page,
+    //             limit,
+    //             totalPages,
+    //             totalItems: count,
+    //             nextPage,
+    //             previousPage
+    //         }
+
+    //         return {
+    //             result: true,
+    //             data: rows,
+    //             pagination,
+    //             status: 200
+    //         }
+
+    //     } catch (error) {
+    //         const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+    //         return { result: false, error: errorMessage, status: 500 }
+    //     }
+    // }
 
     /**
      * Obtiene un usuario por su ID

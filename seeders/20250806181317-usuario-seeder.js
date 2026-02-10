@@ -36,26 +36,26 @@ module.exports = {
 
     // Obtener el ID del perfil especialista
     // const queryEsp = `SELECT id FROM perfil WHERE nombre = 'ESPECIALISTA' LIMIT 1`;
-    let queryEsp = `SELECT dp.id `;
-    queryEsp += `FROM detalle_parametro dp INNER JOIN parametro pr ON pr.clase = dp.parametro_clase `;
-    queryEsp += `WHERE pr.nombre = 'PERFIL' and dp.nombre = 'ESPECIALISTA SOPHIA HUMAN' LIMIT 1`;
+    let queryEspSH = `SELECT dp.id `;
+    queryEspSH += `FROM detalle_parametro dp INNER JOIN parametro pr ON pr.clase = dp.parametro_clase `;
+    queryEspSH += `WHERE pr.nombre = 'PERFIL' and dp.nombre = 'ESPECIALISTA SOPHIA HUMAN' LIMIT 1`;
 
-    const perfilEsp = await queryInterface.sequelize.query(
-      queryEsp,
+    const perfilEspSH = await queryInterface.sequelize.query(
+      queryEspSH,
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     );
 
-    const perfilEspecialistaId = perfilEsp.length > 0 ? perfilEsp[0].id : null
+    const perfilEspecialistaSHId = perfilEspSH.length > 0 ? perfilEspSH[0].id : null
 
-    if (!perfilEspecialistaId) {
-      console.error('Perfil Especialista no encontrado')
+    if (!perfilEspecialistaSHId) {
+      console.error('Perfil Especialista Sophia Human no encontrado')
       return;
     }
 
     // Hash a password default
     const salt = await bcrypt.genSalt(10)
     const hashedPasswordAdmin = await bcrypt.hash('admin', salt)
-    const hashedPasswordEspecialista = await bcrypt.hash('esp', salt)
+    const hashedPasswordEspecialistaSH = await bcrypt.hash('espsh', salt)
 
     const now = new Date()
 
@@ -73,10 +73,10 @@ module.exports = {
       },
       {
         id: uuidv4(),
-        id_perfil: perfilEspecialistaId,
-        username: 'esp',
+        id_perfil: perfilEspecialistaSHId,
+        username: 'espsh',
         email: 'esp@sophiahuman.com',
-        password: hashedPasswordEspecialista,
+        password: hashedPasswordEspecialistaSH,
         sistema: true,
         estado: true,
         created_at: now,

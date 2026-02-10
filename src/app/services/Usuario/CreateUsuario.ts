@@ -26,6 +26,8 @@ class CreateUsuarioService {
     async execute(data: IUsuario): Promise<UsuarioResponse> {
         let fullName: string = ""
 
+        let numeroDocumento: string = ""
+
         const { id_persona, username, email } = data
 
         const userNameStr = username as string
@@ -42,8 +44,10 @@ class CreateUsuarioService {
 
                 const detailPersona = dataPersona as IPersona
 
-                const { nombres, apellido_paterno, apellido_materno } = detailPersona
+                const { numero_documento, nombres, apellido_paterno, apellido_materno } = detailPersona
                 fullName = `${nombres} ${apellido_paterno} ${apellido_materno}`
+
+                numeroDocumento = numero_documento as string
 
                 data.nombre_persona = fullName
             } else {
@@ -53,20 +57,32 @@ class CreateUsuarioService {
             // Generar una contraseña temporal antes de hashearla
             const tempPassword: string = generateTemporaryPassword()
 
-            data.password = tempPassword
+            // data.password = tempPassword
+
+            data.password = (numeroDocumento) ? numeroDocumento : tempPassword
+
+            console.log('---- data new usuario ----')
+            console.log({ data })
 
             const response = await this.usuarioRepository.create(data);
+
+            console.log('---- response createUsuario ----')
+            console.log({ response })
 
             const { result: resultUsuario, data: dataUsuario } = response
 
             if (resultUsuario && dataUsuario) {
 
+                console.log('existe resultUsuario y existe dataUsuario')
+
                 const dataEmail = {
                     name: fullName,
                     email: emailStr,
-                    temporaryPassword: tempPassword,
+                    temporaryPassword: data.password,
                     appUrl: process.env.APP_URL || 'http://localhost:3000',
                 }
+
+                console.log({ dataEmail })
 
                 const mailOptions = {
                     from: process.env.EMAIL_USER_GMAIL,
@@ -75,11 +91,15 @@ class CreateUsuarioService {
                     html: newUserNotificationTemplate(dataEmail)
                 }
 
+                console.log({ mailOptions })
+
                 const responseEmail = await transporter.sendMail(mailOptions);
                 console.log({ responseEmail })
                 console.log(`Correo de bienvenida enviado a ${username}`);
 
                 return response
+            } else {
+                console.log('no existe resultUsuario, no existe dataUsuario')
             }
 
             return {

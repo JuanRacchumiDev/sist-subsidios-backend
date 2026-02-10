@@ -32,25 +32,36 @@ class DescansoMedicoController {
 
             const limit = parseInt(req.query.limit as string) || 10
 
+            const { query } = req
+
+            console.log({ query })
+
             // Extracción de filtros opcionales de req.query
             const {
+                id_colaborador,
                 id_tipodescansomedico,
                 id_tipocontingencia,
+                id_empresa,
                 nombre_colaborador,
                 fecha_inicio,
                 fecha_final,
-                estado
-            } = req.query;
+                user_crea
+            } = query;
 
             // Construir el objeto de filtros (maneja el estado como booleano si es necesario)
             const filters: IDescansoMedicoFilter = {
+                id_colaborador: id_colaborador as string,
                 id_tipodescansomedico: id_tipodescansomedico as string,
                 id_tipocontingencia: id_tipocontingencia as string,
+                id_empresa: id_empresa as string,
                 nombre_colaborador: nombre_colaborador as string,
                 fecha_inicio: fecha_inicio as string,
                 fecha_final: fecha_final as string,
-                estado: estado !== undefined ? estado === 'true' : undefined // Convierte 'true'/'false' a booleano, o undefined si no está
+                user_crea: user_crea as string
+                // estado: estado !== undefined ? estado === 'true' : undefined // Convierte 'true'/'false' a booleano, o undefined si no está
             };
+
+            console.log({ filters })
 
             const result = await GetDescansosPaginateService.execute(page, limit, filters)
 
@@ -83,7 +94,7 @@ class DescansoMedicoController {
                 id_tipocontingencia: id_tipocontingencia as string,
                 fecha_inicio: fecha_inicio as string,
                 fecha_final: fecha_final as string,
-                estado: estado !== undefined ? estado === 'true' : undefined // Convierte 'true'/'false' a booleano, o undefined si no está
+                // estado: estado !== undefined ? estado === 'true' : undefined // Convierte 'true'/'false' a booleano, o undefined si no está
             };
 
             const result = await GetDescansosByColaboradorPaginate.execute(idColaborador, page, limit, filters)

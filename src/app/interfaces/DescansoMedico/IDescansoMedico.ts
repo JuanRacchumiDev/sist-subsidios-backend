@@ -1,13 +1,17 @@
 import { EDescansoMedico } from "../../enums/EDescansoMedico"
 import { ICanje } from "../Canje/ICanje"
-import { IColaborador } from "../Colaborador/IColaborador"
+// import { IColaborador } from "../Colaborador/IColaborador"
 import { IDiagnostico } from "../Diagnostico/IDiagnostico"
-import { ITipoContingencia } from "../TipoContingencia/ITipoContingencia"
-import { ITipoDescansoMedico } from "../TipoDescansoMedico/ITipoDescansoMedico"
+import { IPersona } from "../Persona/IPersona"
+import { IDetalleParametro } from "../DetalleParametro/IDetalleParametro"
+import { IEmpresa } from "../Empresa/IEmpresa"
+// import { ITipoContingencia } from "../TipoContingencia/ITipoContingencia"
+// import { ITipoDescansoMedico } from "../TipoDescansoMedico/ITipoDescansoMedico"
 
 export interface IDescansoMedico {
     id?: string
     id_colaborador?: string
+    id_empresa?: string
     id_tipodescansomedico?: string
     id_tipocontingencia?: string
     codcie10_diagnostico?: string
@@ -50,9 +54,10 @@ export interface IDescansoMedico {
     estado_registro?: EDescansoMedico
     sistema?: boolean
     estado?: boolean
-    colaborador_dm?: IColaborador
-    tipoDescansoMedico?: ITipoDescansoMedico
-    tipoContingencia?: ITipoContingencia
+    colaborador_dm?: IPersona
+    empresa?: IEmpresa
+    tipoDescansoMedico?: IDetalleParametro
+    tipoContingencia?: IDetalleParametro
     diagnostico?: IDiagnostico
     canje?: ICanje
     id_usuario?: string

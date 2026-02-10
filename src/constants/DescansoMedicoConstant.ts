@@ -34,6 +34,7 @@ export const DESCANSOMEDICO_ATTRIBUTES = [
     'is_acepta_politica',
     'is_continuo',
     'estado_registro',
+    'user_crea',
     'sistema',
     'estado'
 ];

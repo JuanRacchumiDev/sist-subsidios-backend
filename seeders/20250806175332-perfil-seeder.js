@@ -28,8 +28,8 @@ module.exports = {
       },
       {
         id: uuidv4(),
-        nombre: 'ESPECIALISTA',
-        nombre_url: 'especialista',
+        nombre: 'ESPECIALISTA SOPHIA HUMAN',
+        nombre_url: 'especialista-sophia-human',
         sistema: true,
         estado: true,
         created_at: now,
@@ -61,7 +61,16 @@ module.exports = {
         estado: true,
         created_at: now,
         updated_at: now
-      }
+      },
+      {
+        id: uuidv4(),
+        nombre: 'ESPECIALISTA EMPRESA',
+        nombre_url: 'especialista-empresa',
+        sistema: true,
+        estado: true,
+        created_at: now,
+        updated_at: now
+      },
     ], {})
   },
 

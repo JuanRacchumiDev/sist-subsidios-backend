@@ -4,20 +4,20 @@ import {
     IDescansoMedico,
     IDescansoMedicoPaginate
 } from "../../interfaces/DescansoMedico/IDescansoMedico";
-import { Colaborador } from "../../models/Colaborador";
+// import { Colaborador } from "../../models/Colaborador";
 import { DescansoMedico } from "../../models/DescansoMedico";
 import { Diagnostico } from "../../models/Diagnostico";
 import { Establecimiento } from "../../models/Establecimiento";
-import { TipoContingencia } from "../../models/TipoContingencia";
-import { TipoDescansoMedico } from "../../models/TipoDescansoMedico";
+// import { TipoContingencia } from "../../models/TipoContingencia";
+// import { TipoDescansoMedico } from "../../models/TipoDescansoMedico";
 import sequelize from "../../../config/database";
 import { DESCANSOMEDICO_ATTRIBUTES } from "../../../constants/DescansoMedicoConstant";
 import HPagination from "../../../helpers/HPagination";
 import { TTotalDias } from '../../types/DescansoMedico/TTotalDias';
 import { parseISO, addDays } from 'date-fns';
 import { COLABORADOR_DM_INCLUDE } from "../../../includes/ColaboradorDMInclude";
-import { TIPODM_INCLUDE } from "../../../includes/TipoDescansoMedicoInclude";
-import { TIPO_CONTINGENCIA_INCLUDE } from "../../../includes/TipoContingenciaInclude";
+// import { TIPODM_INCLUDE } from "../../../includes/TipoDescansoMedicoInclude";
+// import { TIPO_CONTINGENCIA_INCLUDE } from "../../../includes/TipoContingenciaInclude";
 import { DIAGNOSTICO_INCLUDE } from "../../../includes/DiagnosticoInclude";
 import { Op, WhereOptions } from 'sequelize';
 import HDate from "../../../helpers/HDate"
@@ -88,25 +88,48 @@ class DescansoMedicoRepository {
             const where: WhereOptions = {}
 
             // Filtro por estado
-            if (filters.estado !== undefined) {
-                where.estado = filters.estado
+            // if (filters.estado !== undefined) {
+            //     where.estado = filters.estado
+            // }
+
+            const {
+                id_colaborador,
+                id_tipodescansomedico,
+                id_tipocontingencia,
+                id_empresa,
+                nombre_colaborador,
+                fecha_inicio,
+                fecha_final,
+                user_crea
+            } = filters
+
+            if (id_colaborador) {
+                where.id_colaborador = id_colaborador
             }
 
             // Filtro por tipo de descanso médico (id_tipodescansomedico)
-            if (filters.id_tipodescansomedico) {
-                where.id_tipodescansomedico = filters.id_tipodescansomedico
+            if (id_tipodescansomedico) {
+                where.id_tipodescansomedico = id_tipodescansomedico
             }
 
             // Filtro por tipo de contingencia (id_tipocontingencia)
-            if (filters.id_tipocontingencia) {
-                where.id_tipocontingencia = filters.id_tipocontingencia
+            if (id_tipocontingencia) {
+                where.id_tipocontingencia = id_tipocontingencia
+            }
+
+            if (id_empresa) {
+                where.id_empresa = id_empresa
             }
 
             // Filtro por nombre del colaborador
-            if (filters.nombre_colaborador) {
+            if (nombre_colaborador) {
                 where.nombre_colaborador = {
-                    [Op.like]: `%${filters.nombre_colaborador}%`
+                    [Op.like]: `%${nombre_colaborador}%`
                 }
+            }
+
+            if (user_crea) {
+                where.user_crea = user_crea
             }
 
             // Filtro por rango de fechas
@@ -133,6 +156,8 @@ class DescansoMedicoRepository {
                     [Op.lte]: filters.fecha_final
                 };
             }
+
+            console.log({ where })
 
             const { count, rows } = await DescansoMedico.findAndCountAll({
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
@@ -527,6 +552,7 @@ class DescansoMedicoRepository {
 
         const {
             id_colaborador,
+            id_usuario,
             fecha_inicio,
             fecha_final
         } = data
@@ -589,10 +615,11 @@ class DescansoMedicoRepository {
             dia_fecha_final: parseInt(diaFechaFinal, 10),
             mes_fecha_final: parseInt(mesFechaFinal, 10),
             anio_fecha_final: parseInt(anioFechaFinal, 10),
-            mes_devengado: monthName
+            mes_devengado: monthName,
+            user_crea: id_usuario
         }
 
-        // console.log('payload new descanso médico', payload)
+        console.log('payload new descanso médico', payload)
 
         try {
             const newDescanso = await DescansoMedico.create(payload)
@@ -735,6 +762,8 @@ class DescansoMedicoRepository {
                     COLABORADOR_DM_INCLUDE
                 ]
             })
+
+            console.log({ descanso })
 
             if (!descanso) {
                 // await transaction.rollback();
@@ -961,8 +990,8 @@ class DescansoMedicoRepository {
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
                 include: [
                     COLABORADOR_DM_INCLUDE,
-                    TIPODM_INCLUDE,
-                    TIPO_CONTINGENCIA_INCLUDE,
+                    // TIPODM_INCLUDE,
+                    // TIPO_CONTINGENCIA_INCLUDE,
                     DIAGNOSTICO_INCLUDE
                 ],
                 order: [
@@ -1039,8 +1068,8 @@ class DescansoMedicoRepository {
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
                 include: [
                     COLABORADOR_DM_INCLUDE,
-                    TIPODM_INCLUDE,
-                    TIPO_CONTINGENCIA_INCLUDE,
+                    // TIPODM_INCLUDE,
+                    // TIPO_CONTINGENCIA_INCLUDE,
                     DIAGNOSTICO_INCLUDE,
                     {
                         model: Canje,

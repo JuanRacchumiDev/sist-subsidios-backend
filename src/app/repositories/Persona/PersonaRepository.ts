@@ -114,23 +114,51 @@ class PersonaRepository {
     async getAllByGrupoWithPaginate(
         page: number,
         limit: number,
-        nombreGrupo: string
+        nombreGrupo: string,
+        idEmpresa: string | null
     ): Promise<PersonaResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
+            const conditions = ["dp.nombre = :nombreGrupo"];
+            const replacements: any = { nombreGrupo, limit, offset };
+
+            if (idEmpresa) {
+                conditions.push("p.id_empresa = :idEmpresa");
+                replacements.idEmpresa = idEmpresa;
+            }
+
+            const whereClause = `WHERE ${conditions.join(" AND ")}`;
+
+            const baseQuery = `
+                FROM persona p 
+                INNER JOIN grupo_persona gp ON gp.id_persona = p.id
+                INNER JOIN detalle_parametro dp ON dp.id = gp.id_grupo
+                INNER JOIN detalle_parametro dp2 ON dp2.id = p.id_tipodocumento
+                INNER JOIN detalle_parametro dp3 ON dp3.id = p.id_cargo
+                INNER JOIN empresa e ON e.id = p.id_empresa
+                ${whereClause}
+            `;
+
             const queryData = `
                 SELECT dp2.abreviatura, e.nombre_o_razon_social, dp3.nombre as nombre_cargo, p.*
-                FROM persona p INNER JOIN grupo_persona gp ON gp.id_persona  = p.id
-                INNER JOIN detalle_parametro dp on dp.id = gp.id_grupo
-                INNER JOIN detalle_parametro dp2 on dp2.id = p.id_tipodocumento
-                INNER JOIN detalle_parametro dp3 on dp3.id = p.id_cargo
-                INNER JOIN empresa e on e.id = p.id_empresa
-                WHERE dp.nombre = :nombreGrupo
+                ${baseQuery}
                 ORDER BY p.apellido_paterno ASC
                 LIMIT :limit OFFSET :offset;
-            `
+            `;
+
+            // const queryData = `
+            //     SELECT dp2.abreviatura, e.nombre_o_razon_social, dp3.nombre as nombre_cargo, p.*
+            //     FROM persona p INNER JOIN grupo_persona gp ON gp.id_persona  = p.id
+            //     INNER JOIN detalle_parametro dp on dp.id = gp.id_grupo
+            //     INNER JOIN detalle_parametro dp2 on dp2.id = p.id_tipodocumento
+            //     INNER JOIN detalle_parametro dp3 on dp3.id = p.id_cargo
+            //     INNER JOIN empresa e on e.id = p.id_empresa
+            //     WHERE dp.nombre = :nombreGrupo
+            //     ORDER BY p.apellido_paterno ASC
+            //     LIMIT :limit OFFSET :offset;
+            // `
 
             // const queryCount = `
             //     SELECT COUNT(p.id) as total
@@ -140,27 +168,31 @@ class PersonaRepository {
             //     WHERE dp.nombre = :nombreGrupo
             // `
 
-            const queryCount = `
-                SELECT COUNT(p.id) as total
-                FROM persona p INNER JOIN grupo_persona gp ON gp.id_persona  = p.id
-                INNER JOIN detalle_parametro dp on dp.id = gp.id_grupo
-                INNER JOIN detalle_parametro dp2 on dp2.id = p.id_tipodocumento
-                INNER JOIN detalle_parametro dp3 on dp3.id = p.id_cargo
-                INNER JOIN empresa e on e.id = p.id_empresa
-                WHERE dp.nombre = :nombreGrupo
-            `
+            // const queryCount = `
+            //     SELECT COUNT(p.id) as total
+            //     FROM persona p INNER JOIN grupo_persona gp ON gp.id_persona  = p.id
+            //     INNER JOIN detalle_parametro dp on dp.id = gp.id_grupo
+            //     INNER JOIN detalle_parametro dp2 on dp2.id = p.id_tipodocumento
+            //     INNER JOIN detalle_parametro dp3 on dp3.id = p.id_cargo
+            //     INNER JOIN empresa e on e.id = p.id_empresa
+            //     WHERE dp.nombre = :nombreGrupo
+            // `
+
+            const queryCount = `SELECT COUNT(p.id) as total ${baseQuery}`;
 
             const rows = await sequelize.query(queryData, {
-                replacements: { nombreGrupo, limit, offset },
+                replacements,
                 type: 'SELECT',
                 model: Persona,
                 mapToModel: true
             });
 
-            const [{ total }] = await sequelize.query(queryCount, {
-                replacements: { nombreGrupo },
+            const [countResult]: any = await sequelize.query(queryCount, {
+                replacements,
                 type: 'SELECT'
-            }) as any
+            })
+
+            const total = parseInt(countResult.total);
 
             const totalPages = Math.ceil(total / limit)
             const nextPage = HPagination.getNextPage(page, limit, total)

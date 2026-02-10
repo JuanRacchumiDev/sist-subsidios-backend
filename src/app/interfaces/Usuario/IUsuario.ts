@@ -1,6 +1,6 @@
-import { IColaborador } from "../Colaborador/IColaborador"
+// import { IColaborador } from "../Colaborador/IColaborador"
 // import { IPerfil } from "../Perfil/IPerfil"
-import { ITrabajadorSocial } from "../TrabajadorSocial/ITrabajadorSocial"
+// import { ITrabajadorSocial } from "../TrabajadorSocial/ITrabajadorSocial"
 import { IPersona } from "../Persona/IPersona"
 import { IDetalleParametro } from "../DetalleParametro/IDetalleParametro"
 
@@ -22,8 +22,8 @@ export interface IUsuario {
     estado?: boolean
     // perfil?: IPerfil
     perfil?: IDetalleParametro
-    colaborador?: IColaborador
-    trabajadorSocial?: ITrabajadorSocial
+    // colaborador?: IColaborador
+    // trabajadorSocial?: ITrabajadorSocial
     persona?: IPersona
 }
 

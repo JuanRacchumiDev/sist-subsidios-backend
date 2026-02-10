@@ -36,7 +36,11 @@ class AuthRepository {
 
         let idEmpresa: string = ""
 
-        let idColaborador: string = ""
+        let idPersona: string = ""
+
+        let emailPersonal: string = ""
+
+        let emailInstitucional: string = ""
 
         try {
             console.log({ data })
@@ -120,47 +124,66 @@ class AuthRepository {
 
             if (persona) {
                 const {
-                    nombres,
-                    apellido_paterno,
-                    apellido_materno,
-                    id_tipodocumento,
+                    id,
+                    id_empresa,
+                    email_institucional,
+                    email_personal,
+                    nombre_completo,
                     numero_documento
-                } = persona
+                } = persona as Persona
 
-                nombreCompleto = `${nombres} ${apellido_paterno} ${apellido_materno}`;
-
-                /// Validando si existe colaborador
-                // const responseColaborador = await this.colaboradorRepository.getByIdTipoDocAndNumDoc(
-                //     id_tipodocumento as string,
-                //     numero_documento as string
-                // )
-
-                const responseColaborador = await this.personaRepository.getByIdTipoDocAndNumDoc(
-                    id_tipodocumento as string,
-                    numero_documento as string
-                )
-
-                const { result, data } = responseColaborador
-
-                if (result && data) {
-                    // const { id, id_empresa } = data as IColaborador
-                    const { id, id_empresa } = data as IPersona
-
-                    idColaborador = id as string
-                    idEmpresa = id_empresa as string
-                }
+                idPersona = id as string
+                idEmpresa = id_empresa as string
+                emailInstitucional = email_institucional as string
+                emailPersonal = email_personal as string
+                nombreCompleto = nombre_completo as string
             }
 
-            console.log({ perfil })
+            const { nombre_url, nombre: nombrePerfil } = perfil as DetalleParametro
+
+            // if (persona) {
+            //     const {
+            //         nombres,
+            //         apellido_paterno,
+            //         apellido_materno,
+            //         id_tipodocumento,
+            //         numero_documento
+            //     } = persona
+
+            //     nombreCompleto = `${nombres} ${apellido_paterno} ${apellido_materno}`;
+
+            //     /// Validando si existe colaborador
+            //     // const responseColaborador = await this.colaboradorRepository.getByIdTipoDocAndNumDoc(
+            //     //     id_tipodocumento as string,
+            //     //     numero_documento as string
+            //     // )
+
+            //     const responseColaborador = await this.personaRepository.getByIdTipoDocAndNumDoc(
+            //         id_tipodocumento as string,
+            //         numero_documento as string
+            //     )
+
+            //     const { result, data } = responseColaborador
+
+            //     if (result && data) {
+            //         // const { id, id_empresa } = data as IColaborador
+            //         const { id, id_empresa } = data as IPersona
+
+            //         idColaborador = id as string
+            //         idEmpresa = id_empresa as string
+            //     }
+            // }
 
             const dataUsuario = {
                 id_usuario: idUsuario,
                 id_empresa: idEmpresa,
-                id_colaborador: idColaborador,
+                id_persona: idPersona,
                 username,
-                nombre_perfil: perfil?.nombre,
-                slug_perfil: perfil?.nombre_url,
-                nombre_completo: nombreCompleto
+                nombre_perfil: nombrePerfil,
+                nombre_perfil_url: nombre_url,
+                nombre_completo: nombreCompleto,
+                email_institucional: emailInstitucional,
+                email_personal: emailPersonal
             }
 
             console.log({ dataUsuario })

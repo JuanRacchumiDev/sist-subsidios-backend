@@ -23,6 +23,11 @@ class EmpresaRepository {
         try {
             const empresas = await Empresa.findAll({
                 attributes: EMPRESA_ATTRIBUTES,
+                where: {
+                    nombre_o_razon_social: {
+                        [Op.notLike]: 'SOPHIA HUMAN S.A.C.'
+                    }
+                },
                 order: [
                     ['nombre_o_razon_social', 'ASC']
                 ]

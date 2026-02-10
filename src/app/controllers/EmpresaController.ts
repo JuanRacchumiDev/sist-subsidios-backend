@@ -3,6 +3,7 @@ import GetEmpresasService from '../services/Empresa/GetEmpresas'
 import GetEmpresasPaginateService from '../services/Empresa/GetEmpresasPaginate'
 import GetEmpresaService from '../services/Empresa/GetEmpresa'
 import GetInfoApiService from '../services/Empresa/GetInfoApi'
+import GetEmpresaByNombreService from '../services/Empresa/GetEmpresaByNombre'
 import CreateEmpresaService from '../services/Empresa/CreateEmpresa'
 import UpdateEmpresaService from '../services/Empresa/UpdateEmpresa'
 import UpdateEstadoService from '../services/Empresa/UpdateEstado'
@@ -69,6 +70,30 @@ class EmpresaController {
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);
+        }
+    }
+
+    async getEmpreByNombre(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { query: { razonSocial } } = req
+
+            if (!razonSocial) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'La razón social es requerida como parámetro de consulta',
+                        status: 400
+                    }
+                );
+            }
+
+            const razonSocialStr = razonSocial as string
+
+            const result = await GetEmpresaByNombreService.execute(razonSocialStr)
+
+            res.status(200).json(result)
+        } catch (error) {
+            next(error)
         }
     }
 

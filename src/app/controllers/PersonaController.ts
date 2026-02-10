@@ -98,7 +98,7 @@ class PersonaController {
 
             const limit = parseInt(req.query.limit as string) || 10
 
-            const { query: { nombreGrupo } } = req
+            const { query: { nombreGrupo, id_empresa } } = req
 
             if (!nombreGrupo) {
                 return res.status(400).json(
@@ -111,7 +111,9 @@ class PersonaController {
 
             const nombreGrupoStr = nombreGrupo as string
 
-            const result = await GetPersonasByGrupoPaginateService.execute(page, limit, nombreGrupoStr)
+            const idEmpresaStr = id_empresa as string
+
+            const result = await GetPersonasByGrupoPaginateService.execute(page, limit, nombreGrupoStr, idEmpresaStr)
 
             res.status(result.status || 200).json(result);
         } catch (error) {

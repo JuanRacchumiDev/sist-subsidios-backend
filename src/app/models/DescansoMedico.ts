@@ -3,6 +3,7 @@ import { IDescansoMedico } from '../interfaces/DescansoMedico/IDescansoMedico';
 import { EDescansoMedico } from '../enums/EDescansoMedico';
 // import { Colaborador } from './Colaborador';
 import { Persona } from './Persona'
+import { Empresa } from './Empresa'
 // import { TipoDescansoMedico } from './TipoDescansoMedico';
 // import { TipoContingencia } from './TipoContingencia';
 import { DetalleParametro } from './DetalleParametro'
@@ -16,6 +17,7 @@ interface DescansoMedicoCreationAttributes extends Optional<IDescansoMedico, 'id
 export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreationAttributes> implements IDescansoMedico {
     public id?: string | undefined;
     public id_colaborador?: string | undefined;
+    public id_empresa?: string | undefined;
     public id_tipodescansomedico?: string | undefined;
     public id_tipocontingencia?: string | undefined;
     public codcie10_diagnostico?: string | undefined;
@@ -68,6 +70,7 @@ export class DescansoMedico extends Model<IDescansoMedico, DescansoMedicoCreatio
 
     // Asociaciones
     public getColaborador!: () => Promise<Persona>
+    public getEmpresa!: () => Promise<Empresa>
     // public getColaborador!: () => Promise<Colaborador>
     public getTipoDescansoMedico!: () => Promise<DetalleParametro>
     public getTipoContingencia!: () => Promise<DetalleParametro>
@@ -91,6 +94,14 @@ DescansoMedico.init({
         references: {
             // model: Colaborador,
             model: Persona,
+            key: 'id'
+        }
+    },
+    id_empresa: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: Empresa,
             key: 'id'
         }
     },

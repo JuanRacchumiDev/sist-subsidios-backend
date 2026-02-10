@@ -39,6 +39,9 @@ class UsuarioController {
 
             const result = await GetUsuariosPaginateService.execute(page, limit, filter)
 
+            console.log('---- getAllUsuariosPaginated ----')
+            console.log({ result })
+
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

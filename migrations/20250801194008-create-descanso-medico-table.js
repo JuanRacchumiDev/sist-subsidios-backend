@@ -26,6 +26,14 @@ module.exports = {
           key: 'id'
         }
       },
+      id_empresa: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'empresa',
+          key: 'id'
+        }
+      },
       id_tipodescansomedico: {
         type: Sequelize.UUID,
         allowNull: false,
