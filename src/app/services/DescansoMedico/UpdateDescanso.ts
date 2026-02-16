@@ -79,7 +79,8 @@ class UpdateDescansoService {
                 nombre_establecimiento,
                 estado_registro,
                 observacion,
-                colaborador_dm
+                colaborador_dm,
+                user_crea
             } = descanso
 
             if (estado_registro === EDescansoMedico.DOCUMENTACION_INCORRECTA) {
@@ -132,6 +133,8 @@ class UpdateDescansoService {
 
                 const totalDiasActual = total_dias as number;
 
+                const userCrea = user_crea as string
+
                 // Obteniendo datos del colaborador
                 // const responseColaborador = await this.colaboradorRepository.getById(idColaborador)
                 const responseColaborador = await this.personaRepository.getById(idColaborador)
@@ -148,7 +151,6 @@ class UpdateDescansoService {
                     nombres,
                     apellido_paterno,
                     apellido_materno,
-                    email_personal: correo_personal
                 } = dataColaborador as IPersona
 
                 const nombreColaborador = `${nombres} ${apellido_paterno} ${apellido_materno}`
@@ -199,7 +201,8 @@ class UpdateDescansoService {
                             estado_registro: ECanje.CANJE_REGISTRADO,
                             nombre_colaborador: nombreColaborador,
                             nombre_tipocontingencia,
-                            nombre_tipodescansomedico
+                            nombre_tipodescansomedico,
+                            user_crea: userCrea
                         };
 
                         recordsToCreateCanje.push(payloadCanjeMaternidad)
@@ -237,7 +240,8 @@ class UpdateDescansoService {
                                 estado_registro: ECanje.CANJE_REGISTRADO,
                                 nombre_colaborador: nombreColaborador,
                                 nombre_tipocontingencia,
-                                nombre_tipodescansomedico
+                                nombre_tipodescansomedico,
+                                user_crea: userCrea
                             };
 
                             recordsToCreateCanje.push(payloadCanjeMaternidad)
@@ -326,7 +330,8 @@ class UpdateDescansoService {
                             estado_registro: ECanje.CANJE_REGISTRADO,
                             nombre_colaborador: nombreColaborador,
                             nombre_tipocontingencia,
-                            nombre_tipodescansomedico
+                            nombre_tipodescansomedico,
+                            user_crea: userCrea
                         };
 
                         console.log({ payloadCanjeWithoutSubsidio })
@@ -385,42 +390,43 @@ class UpdateDescansoService {
                             estado_registro: ECanje.CANJE_REGISTRADO,
                             nombre_colaborador: nombreColaborador,
                             nombre_tipocontingencia,
-                            nombre_tipodescansomedico
+                            nombre_tipodescansomedico,
+                            user_crea: userCrea
                         };
 
                         console.log({ payloadCanjeWithSubsidio })
 
                         recordsToCreateCanje.push(payloadCanjeWithSubsidio);
                     }
+                }
 
-                    // Aquí se llama a la función para gestionar los solapamientos de fechas
-                    const recordsToCreateWithOverlapHandling = await this.canjeRepository.validateSolapamientoFechas(recordsToCreateCanje);
+                // Aquí se llama a la función para gestionar los solapamientos de fechas
+                const recordsToCreateWithOverlapHandling = await this.canjeRepository.validateSolapamientoFechas(recordsToCreateCanje);
 
-                    console.log({ recordsToCreateWithOverlapHandling })
+                console.log({ recordsToCreateWithOverlapHandling })
 
-                    // Se eliminan los canjes que queden sin días después del manejo del solapamiento
-                    const finalRecordsToCreate = recordsToCreateWithOverlapHandling.filter(canje => HDate.differenceDates(canje.fecha_inicio_subsidio as string, canje.fecha_final_subsidio as string) + 1 > 0);
+                // Se eliminan los canjes que queden sin días después del manejo del solapamiento
+                const finalRecordsToCreate = recordsToCreateWithOverlapHandling.filter(canje => HDate.differenceDates(canje.fecha_inicio_subsidio as string, canje.fecha_final_subsidio as string) + 1 > 0);
 
-                    console.log({ finalRecordsToCreate })
+                console.log({ finalRecordsToCreate })
 
-                    if (finalRecordsToCreate.length > 0) {
-                        const resultsCanjes = await this.canjeRepository.createMultiple(finalRecordsToCreate) as CanjeResponse[];
+                if (finalRecordsToCreate.length > 0) {
+                    const resultsCanjes = await this.canjeRepository.createMultiple(finalRecordsToCreate) as CanjeResponse[];
 
-                        const allSuccessful = resultsCanjes.every(res => res.result);
+                    const allSuccessful = resultsCanjes.every(res => res.result);
 
-                        if (allSuccessful) {
-                            return {
-                                result: true,
-                                message: "Canjes registrados con éxito",
-                                status: 200
-                            };
-                        } else {
-                            return {
-                                result: false,
-                                error: "Error al registrar uno o más canjes",
-                                status: 500
-                            };
-                        }
+                    if (allSuccessful) {
+                        return {
+                            result: true,
+                            message: "Canjes registrados con éxito",
+                            status: 200
+                        };
+                    } else {
+                        return {
+                            result: false,
+                            error: "Error al registrar uno o más canjes",
+                            status: 500
+                        };
                     }
                 }
             }

@@ -15,6 +15,8 @@ import HDate from "../../../helpers/HDate"
 import { ICanjeFilter } from "../../interfaces/Canje/ICanjeFilter"
 import { TItemReport } from '../../types/Canje/TItemReport'
 import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude"
+import { PERSONA_INCLUDE } from "../../../includes/PersonaInclude"
+import { Persona } from "../../models/Persona"
 
 type TReportResponse = {
     result: boolean
@@ -111,6 +113,7 @@ class CanjeRepository {
             const { count, rows } = await Canje.findAndCountAll({
                 attributes: CANJE_ATTRIBUTES,
                 include: [
+                    PERSONA_INCLUDE,
                     DESCANSOMEDICO_INCLUDE,
                     // COLABORADOR_INCLUDE
                 ],
@@ -119,7 +122,8 @@ class CanjeRepository {
                 //     is_reembolsable: true
                 // },
                 order: [
-                    ['fecha_inicio_dm', 'ASC'],
+                    [{ model: Persona, as: 'persona' }, 'apellido_paterno', 'ASC'],
+                    // ['fecha_inicio_dm', 'ASC'],
                     ['fecha_inicio_subsidio', 'ASC']
                 ],
                 // logging: true,
@@ -340,8 +344,6 @@ class CanjeRepository {
                     fecha_final_subsidio,
                 } = data
 
-                // console.log({ esContinuo })
-
                 const idColaborador = id_colaborador as string
                 const fechaInicioSubsidio = fecha_inicio_subsidio as string
                 const fechaFinalSubsidio = fecha_final_subsidio as string
@@ -365,7 +367,7 @@ class CanjeRepository {
                 // Obtener el mes de devengado
                 const monthName = HDate.getMonthName(fechaFinalSubsidio)
 
-                // data.total_dias = HDate.differenceDates(fechaInicioSubsidio, fechaFinalSubsidio) + 1
+                data.total_dias = HDate.differenceDates(fechaInicioSubsidio, fechaFinalSubsidio) + 1
 
                 const payload: ICanje = {
                     ...data,

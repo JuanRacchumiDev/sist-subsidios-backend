@@ -23,5 +23,6 @@ export const CANJE_ATTRIBUTES = [
     'nombre_tipodescansomedico',
     'nombre_tipocontingencia',
     'estado_registro',
+    'user_crea',
     'estado'
 ]

@@ -8,6 +8,8 @@ import { Persona } from "../../models/Persona";
 import { DetalleParametro } from "../../models/DetalleParametro"
 import { Op } from 'sequelize';
 import HPagination from "../../../helpers/HPagination";
+import { TIPO_DOCUMENTO_INCLUDE } from '../../../includes/TipoDocumentoInclude';
+import { CARGO_INCLUDE } from '../../../includes/CargoInclude'
 // import { TipoDocumento } from "../../models/TipoDocumento";
 
 class PersonaRepository {
@@ -144,7 +146,7 @@ class PersonaRepository {
             const queryData = `
                 SELECT dp2.abreviatura, e.nombre_o_razon_social, dp3.nombre as nombre_cargo, p.*
                 ${baseQuery}
-                ORDER BY p.apellido_paterno ASC
+                ORDER BY e.nombre_o_razon_social ASC, p.apellido_paterno ASC
                 LIMIT :limit OFFSET :offset;
             `;
 
@@ -316,7 +318,11 @@ class PersonaRepository {
                     numero_documento: numDoc
                 },
                 attributes: PERSONA_ATTRIBUTES,
-                include: [DETALLE_PARAMETRO_INCLUDE]
+                include: [
+                    DETALLE_PARAMETRO_INCLUDE,
+                    TIPO_DOCUMENTO_INCLUDE,
+                    CARGO_INCLUDE
+                ]
             })
 
             if (!persona) {

@@ -1,7 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize'
 import { IPersona } from '../interfaces/Persona/IPersona';
 import { EOrigen } from '../enums/EOrigen';
-import { TipoDocumento } from './TipoDocumento';
+// import { TipoDocumento } from './TipoDocumento';
 import sequelize from '../../config/database'
 import { DetalleParametro } from './DetalleParametro';
 import { Empresa } from './Empresa';
@@ -75,7 +75,7 @@ Persona.init({
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-            model: TipoDocumento,
+            model: DetalleParametro,
             key: 'id'
         }
     },

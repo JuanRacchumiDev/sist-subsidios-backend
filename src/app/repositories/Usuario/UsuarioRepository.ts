@@ -87,7 +87,7 @@ class UsuarioRepository {
                 detailData += `WHERE ` + conditions.join(' AND ')
             }
 
-            const queryData = `SELECT ${selectData} ${detailData} ORDER BY u.email ASC LIMIT :limit OFFSET :offset;`;
+            const queryData = `SELECT ${selectData} ${detailData} ORDER BY dp.nombre, u.username ASC LIMIT :limit OFFSET :offset;`;
 
             console.log({ queryData })
 

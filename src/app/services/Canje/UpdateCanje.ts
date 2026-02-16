@@ -1,7 +1,8 @@
 import CanjeRepository from '../../repositories/Canje/CanjeRepository';
 import { ICanje, CanjeResponse } from '../../interfaces/Canje/ICanje';
 import { IReembolso } from '../../interfaces/Reembolso/IReembolso'
-import { IColaborador } from '../../interfaces/Colaborador/IColaborador';
+// import { IColaborador } from '../../interfaces/Colaborador/IColaborador';
+import { IPersona } from "../../interfaces/Persona/IPersona"
 import { ECanje } from '../../enums/ECanje';
 import { TDetalleEmail } from '../../types/Canje/TDetalleEmail';
 import { IDescansoMedico } from '../../interfaces/DescansoMedico/IDescansoMedico';
@@ -39,7 +40,7 @@ class UpdateCanjeService {
 
         console.log({ responseCanje })
 
-        const { result, error, data, message, status } = responseCanje
+        const { result, data } = responseCanje
 
         if (!result) {
             return responseCanje
@@ -51,12 +52,12 @@ class UpdateCanjeService {
 
         const {
             id: idCanje,
-            id_descansomedico,
             fecha_inicio_subsidio,
             fecha_final_subsidio,
             estado_registro,
             observacion,
-            descansoMedico
+            descansoMedico,
+            user_crea
         } = canje
 
         console.log('canje.descansomedico', descansoMedico)
@@ -73,13 +74,14 @@ class UpdateCanjeService {
             nombre_establecimiento
         } = detalleDescansoMedico
 
-        const colaborador = descansoMedico?.colaborador_dm as IColaborador
+        // const colaborador = descansoMedico?.colaborador_dm as IColaborador
+        const colaborador = descansoMedico?.colaborador_dm as IPersona
 
         console.log({ colaborador })
 
-        const { correo_personal, nombre_completo } = colaborador
+        const { email_personal, nombre_completo } = colaborador
         nombreCompleto = nombre_completo as string
-        email = correo_personal as string
+        email = email_personal as string
 
         if (estado_registro === ECanje.CANJE_OBSERVADO) {
             const detalleCanje: TDetalleEmail = {
@@ -123,7 +125,8 @@ class UpdateCanjeService {
                 fecha_registro: fechaActual,
                 fecha_maxima_reembolso: fechaActual,
                 is_cobrable: false,
-                estado_registro: EReembolso.REEMBOLSO_INGRESADO
+                estado_registro: EReembolso.REEMBOLSO_INGRESADO,
+                user_crea
             }
 
             console.log({ payloadReembolso })

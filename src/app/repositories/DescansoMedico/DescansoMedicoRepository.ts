@@ -30,6 +30,7 @@ import {
 import { Canje } from "../../models/Canje";
 import { IDescansoMedicoFilter } from '../../interfaces/DescansoMedico/IDescansoMedicoFilter';
 import { DETALLE_PARAMETRO_INCLUDE } from "../../../includes/DetalleParametroInclude"
+import { Persona } from "../../models/Persona";
 
 type TReportDescansosResponse = {
     result: boolean
@@ -170,6 +171,7 @@ class DescansoMedicoRepository {
                 ],
                 where,
                 order: [
+                    [{ model: Persona, as: 'colaborador_dm' }, 'apellido_paterno', 'ASC'],
                     ['fecha_inicio', 'ASC']
                 ],
                 limit,
@@ -677,6 +679,7 @@ class DescansoMedicoRepository {
             for (const data of dataArray) {
                 const {
                     id_colaborador,
+                    id_usuario,
                     fecha_inicio,
                     fecha_final
                 } = data
@@ -719,7 +722,8 @@ class DescansoMedicoRepository {
                     dia_fecha_final: parseInt(diaFechaFinal, 10),
                     mes_fecha_final: parseInt(mesFechaFinal, 10),
                     anio_fecha_final: parseInt(anioFechaFinal, 10),
-                    mes_devengado: monthName
+                    mes_devengado: monthName,
+                    user_crea: id_usuario
                 }
 
                 console.log('payload new descanso', payload)

@@ -4,7 +4,8 @@ import { ECanje } from '../enums/ECanje';
 import { DescansoMedico } from './DescansoMedico';
 import sequelize from '../../config/database'
 import { Reembolso } from './Reembolso';
-import { Colaborador } from './Colaborador';
+import { Persona } from './Persona'
+// import { Colaborador } from './Colaborador';
 
 interface CanjeCreationAttributes extends Optional<ICanje, 'id'> { }
 
@@ -55,7 +56,7 @@ export class Canje extends Model<ICanje, CanjeCreationAttributes> implements ICa
 
     // Asociaciones
     public getDescansoMedico!: () => Promise<DescansoMedico>
-    public getColaborador!: () => Promise<Colaborador>
+    public getColaborador!: () => Promise<Persona>
 }
 
 Canje.init({
@@ -77,7 +78,7 @@ Canje.init({
         type: DataTypes.UUID,
         defaultValue: false,
         references: {
-            model: Colaborador,
+            model: Persona,
             key: 'id'
         }
     },

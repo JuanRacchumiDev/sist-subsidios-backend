@@ -1,7 +1,7 @@
-import { TipoDocumento } from "../app/models/TipoDocumento";
+import { DetalleParametro } from "../app/models/DetalleParametro";
 
 export const TIPO_DOCUMENTO_INCLUDE = {
-    model: TipoDocumento,
+    model: DetalleParametro,
     as: 'tipoDocumento',
     attributes: ['id', 'nombre', 'abreviatura']
 }

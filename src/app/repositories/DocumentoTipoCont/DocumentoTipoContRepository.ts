@@ -7,6 +7,7 @@ import { DETALLE_PARAMETRO_INCLUDE } from "../../../includes/DetalleParametroInc
 import HPagination from "../../../helpers/HPagination";
 import { Op, WhereOptions } from "sequelize";
 import { IDocumentoTipoContFilter } from "../../interfaces/DocumentoTipoCont/IDocumentoTipoContFilter";
+import { DetalleParametro } from '../../models/DetalleParametro';
 
 class DocumentoTipoContRepository {
     /**
@@ -62,6 +63,9 @@ class DocumentoTipoContRepository {
                 ],
                 where,
                 order: [
+                    [
+                        { model: DetalleParametro, as: 'detalleParametro' }, 'nombre', 'ASC'
+                    ],
                     ['nombre', 'ASC']
                 ],
                 limit,

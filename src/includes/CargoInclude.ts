@@ -1,7 +1,7 @@
-import { Cargo } from "../app/models/Cargo";
+import { DetalleParametro } from "../app/models/DetalleParametro";
 
 export const CARGO_INCLUDE = {
-    model: Cargo,
+    model: DetalleParametro,
     as: 'cargo',
-    attributes: ['id', 'nombre']
+    attributes: ['id', 'nombre', 'abreviatura']
 }
