@@ -29,12 +29,9 @@ class DescansoMedicoController {
     async getAllDescansosPaginated(req: Request, res: Response, next: NextFunction) {
         try {
             const page = parseInt(req.query.page as string) || 1
-
             const limit = parseInt(req.query.limit as string) || 10
 
             const { query } = req
-
-            console.log({ query })
 
             // Extracción de filtros opcionales de req.query
             const {
@@ -54,11 +51,10 @@ class DescansoMedicoController {
                 id_tipodescansomedico: id_tipodescansomedico as string,
                 id_tipocontingencia: id_tipocontingencia as string,
                 id_empresa: id_empresa as string,
-                nombre_colaborador: nombre_colaborador as string,
+                nombre_colaborador: (nombre_colaborador as string)?.trim(),
                 fecha_inicio: fecha_inicio as string,
                 fecha_final: fecha_final as string,
                 user_crea: user_crea as string
-                // estado: estado !== undefined ? estado === 'true' : undefined // Convierte 'true'/'false' a booleano, o undefined si no está
             };
 
             console.log({ filters })

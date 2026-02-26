@@ -54,10 +54,12 @@ class EmpresaRepository {
             if (filter) {
                 const filterValue = `%${filter}%`
 
+                console.log({ filterValue })
+
                 whereClause[Op.or] = [
                     {
                         nombre_o_razon_social: {
-                            [Op.like]: filterValue
+                            [Op.iLike]: filterValue
                         }
                     },
                     {

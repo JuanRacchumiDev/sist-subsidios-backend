@@ -113,22 +113,70 @@ class PersonaRepository {
         }
     }
 
+    async getUniqueByEmpresaWithGrupo(
+        idEmpresa: string,
+        nombreGrupo: string
+    ): Promise<PersonaResponse> {
+        try {
+            const queryData = `
+                SELECT dp2.abreviatura, e.nombre_o_razon_social, dp3.nombre as nombre_cargo, p.*
+                FROM persona p INNER JOIN grupo_persona gp ON gp.id_persona  = p.id
+                INNER JOIN detalle_parametro dp on dp.id = gp.id_grupo
+                INNER JOIN detalle_parametro dp2 on dp2.id = p.id_tipodocumento
+                INNER JOIN detalle_parametro dp3 on dp3.id = p.id_cargo
+                INNER JOIN empresa e on e.id = p.id_empresa
+                WHERE dp.nombre = :nombreGrupo
+                AND p.id_empresa = :idEmpresa
+                LIMIT 1;
+            `
+
+            const rows = await sequelize.query(queryData, {
+                replacements: { nombreGrupo, idEmpresa },
+                type: 'SELECT',
+                model: Persona,
+                mapToModel: true
+            })
+
+            return { result: true, data: rows, status: 200 }
+        } catch (error: any) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
     async getAllByGrupoWithPaginate(
         page: number,
         limit: number,
-        nombreGrupo: string,
-        idEmpresa: string | null
+        filters: any
     ): Promise<PersonaResponsePaginate> {
         try {
-            // Obtenemos los parámetros de consulta
-            const offset = HPagination.getOffset(page, limit)
+            const offset = HPagination.getOffset(page, limit);
+            const { nombreGrupo, id_empresa, numero_documento, id_tipodocumento, nombre_completo } = filters;
 
+            // 1. Condiciones base obligatorias
             const conditions = ["dp.nombre = :nombreGrupo"];
             const replacements: any = { nombreGrupo, limit, offset };
 
-            if (idEmpresa) {
-                conditions.push("p.id_empresa = :idEmpresa");
-                replacements.idEmpresa = idEmpresa;
+            // 2. Condiciones dinámicas (opcionales)
+            if (id_empresa) {
+                conditions.push("p.id_empresa = :id_empresa");
+                replacements.id_empresa = id_empresa;
+            }
+
+            if (id_tipodocumento) {
+                conditions.push("p.id_tipodocumento = :id_tipodocumento");
+                replacements.id_tipodocumento = id_tipodocumento;
+            }
+
+            if (numero_documento) {
+                conditions.push("LOWER(p.numero_documento) = LOWER(:numero_documento)");
+                replacements.numero_documento = numero_documento;
+            }
+
+            if (nombre_completo) {
+                // Buscamos coincidencia en cualquier parte del nombre completo
+                conditions.push("LOWER(p.nombre_completo) LIKE LOWER(:nombre_completo)");
+                replacements.nombre_completo = `%${nombre_completo}%`;
             }
 
             const whereClause = `WHERE ${conditions.join(" AND ")}`;
@@ -195,7 +243,6 @@ class PersonaRepository {
             })
 
             const total = parseInt(countResult.total);
-
             const totalPages = Math.ceil(total / limit)
             const nextPage = HPagination.getNextPage(page, limit, total)
             const previousPage = HPagination.getPreviousPage(page)

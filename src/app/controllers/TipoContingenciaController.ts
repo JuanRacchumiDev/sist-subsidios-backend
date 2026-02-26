@@ -5,7 +5,8 @@ import GetTipoContingenciaService from '../services/TipoContingencia/GetTipo'
 import GetTipoContingenciasService from '../services/TipoContingencia/GetTipos'
 import GetByNombreService from '../services/TipoContingencia/GetByNombre'
 import UpdateTipoContingenciaService from '../services/TipoContingencia/UpdateTipo'
-import { ITipoContingencia } from '../interfaces/TipoContingencia/ITipoContingencia';
+// import { ITipoContingencia } from '../interfaces/TipoContingencia/ITipoContingencia';
+import { IDetalleParametro } from "../interfaces/DetalleParametro/IDetalleParametro"
 
 class TipoContingenciaController {
     async getAllTipoContingencias(req: Request, res: Response, next: NextFunction) {
@@ -53,7 +54,7 @@ class TipoContingenciaController {
 
     async createTipoContingencia(req: Request, res: Response, next: NextFunction) {
         try {
-            const tipoContingenciaData: ITipoContingencia = req.body;
+            const tipoContingenciaData: IDetalleParametro = req.body;
             const result = await CreateTipoContingenciaService.execute(tipoContingenciaData);
             res.status(result.status || 201).json(result);
         } catch (error) {
@@ -64,7 +65,7 @@ class TipoContingenciaController {
     async updateTipoContingencia(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-            const tipoContingenciaData: ITipoContingencia = req.body;
+            const tipoContingenciaData: IDetalleParametro = req.body;
             const result = await UpdateTipoContingenciaService.execute(id, tipoContingenciaData);
             res.status(result.status || 200).json(result);
         } catch (error) {

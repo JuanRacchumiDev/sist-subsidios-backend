@@ -16,6 +16,8 @@ router.get('/consulta-api', authToken, PersonaController.getPersonaByApi)
 
 router.get('/empresa/:idEmpresa', authToken, PersonaController.getAllPersonasByEmpresa)
 
+router.get('/buscar-unico', authToken, PersonaController.getPersonaUnique)
+
 router.get('/', authToken, PersonaController.getAllPersonas)
 
 router.get('/:id', authToken, PersonaController.getPersonaById)

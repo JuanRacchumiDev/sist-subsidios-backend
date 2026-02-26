@@ -1,4 +1,7 @@
 export interface ICanjeFilter {
+    id_colaborador?: string
+    id_tipodescansomedico?: string
+    id_tipocontingencia?: string
     nombre_colaborador?: string
     codigo_canje?: string
     codigo_citt?: string

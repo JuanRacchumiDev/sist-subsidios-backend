@@ -16,11 +16,11 @@ class GetPersonasByGrupoPaginateService {
      * Ejecuta la operación para obtener personas por grupo
      * @param {number} page - El número de la página actual
      * @param {number} limit - El número de ítems por página
-     * @param {string} nombreGrupo - El nombre del grupo a filtrar
+     * @param {any} filters - Los filtros a aplicar
      * @returns {Promise<PersonaResponse>} La respuesta de obtener las personas por grupo
      */
-    async execute(page: number, limit: number, nombreGrupo: string, idEmpresa: string | null = null): Promise<PersonaResponse> {
-        return await this.personaRepository.getAllByGrupoWithPaginate(page, limit, nombreGrupo, idEmpresa)
+    async execute(page: number, limit: number, filters: any): Promise<PersonaResponse> {
+        return await this.personaRepository.getAllByGrupoWithPaginate(page, limit, filters)
     }
 }
 

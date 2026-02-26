@@ -59,8 +59,6 @@ class DescansoMedicoRepository {
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
                 include: [
                     COLABORADOR_DM_INCLUDE,
-                    // TIPODM_INCLUDE,
-                    // TIPO_CONTINGENCIA_INCLUDE,
                     DETALLE_PARAMETRO_INCLUDE,
                     DIAGNOSTICO_INCLUDE
                 ],
@@ -85,16 +83,7 @@ class DescansoMedicoRepository {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            // Construcción dinámica de la claúsula WHERE
-            const where: WhereOptions = {}
-
-            // Filtro por estado
-            // if (filters.estado !== undefined) {
-            //     where.estado = filters.estado
-            // }
-
             const {
-                id_colaborador,
                 id_tipodescansomedico,
                 id_tipocontingencia,
                 id_empresa,
@@ -104,89 +93,111 @@ class DescansoMedicoRepository {
                 user_crea
             } = filters
 
-            if (id_colaborador) {
-                where.id_colaborador = id_colaborador
-            }
+            // 1. Condiciones iniciales
+            const conditions = ["1 = 1"];
+            const replacements: any = { limit, offset };
 
-            // Filtro por tipo de descanso médico (id_tipodescansomedico)
-            if (id_tipodescansomedico) {
-                where.id_tipodescansomedico = id_tipodescansomedico
-            }
-
-            // Filtro por tipo de contingencia (id_tipocontingencia)
-            if (id_tipocontingencia) {
-                where.id_tipocontingencia = id_tipocontingencia
-            }
-
+            // 2. Filtros dinámicos
             if (id_empresa) {
-                where.id_empresa = id_empresa
+                conditions.push("p.id_empresa = :id_empresa");
+                replacements.id_empresa = id_empresa;
             }
 
-            // Filtro por nombre del colaborador
-            if (nombre_colaborador) {
-                where.nombre_colaborador = {
-                    [Op.like]: `%${nombre_colaborador}%`
-                }
+            if (id_tipodescansomedico) {
+                conditions.push("dm.id_tipodescansomedico = :id_tipodescansomedico");
+                replacements.id_tipodescansomedico = id_tipodescansomedico;
+            }
+
+            if (id_tipocontingencia) {
+                conditions.push("dm.id_tipocontingencia = :id_tipocontingencia");
+                replacements.id_tipocontingencia = id_tipocontingencia;
             }
 
             if (user_crea) {
-                where.user_crea = user_crea
+                conditions.push("dm.user_crea = :user_crea");
+                replacements.user_crea = user_crea;
             }
 
-            // Filtro por rango de fechas
-            if (filters.fecha_inicio && filters.fecha_final) {
-                where.fecha_inicio = {
-                    [Op.lte]: filters.fecha_final
-                }
-
-                where.fecha_final = {
-                    [Op.gte]: filters.fecha_inicio
-                }
-
-                /**
-                where.fecha_inicio = {
-                    [Op.between]: [filters.fecha_inicio, filters.fecha_final]
-                }
-                */
-            } else if (filters.fecha_inicio) {
-                where.fecha_inicio = {
-                    [Op.gte]: filters.fecha_inicio
-                };
-            } else if (filters.fecha_final) {
-                where.fecha_final = {
-                    [Op.lte]: filters.fecha_final
-                };
+            // Búsqueda Case Insensitive por nombre de colaborador
+            if (nombre_colaborador) {
+                conditions.push("LOWER(p.nombre_completo) LIKE LOWER(:nombre_colaborador)");
+                replacements.nombre_colaborador = `%${nombre_colaborador}%`;
             }
 
-            console.log({ where })
+            // Filtro para fecha de inicio
+            if (fecha_inicio && !fecha_final) {
+                conditions.push("dm.fecha_inicio >= :fecha_inicio")
+                replacements.fecha_inicio = fecha_inicio
+            }
 
-            const { count, rows } = await DescansoMedico.findAndCountAll({
-                attributes: DESCANSOMEDICO_ATTRIBUTES,
-                include: [
-                    COLABORADOR_DM_INCLUDE,
-                    // TIPODM_INCLUDE,
-                    // TIPO_CONTINGENCIA_INCLUDE,
-                    DETALLE_PARAMETRO_INCLUDE,
-                    DIAGNOSTICO_INCLUDE
-                ],
-                where,
-                order: [
-                    [{ model: Persona, as: 'colaborador_dm' }, 'apellido_paterno', 'ASC'],
-                    ['fecha_inicio', 'ASC']
-                ],
-                limit,
-                offset
-            })
+            // Filtro para fecha final
+            if (!fecha_inicio && fecha_final) {
+                conditions.push("dm.fecha_final <= :fecha_final")
+                replacements.fecha_final = fecha_final
+            }
 
-            const totalPages = Math.ceil(count / limit)
-            const nextPage = HPagination.getNextPage(page, limit, count)
+            // Filtro por rango de fechas (Fecha de inicio del descanso)
+            if (fecha_inicio && fecha_final) {
+                conditions.push("dm.fecha_inicio >= :fecha_inicio AND dm.fecha_final <= :fecha_final");
+                replacements.fecha_inicio = fecha_inicio;
+                replacements.fecha_final = fecha_final;
+            }
+
+            const whereClause = `WHERE ${conditions.join(" AND ")}`;
+
+            console.log({ whereClause })
+
+            // 3. Consultas
+            const baseQuery = `
+                FROM descanso_medico dm
+                INNER JOIN persona p ON p.id = dm.id_colaborador
+                INNER JOIN detalle_parametro dp_tipo ON dp_tipo.id = dm.id_tipodescansomedico
+                INNER JOIN detalle_parametro dp_cont ON dp_cont.id = dm.id_tipocontingencia
+                INNER JOIN empresa e ON e.id = p.id_empresa
+                ${whereClause}
+            `;
+
+            const queryData = `
+                SELECT 
+                    dm.*, 
+                    p.apellido_paterno as apellido_paterno_colaborador,
+                    p.apellido_materno as apellido_materno_colaborador,
+                    p.nombres as nombres_colaborador,
+                    p.nombre_completo as nombre_colaborador, 
+                    dp_tipo.nombre as nombre_tipo_descanso,
+                    dp_cont.nombre as nombre_tipo_contingencia,
+                    e.nombre_o_razon_social as nombre_empresa
+                ${baseQuery}
+                ORDER BY p.apellido_paterno ASC, dm.fecha_inicio ASC
+                LIMIT :limit OFFSET :offset;
+            `;
+
+            const queryCount = `SELECT COUNT(dm.id) as total ${baseQuery}`;
+
+            const rows = await sequelize.query(queryData, {
+                replacements,
+                type: 'SELECT',
+                model: DescansoMedico,
+                mapToModel: true
+            });
+
+            console.log({ rows })
+
+            const [countResult]: any = await sequelize.query(queryCount, {
+                replacements,
+                type: 'SELECT'
+            });
+
+            const total = parseInt(countResult.total);
+            const totalPages = Math.ceil(total / limit)
+            const nextPage = HPagination.getNextPage(page, limit, total)
             const previousPage = HPagination.getPreviousPage(page)
 
             const pagination: IDescansoMedicoPaginate = {
                 currentPage: page,
                 limit,
                 totalPages,
-                totalItems: count,
+                totalItems: total,
                 nextPage,
                 previousPage
             }
@@ -196,7 +207,101 @@ class DescansoMedicoRepository {
                 data: rows,
                 pagination,
                 status: 200
-            }
+            };
+
+            // if (id_colaborador) {
+            //     where.id_colaborador = id_colaborador
+            // }
+
+            // // Filtro por tipo de descanso médico (id_tipodescansomedico)
+            // if (id_tipodescansomedico) {
+            //     where.id_tipodescansomedico = id_tipodescansomedico
+            // }
+
+            // // Filtro por tipo de contingencia (id_tipocontingencia)
+            // if (id_tipocontingencia) {
+            //     where.id_tipocontingencia = id_tipocontingencia
+            // }
+
+            // if (id_empresa) {
+            //     where.id_empresa = id_empresa
+            // }
+
+            // // Filtro por nombre del colaborador
+            // if (nombre_colaborador) {
+            //     where.nombre_colaborador = {
+            //         [Op.like]: `%${nombre_colaborador}%`
+            //     }
+            // }
+
+            // if (user_crea) {
+            //     where.user_crea = user_crea
+            // }
+
+            // // Filtro por rango de fechas
+            // if (filters.fecha_inicio && filters.fecha_final) {
+            //     where.fecha_inicio = {
+            //         [Op.lte]: filters.fecha_final
+            //     }
+
+            //     where.fecha_final = {
+            //         [Op.gte]: filters.fecha_inicio
+            //     }
+
+            //     /**
+            //     where.fecha_inicio = {
+            //         [Op.between]: [filters.fecha_inicio, filters.fecha_final]
+            //     }
+            //     */
+            // } else if (filters.fecha_inicio) {
+            //     where.fecha_inicio = {
+            //         [Op.gte]: filters.fecha_inicio
+            //     };
+            // } else if (filters.fecha_final) {
+            //     where.fecha_final = {
+            //         [Op.lte]: filters.fecha_final
+            //     };
+            // }
+
+            // console.log({ where })
+
+            // const { count, rows } = await DescansoMedico.findAndCountAll({
+            //     attributes: DESCANSOMEDICO_ATTRIBUTES,
+            //     include: [
+            //         COLABORADOR_DM_INCLUDE,
+            //         // TIPODM_INCLUDE,
+            //         // TIPO_CONTINGENCIA_INCLUDE,
+            //         DETALLE_PARAMETRO_INCLUDE,
+            //         DIAGNOSTICO_INCLUDE
+            //     ],
+            //     whereClause,
+            //     order: [
+            //         [{ model: Persona, as: 'colaborador_dm' }, 'apellido_paterno', 'ASC'],
+            //         ['fecha_inicio', 'ASC']
+            //     ],
+            //     limit,
+            //     offset
+            // })
+
+            // const totalPages = Math.ceil(count / limit)
+            // const nextPage = HPagination.getNextPage(page, limit, count)
+            // const previousPage = HPagination.getPreviousPage(page)
+
+            // const pagination: IDescansoMedicoPaginate = {
+            //     currentPage: page,
+            //     limit,
+            //     totalPages,
+            //     totalItems: count,
+            //     nextPage,
+            //     previousPage
+            // }
+
+            // return {
+            //     result: true,
+            //     data: rows,
+            //     pagination,
+            //     status: 200
+            // }
 
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'

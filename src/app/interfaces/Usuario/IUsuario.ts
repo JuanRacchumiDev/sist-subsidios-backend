@@ -1,6 +1,3 @@
-// import { IColaborador } from "../Colaborador/IColaborador"
-// import { IPerfil } from "../Perfil/IPerfil"
-// import { ITrabajadorSocial } from "../TrabajadorSocial/ITrabajadorSocial"
 import { IPersona } from "../Persona/IPersona"
 import { IDetalleParametro } from "../DetalleParametro/IDetalleParametro"
 
@@ -14,6 +11,7 @@ export interface IUsuario {
     email?: string
     password?: string
     nombre_persona?: string
+    nombre_perfil?: string
     remember_token?: string
     user_crea?: string
     user_actualiza?: string

@@ -221,6 +221,8 @@ class AuthRepository {
                 }
             )
 
+            console.log({ usuario })
+
             if (!usuario) {
                 return {
                     result: false,

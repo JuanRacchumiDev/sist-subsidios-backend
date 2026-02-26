@@ -40,8 +40,7 @@ class CanjeRepository {
             const canjes = await Canje.findAll({
                 attributes: CANJE_ATTRIBUTES,
                 include: [
-                    DESCANSOMEDICO_INCLUDE,
-                    // COLABORADOR_INCLUDE
+                    DESCANSOMEDICO_INCLUDE
                 ],
                 where: {
                     is_reembolsable: true
@@ -62,84 +61,117 @@ class CanjeRepository {
     async getAllWithPaginate(
         page: number,
         limit: number,
-        filters: ICanjeFilter
+        filters: ICanjeFilter = {}
     ): Promise<CanjeResponsePaginate> {
         try {
-            // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            // Construcción dinámica de la claúsula WHERE
-            const where: WhereOptions = {}
+            const {
+                id_tipodescansomedico,
+                id_tipocontingencia,
+                nombre_colaborador,
+                codigo_canje,
+                codigo_citt,
+                fecha_inicio_subsidio,
+                fecha_final_subsidio
+            } = filters
 
-            where.is_reembolsable = true
+            console.log({ id_tipodescansomedico })
+            console.log({ id_tipocontingencia })
+            console.log({ nombre_colaborador })
+            console.log({ fecha_inicio_subsidio })
+            console.log({ fecha_final_subsidio })
 
-            // Filtro por estado
-            if (filters.estado !== undefined) {
-                where.estado = filters.estado
+            // 1. Condiciones iniciales
+            const conditions = ["1 = 1"];
+            const replacements: any = { limit, offset };
+
+            if (id_tipodescansomedico) {
+                conditions.push("dm.id_tipodescansomedico = :id_tipodescansomedico");
+                replacements.id_tipodescansomedico = id_tipodescansomedico;
             }
 
-            // Filtro por nombre del colaborador
-            if (filters.nombre_colaborador) {
-                where.nombre_colaborador = {
-                    [Op.like]: `%${filters.nombre_colaborador}%`
-                }
+            if (id_tipocontingencia) {
+                conditions.push("dm.id_tipocontingencia = :id_tipocontingencia");
+                replacements.id_tipocontingencia = id_tipocontingencia;
             }
 
-            // Filtro por rango de fechas
-            if (filters.fecha_inicio_subsidio && filters.fecha_final_subsidio) {
-                where.fecha_inicio_subsidio = {
-                    [Op.lte]: filters.fecha_final_subsidio
-                }
-
-                where.fecha_final_subsidio = {
-                    [Op.gte]: filters.fecha_inicio_subsidio
-                }
-
-                /**
-                 where.fecha_inicio_subsidio = {
-                    [Op.between]: [filters.fecha_inicio_subsidio, filters.fecha_final_subsidio]
-                 }
-                 */
-            } else if (filters.fecha_inicio_subsidio) {
-                where.fecha_inicio_subsidio = {
-                    [Op.gte]: filters.fecha_inicio_subsidio
-                }
-            } else if (filters.fecha_final_subsidio) {
-                where.fecha_final_subsidio = {
-                    [Op.lte]: filters.fecha_final_subsidio
-                }
+            if (nombre_colaborador) {
+                conditions.push("LOWER(p.nombre_completo) LIKE LOWER(:nombre_colaborador)");
+                replacements.nombre_colaborador = `%${nombre_colaborador}%`;
             }
 
-            const { count, rows } = await Canje.findAndCountAll({
-                attributes: CANJE_ATTRIBUTES,
-                include: [
-                    PERSONA_INCLUDE,
-                    DESCANSOMEDICO_INCLUDE,
-                    // COLABORADOR_INCLUDE
-                ],
-                where,
-                // where: {
-                //     is_reembolsable: true
-                // },
-                order: [
-                    [{ model: Persona, as: 'persona' }, 'apellido_paterno', 'ASC'],
-                    // ['fecha_inicio_dm', 'ASC'],
-                    ['fecha_inicio_subsidio', 'ASC']
-                ],
-                // logging: true,
-                limit,
-                offset
+            // Filtro para fecha de inicio
+            if (fecha_inicio_subsidio && !fecha_final_subsidio) {
+                conditions.push("c.fecha_inicio_subsidio >= :fecha_inicio_subsidio")
+                replacements.fecha_inicio_subsidio = fecha_inicio_subsidio
+            }
+
+            // Filtro para fecha final
+            if (!fecha_inicio_subsidio && fecha_final_subsidio) {
+                conditions.push("c.fecha_final_subsidio <= :fecha_final_subsidio")
+                replacements.fecha_final_subsidio = fecha_final_subsidio
+            }
+
+            // Filtro por rango de fechas (Fecha de inicio del descanso)
+            if (fecha_inicio_subsidio && fecha_final_subsidio) {
+                conditions.push("c.fecha_inicio_subsidio >= :fecha_inicio_subsidio AND c.fecha_final_subsidio <= :fecha_final_subsidio");
+                replacements.fecha_inicio_subsidio = fecha_inicio_subsidio;
+                replacements.fecha_final_subsidio = fecha_final_subsidio;
+            }
+
+            const whereClause = `WHERE ${conditions.join(" AND ")}`
+
+            console.log({ whereClause })
+
+            const baseQuery = `
+                FROM canje c
+                INNER JOIN descanso_medico dm on c.id_descansomedico = dm.id
+                INNER JOIN persona p on p.id = c.id_colaborador
+                ${whereClause}
+            `
+
+            const queryData = `
+                SELECT
+                    p.apellido_paterno as apellido_paterno_colaborador,
+                    p.apellido_materno as apellido_materno_colaborador,
+                    p.nombres as nombres_colaborador,
+                    dm.id_tipodescansomedico,
+                    dm.id_tipocontingencia,
+                    c.*
+                ${baseQuery}
+                ORDER BY p.apellido_paterno ASC, c.fecha_inicio_subsidio ASC
+                LIMIT :limit OFFSET :offset;
+            `
+
+            console.log({ queryData })
+
+            const queryCount = `SELECT COUNT(c.id) as total ${baseQuery}`
+
+            const rows = await sequelize.query(queryData, {
+                replacements,
+                type: 'SELECT',
+                model: Canje,
+                mapToModel: true
             })
 
-            const totalPages = Math.ceil(count / limit)
-            const nextPage = HPagination.getNextPage(page, limit, count)
+            console.log({ rows })
+
+            const [countResult]: any = await sequelize.query(queryCount, {
+                replacements,
+                type: 'SELECT'
+            });
+
+            const total = parseInt(countResult.total);
+            const totalPages = Math.ceil(total / limit)
+            const nextPage = HPagination.getNextPage(page, limit, total)
             const previousPage = HPagination.getPreviousPage(page)
 
             const pagination: ICanjePaginate = {
                 currentPage: page,
                 limit,
                 totalPages,
-                totalItems: count,
+                totalItems: total,
                 nextPage,
                 previousPage
             }
@@ -149,8 +181,7 @@ class CanjeRepository {
                 data: rows,
                 pagination,
                 status: 200
-            }
-
+            };
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }

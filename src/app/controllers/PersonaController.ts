@@ -7,6 +7,7 @@ import GetInfoApiService from '../services/Persona/GetInfoApi'
 import GetByIdTipoAndNumDocService from '../services/Persona/GetByIdTipoAndNumDoc'
 import GetPersonasByEmpresaService from '../services/Persona/GetPersonasByEmpresa'
 import GetPersonasByEmpresaAndGrupoService from '../services/Persona/GetPersonasByEmpresaAndGrupo'
+import GetPersonaUniqueService from '../services/Persona/GetPersonaUnique'
 import GetPersonasByGrupoPaginateService from '../services/Persona/GetPersonasByGrupoPaginate'
 import { IPersona } from '../interfaces/Persona/IPersona';
 
@@ -58,6 +59,30 @@ class PersonaController {
         }
     }
 
+    async getPersonaUnique(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { query: { idEmpresa, nombreGrupo } } = req
+
+            if (!idEmpresa || !nombreGrupo) {
+                return res.status(400).json(
+                    {
+                        result: false,
+                        message: 'El identificador de empresa y nombre del grupo son requeridos'
+                    }
+                )
+            }
+
+            const idEmpresaStr = idEmpresa as string
+            const nombreGrupoStr = nombreGrupo as string
+
+            const result = await GetPersonaUniqueService.execute(idEmpresaStr, nombreGrupoStr)
+
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async getAllPersonaByEmpresaWithGrupo(req: Request, res: Response, next: NextFunction) {
         try {
             const { query: { idEmpresa, nombreGrupo } } = req
@@ -98,22 +123,26 @@ class PersonaController {
 
             const limit = parseInt(req.query.limit as string) || 10
 
-            const { query: { nombreGrupo, id_empresa } } = req
+            // Extraemos todos los posibles filtros del query
+            const { nombreGrupo, id_empresa, numero_documento, id_tipodocumento, nombre_completo } = req.query;
 
             if (!nombreGrupo) {
-                return res.status(400).json(
-                    {
-                        result: false,
-                        message: 'El nombre del grupo es requerido como parámetro de consulta'
-                    }
-                );
+                return res.status(400).json({
+                    result: false,
+                    message: 'El nombre del grupo es requerido'
+                });
             }
 
-            const nombreGrupoStr = nombreGrupo as string
+            // Agrupamos los filtros en un objeto para mayor limpieza
+            const filters = {
+                nombreGrupo: (nombreGrupo as string)?.trim(),
+                id_empresa: id_empresa as string,
+                numero_documento: (numero_documento as string)?.trim(),
+                id_tipodocumento: id_tipodocumento as string,
+                nombre_completo: (nombre_completo as string)?.trim()
+            };
 
-            const idEmpresaStr = id_empresa as string
-
-            const result = await GetPersonasByGrupoPaginateService.execute(page, limit, nombreGrupoStr, idEmpresaStr)
+            const result = await GetPersonasByGrupoPaginateService.execute(page, limit, filters)
 
             res.status(result.status || 200).json(result);
         } catch (error) {

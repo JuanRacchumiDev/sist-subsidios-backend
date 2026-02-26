@@ -48,104 +48,76 @@ class UsuarioRepository {
     async getAllWithPaginate(
         page: number,
         limit: number,
-        filters: IUsuarioFilter
+        filters: IUsuarioFilter = {}
     ): Promise<UsuarioResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            // Definiendo los campos de la query de datos
-            const selectData = `dp.nombre as nombre_perfil, p.id as id_persona, p.nombres, p.apellido_paterno, p.apellido_materno, p.nombre_completo,
-                u.id, u.id_perfil, u.id_persona, u.username, u.email, u.estado `;
+            const {
+                id_perfil,
+                nombre_persona,
+                username,
+                email
+            } = filters
 
-            // Definiendo el total de usuarios de la consulta
-            const selectCount = `COUNT (u.id) as total `;
+            const conditions = ["1 = 1"];
+            const replacements: any = { limit, offset };
 
-            // Definiendo el detalle de la consulta
-            let detailData = `FROM usuario u inner join detalle_parametro dp on dp.id = u.id_perfil
-                LEFT JOIN persona p on p.id = u.id_persona `;
-
-            // Construcción dinámica de WHERE y preparación de replacements
-            const replacements: any = {
-                limit,
-                offset,
-                nombre_persona: filters.nombre_persona ? `%${filters.nombre_persona}%` : null,
-                id_perfil: filters.id_perfil
+            if (id_perfil) {
+                conditions.push("us.id_perfil = :id_perfil")
+                replacements.id_perfil = id_perfil
             }
 
-            let conditions: string[] = []
-
-            if (filters.id_perfil !== undefined) {
-                conditions.push(`u.id_perfil = :id_perfil`)
+            if (nombre_persona) {
+                conditions.push("LOWER(us.nombre_persona) LIKE LOWER(:nombre_persona)")
+                replacements.nombre_persona = `%${nombre_persona}%`
             }
 
-            if (filters.nombre_persona !== undefined) {
-                conditions.push(`p.nombre_completo LIKE :nombre_persona`)
+            if (username) {
+                conditions.push("LOWER(us.username) LIKE LOWER(:username)")
+                replacements.username = `%${username}%`
             }
 
-            if (conditions.length > 0) {
-                detailData += `WHERE ` + conditions.join(' AND ')
+            if (email) {
+                conditions.push("LOWER(us.email) LIKE LOWER(:email)")
+                replacements.email = `%${email}%`
             }
 
-            const queryData = `SELECT ${selectData} ${detailData} ORDER BY dp.nombre, u.username ASC LIMIT :limit OFFSET :offset;`;
+            const whereClause = `WHERE ${conditions.join(" AND ")}`
 
-            console.log({ queryData })
+            const baseQuery = `
+                FROM usuario us
+                INNER JOIN detalle_parametro dp
+                ON dp.id = us.id_perfil
+                ${whereClause}
+            `
 
-            // if (filters.id_perfil !== undefined && filters.nombre_persona === undefined) {
-            //     detailData += `WHERE u.id_perfil = :filters.id_perfil `
-            // }
+            const queryData = `
+                SELECT
+                    us.id, id_perfil, id_persona, username, email, nombre_persona, dp.nombre as nombre_perfil, us.estado
+                ${baseQuery}
+                ORDER BY us.username ASC
+                LIMIT :limit OFFSET :offset;
+            `
 
-            // if (filters.id_perfil === undefined && filters.nombre_persona !== undefined) {
-            //     detailData += `WHERE p.nombre_completo LIKE :filters.nombre_persona `
-            // }
-
-            // if (filters.id_perfil !== undefined && filters.nombre_persona !== undefined) {
-            //     detailData += `WHERE u.id_perfil = :filters.id_perfil AND p.nombre_completo LIKE :filters.nombre_persona `
-            // }
-
-            // // Definiendo la consulta de datos
-            // let queryData = `SELECT  `;
-
-            // queryData += selectData;
-
-            // queryData += detailData;
-
-            // queryData += `ORDER BY u.email ASC`;
-
-            // queryData += `LIMIT :limit OFFSET :offset;`
-
-            // console.log({ queryData })
-
-            // // Definiendo la consulta de total de resultados
-            // let queryCount = `SELECT `;
-
-            // queryCount += selectCount;
-
-            // queryCount += detailData;
+            const queryCount = `SELECT COUNT(us.id) as total ${baseQuery}`
 
             const rows = await sequelize.query(queryData, {
-                replacements: replacements,
-                type: QueryTypes.SELECT,
+                replacements,
+                type: 'SELECT',
                 model: Usuario,
                 mapToModel: true
-            })
+            });
 
-            const queryCount = `SELECT ${selectCount} ${detailData}`
-
-            console.log({ queryCount })
-
-            // const [{ total }] = await sequelize.query(queryCount, {
-            //     replacements: { filters.id_perfil, filters.nombre_persona, limit, offset },
-            //     type: 'SELECT'
-            // }) as any
+            console.log({ rows })
 
             const [countResult]: any = await sequelize.query(queryCount, {
-                replacements: replacements,
-                type: QueryTypes.SELECT
-            })
+                replacements,
+                type: 'SELECT'
+            });
 
-            const total = parseInt(countResult.total)
-
+            const total = parseInt(countResult.total);
             const totalPages = Math.ceil(total / limit)
             const nextPage = HPagination.getNextPage(page, limit, total)
             const previousPage = HPagination.getPreviousPage(page)
@@ -159,83 +131,17 @@ class UsuarioRepository {
                 previousPage
             }
 
-            console.log({ pagination })
-
             return {
                 result: true,
                 data: rows,
                 pagination,
                 status: 200
-            }
+            };
         } catch (error: any) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
         }
     }
-
-    // async getAllWithPaginate(
-    //     page: number,
-    //     limit: number,
-    //     filters: IUsuarioFilter
-    // ): Promise<UsuarioResponsePaginate> {
-    //     try {
-    //         // Obtenemos los parámetros de consulta
-    //         const offset = HPagination.getOffset(page, limit)
-
-    //         // Construcción dinámica de la claúsula WHERE
-    //         const where: WhereOptions = {}
-
-    //         if (filters.id_perfil !== undefined) {
-    //             where.id_perfil = filters.id_perfil
-    //         }
-
-    //         if (filters.nombre_persona !== undefined) {
-    //             where.nombre_persona = {
-    //                 [Op.like]: `%${filters.nombre_persona}%`
-    //             }
-    //         }
-
-    //         const { count, rows } = await Usuario.findAndCountAll({
-    //             attributes: USUARIO_ATTRIBUTES,
-    //             include: [
-    //                 PERFIL_INCLUDE,
-    //                 PERSONA_INCLUDE,
-    //                 COLABORADOR_INCLUDE,
-    //                 TRABAJADOR_SOCIAL_INCLUDE
-    //             ],
-    //             where,
-    //             order: [
-    //                 ['email', 'ASC']
-    //             ],
-    //             limit,
-    //             offset
-    //         })
-
-    //         const totalPages = Math.ceil(count / limit)
-    //         const nextPage = HPagination.getNextPage(page, limit, count)
-    //         const previousPage = HPagination.getPreviousPage(page)
-
-    //         const pagination: IUsuarioPaginate = {
-    //             currentPage: page,
-    //             limit,
-    //             totalPages,
-    //             totalItems: count,
-    //             nextPage,
-    //             previousPage
-    //         }
-
-    //         return {
-    //             result: true,
-    //             data: rows,
-    //             pagination,
-    //             status: 200
-    //         }
-
-    //     } catch (error) {
-    //         const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-    //         return { result: false, error: errorMessage, status: 500 }
-    //     }
-    // }
 
     /**
      * Obtiene un usuario por su ID
