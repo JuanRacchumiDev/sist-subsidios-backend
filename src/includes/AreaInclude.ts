@@ -1,7 +1,7 @@
-import { Area } from "../app/models/Area";
+import { DetalleParametro } from "../app/models/DetalleParametro";
 
 export const AREA_INCLUDE = {
-    model: Area,
+    model: DetalleParametro,
     as: 'area',
-    attributes: ['id', 'nombre']
+    attributes: ['id', 'nombre', 'abreviatura']
 }

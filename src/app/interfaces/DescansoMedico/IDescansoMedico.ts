@@ -1,12 +1,9 @@
 import { EDescansoMedico } from "../../enums/EDescansoMedico"
 import { ICanje } from "../Canje/ICanje"
-// import { IColaborador } from "../Colaborador/IColaborador"
 import { IDiagnostico } from "../Diagnostico/IDiagnostico"
 import { IPersona } from "../Persona/IPersona"
 import { IDetalleParametro } from "../DetalleParametro/IDetalleParametro"
 import { IEmpresa } from "../Empresa/IEmpresa"
-// import { ITipoContingencia } from "../TipoContingencia/ITipoContingencia"
-// import { ITipoDescansoMedico } from "../TipoDescansoMedico/ITipoDescansoMedico"
 
 export interface IDescansoMedico {
     id?: string

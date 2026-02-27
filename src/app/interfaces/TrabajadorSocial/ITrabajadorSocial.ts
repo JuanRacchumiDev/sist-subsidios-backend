@@ -1,9 +1,5 @@
-import { ITipoDocumento } from "../TipoDocumento/ITipoDocumento"
-import { ICargo } from "../Cargo/ICargo"
 import { IEmpresa } from "../Empresa/IEmpresa"
-import { IArea } from "../Area/IArea"
-import { ISede } from "../Sede/ISede"
-import { IPais } from "../Pais/IPais"
+import { IDetalleParametro } from "../DetalleParametro/IDetalleParametro"
 
 export interface ITrabajadorSocial {
     id?: string
@@ -34,12 +30,12 @@ export interface ITrabajadorSocial {
     user_elimina?: string
     sistema?: boolean
     estado?: boolean
-    tipoDocumento?: ITipoDocumento
-    cargo?: ICargo
+    tipoDocumento?: IDetalleParametro
+    cargo?: IDetalleParametro
     empresa?: IEmpresa
-    area?: IArea
-    sede?: ISede
-    pais?: IPais
+    area?: IDetalleParametro
+    sede?: IDetalleParametro
+    pais?: IDetalleParametro
 }
 
 export interface TrabajadorSocialResponse {

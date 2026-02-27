@@ -1,6 +1,5 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { IDocumentoTipoCont } from '../interfaces/DocumentoTipoCont/IDocumentoTipoCont';
-// import { TipoContingencia } from './TipoContingencia';
 import { DetalleParametro } from './DetalleParametro'
 import sequelize from '../../config/database'
 import HString from '../../helpers/HString';
@@ -25,7 +24,6 @@ export class DocumentoTipoCont extends Model<IDocumentoTipoCont, DocumentoTipoCo
 
     // Asociaciones
     public getTipoContingencia!: () => Promise<DetalleParametro>
-    // public getTipoContingencia!: () => Promise<TipoContingencia>
 }
 
 DocumentoTipoCont.init({
@@ -39,7 +37,6 @@ DocumentoTipoCont.init({
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-            // model: TipoContingencia,
             model: DetalleParametro,
             key: 'id'
         }
@@ -88,3 +85,8 @@ DocumentoTipoCont.init({
     paranoid: true,
     underscored: true
 })
+
+// DocumentoTipoCont.belongsTo(DetalleParametro, {
+//     foreignKey: 'id_tipocontingencia',
+//     as: 'tipoContingencia'
+// })

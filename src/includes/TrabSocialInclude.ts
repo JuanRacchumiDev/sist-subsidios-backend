@@ -1,7 +1,7 @@
-import { TrabajadorSocial } from "../app/models/TrabajadorSocial";
+import { Persona } from "../app/models/Persona";
 
 export const TRABAJADOR_SOCIAL_INCLUDE = {
-    model: TrabajadorSocial,
+    model: Persona,
     as: 'trabajadorSocial',
     attributes: ['id', 'nombres', 'apellido_paterno', 'apellido_materno']
 }

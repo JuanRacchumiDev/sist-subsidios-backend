@@ -1,10 +1,11 @@
-import { IArea } from "../Area/IArea"
-import { ICargo } from "../Cargo/ICargo"
+// import { IArea } from "../Area/IArea"
+// import { ICargo } from "../Cargo/ICargo"
 import { IEmpresa } from "../Empresa/IEmpresa"
-import { IPais } from "../Pais/IPais"
-import { IParentesco } from "../Parentesco/IParentesco"
-import { ISede } from "../Sede/ISede"
-import { ITipoDocumento } from "../TipoDocumento/ITipoDocumento"
+// import { IPais } from "../Pais/IPais"
+// import { IParentesco } from "../Parentesco/IParentesco"
+// import { ISede } from "../Sede/ISede"
+// import { ITipoDocumento } from "../TipoDocumento/ITipoDocumento"
+import { IDetalleParametro } from "../DetalleParametro/IDetalleParametro"
 
 export interface IColaborador {
     id?: string
@@ -40,12 +41,12 @@ export interface IColaborador {
     user_elimina?: string
     sistema?: boolean
     estado?: boolean
-    parentesco?: IParentesco
-    tipoDocumento?: ITipoDocumento
-    cargo?: ICargo
-    area?: IArea
-    sede?: ISede
-    pais?: IPais
+    parentesco?: IDetalleParametro
+    tipoDocumento?: IDetalleParametro
+    cargo?: IDetalleParametro
+    area?: IDetalleParametro
+    sede?: IDetalleParametro
+    pais?: IDetalleParametro
     empresa?: IEmpresa
 }
 

@@ -1,8 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize'
 import { IArea } from '../interfaces/Area/IArea';
 import sequelize from '../../config/database'
-import { Colaborador } from './Colaborador';
-import { TrabajadorSocial } from './TrabajadorSocial';
+import { Persona } from './Persona'
 
 interface AreaCreationAttributes extends Optional<IArea, 'id'> { }
 
@@ -22,8 +21,8 @@ export class Area extends Model<IArea, AreaCreationAttributes> implements IArea 
     public readonly deleted_at!: Date
 
     // Asociaciones
-    public getColaboradores?: () => Promise<Colaborador[]>
-    public getTrabajadoresSociales?: () => Promise<TrabajadorSocial[]>
+    public getColaboradores?: () => Promise<Persona[]>
+    public getTrabajadoresSociales?: () => Promise<Persona[]>
 }
 
 Area.init({

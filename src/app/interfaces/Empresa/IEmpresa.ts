@@ -1,4 +1,4 @@
-import { IRepresentanteLegal } from "../RepresentanteLegal/IRepresentanteLegal"
+import { IPersona } from "../Persona/IPersona"
 
 export interface IEmpresa {
     id?: string
@@ -18,7 +18,7 @@ export interface IEmpresa {
     user_elimina?: string
     sistema?: boolean
     estado?: boolean
-    representantes?: IRepresentanteLegal[]
+    representantes?: IPersona[]
 }
 
 export interface EmpresaResponse {

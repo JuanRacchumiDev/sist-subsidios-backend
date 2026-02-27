@@ -1,8 +1,6 @@
-// import { Colaborador } from "../app/models/Colaborador";
 import { Persona } from '../app/models/Persona'
 
 export const COLABORADOR_DM_INCLUDE = {
-    // model: Colaborador,
     model: Persona,
     as: 'colaborador_dm',
     attributes: [

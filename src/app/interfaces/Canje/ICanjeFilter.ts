@@ -1,5 +1,4 @@
 export interface ICanjeFilter {
-    id_colaborador?: string
     id_tipodescansomedico?: string
     id_tipocontingencia?: string
     nombre_colaborador?: string
@@ -7,5 +6,4 @@ export interface ICanjeFilter {
     codigo_citt?: string
     fecha_inicio_subsidio?: string
     fecha_final_subsidio?: string
-    estado?: boolean
 }

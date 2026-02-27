@@ -5,8 +5,6 @@ import { DescansoMedico } from "./DescansoMedico";
 import { Canje } from "./Canje";
 import { Cobro } from "./Cobro";
 import { Reembolso } from "./Reembolso";
-import { Colaborador } from "./Colaborador";
-import { TrabajadorSocial } from "./TrabajadorSocial";
 import { Persona } from "./Persona"
 import sequelize from '../../config/database'
 
@@ -20,8 +18,6 @@ export class Adjunto extends Model<IAdjunto, AdjuntoCreationAttributes> implemen
     public id_cobro?: string | undefined;
     public id_reembolso?: string | undefined;
     public id_persona?: string | undefined;
-    public id_colaborador?: string | undefined;
-    public id_trabajadorsocial?: string | undefined;
     public id_documento?: string | undefined;
     public file_name?: string | undefined;
     public file_type?: string | undefined;
@@ -45,9 +41,7 @@ export class Adjunto extends Model<IAdjunto, AdjuntoCreationAttributes> implemen
     public getCanje?: () => Promise<Canje>
     public getCobro?: () => Promise<Cobro>
     public getReembolso?: () => Promise<Reembolso>
-    public getColaborador?: () => Promise<Colaborador>
     public getPersona?: () => Promise<Persona>
-    public getTrabajadorSocial?: () => Promise<TrabajadorSocial>
 }
 
 Adjunto.init({
@@ -102,22 +96,6 @@ Adjunto.init({
         allowNull: true,
         references: {
             model: 'Persona',
-            key: 'id'
-        }
-    },
-    id_colaborador: {
-        type: DataTypes.UUID,
-        allowNull: true,
-        references: {
-            model: 'Colaborador',
-            key: 'id'
-        }
-    },
-    id_trabajadorsocial: {
-        type: DataTypes.UUID,
-        allowNull: true,
-        references: {
-            model: 'TrabajadorSocial',
             key: 'id'
         }
     },

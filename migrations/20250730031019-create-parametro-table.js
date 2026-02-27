@@ -1,6 +1,5 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('parametro', {
@@ -45,38 +44,27 @@ module.exports = {
         allowNull: false,
         defaultValue: true
       },
-      // Sequelize will automatically add `created_at` and `updated_at` if `timestamps: true` in your model.
-      // However, it's good practice to define them explicitly in migrations for clarity and control.
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') // MySQL: CURRENT_TIMESTAMP
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updated_at: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') // MySQL: auto-update
-        // For older Sequelize versions or other DBs, you might just use CURRENT_TIMESTAMP and let Sequelize handle updates.
-        // For MySQL, `ON UPDATE CURRENT_TIMESTAMP` is common for `updated_at`.
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
-      deleted_at: { // Required because paranoid: true is set in the model
+      deleted_at: {
         type: Sequelize.DATE,
         allowNull: true
       }
     }, {
-      // Optional: Add table-level options here
-      charset: 'utf8mb4', // Recommended for full Unicode support
-      collate: 'utf8mb4_unicode_ci' // Recommended for full Unicode support
+      charset: 'utf8mb4',
+      collate: 'utf8mb4_unicode_ci'
     });
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
     await queryInterface.dropTable('parametro');
   }
 };

@@ -1,7 +1,7 @@
-import { TipoDescansoMedico } from "../app/models/TipoDescansoMedico";
+import { DetalleParametro } from "../app/models/DetalleParametro";
 
 export const TIPODM_INCLUDE = {
-    model: TipoDescansoMedico,
+    model: DetalleParametro,
     as: 'tipoDescansoMedico',
     attributes: ['id', 'nombre']
 }

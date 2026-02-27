@@ -1,4 +1,4 @@
-import { ITipoEstablecimiento } from "../TipoEstablecimiento/ITipoEstablecimiento"
+import { IDetalleParametro } from "../DetalleParametro/IDetalleParametro"
 
 export interface IEstablecimiento {
     id?: string
@@ -13,7 +13,7 @@ export interface IEstablecimiento {
     user_elimina?: string
     sistema?: boolean
     estado?: boolean
-    tipoEstablecimiento?: ITipoEstablecimiento
+    tipoEstablecimiento?: IDetalleParametro
 }
 
 export interface EstablecimientoResponse {

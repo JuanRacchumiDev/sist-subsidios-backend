@@ -1,14 +1,7 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    /**
-     * Add altering commands here.
-     *
-     * Example:
-     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
-     */
     await queryInterface.createTable('persona', {
       id: {
         type: Sequelize.UUID,
@@ -20,11 +13,9 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'detalle_parametro', // Nombre de la tabla a la que hace referencia
+          model: 'detalle_parametro',
           key: 'id',
         },
-        // onUpdate: 'CASCADE',
-        // onDelete: 'RESTRICT', // Coincide con onDelete del modelo TipoDocumento.belongsTo(Persona)
       },
       id_empresa: {
         type: Sequelize.UUID,
@@ -91,7 +82,7 @@ module.exports = {
         allowNull: true,
       },
       direccion: {
-        type: Sequelize.STRING(60),
+        type: Sequelize.STRING(100),
         allowNull: true,
       },
       direccion_completa: {
@@ -135,7 +126,7 @@ module.exports = {
         allowNull: true
       },
       fecha_nacimiento: {
-        type: Sequelize.STRING(10), // Asumiendo formato 'YYYY-MM-DD' o similar
+        type: Sequelize.STRING(10),
         allowNull: false
       },
       fecha_ingreso: {
@@ -167,11 +158,11 @@ module.exports = {
         allowNull: true
       },
       sexo: {
-        type: Sequelize.STRING(2), // M, F u otro
+        type: Sequelize.STRING(2),
         allowNull: false,
       },
       origen: {
-        type: Sequelize.STRING(30), // Para almacenar el string del ENUM EOrigen
+        type: Sequelize.STRING(30),
         allowNull: false,
       },
       user_crea: {
@@ -211,7 +202,6 @@ module.exports = {
         allowNull: false,
         defaultValue: true
       },
-      // Timestamps necesarios debido a `timestamps: true` en el modelo
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -220,27 +210,19 @@ module.exports = {
       updated_at: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') // Común en MySQL para auto-actualización
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
-      // `deleted_at` necesario debido a `paranoid: true` en el modelo
       deleted_at: {
         type: Sequelize.DATE,
-        allowNull: true // Debe ser anulable para el borrado suave
+        allowNull: true
       }
     }, {
-      // Opciones de la tabla (opcional pero recomendado para la consistencia de la base de datos)
       charset: 'utf8mb4',
       collate: 'utf8mb4_unicode_ci'
     });
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
     await queryInterface.dropTable('persona');
   }
 };

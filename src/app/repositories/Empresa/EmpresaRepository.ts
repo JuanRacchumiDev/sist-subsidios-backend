@@ -2,16 +2,10 @@ import { TValidateFields } from '../../types/TTypeFields';
 import sequelize from '../../../config/database'
 import { IEmpresa, IEmpresaPaginate, EmpresaResponse, EmpresaResponsePaginate } from "../../interfaces/Empresa/IEmpresa"
 import { Empresa } from "../../models/Empresa"
-// import { RepresentanteLegal } from "../../models/RepresentanteLegal"
 import { Persona } from "../../models/Persona"
-// import { Cargo } from "../../models/Cargo"
-import { DetalleParametro } from '../../models/DetalleParametro'
 import { Op } from "sequelize";
 import { EMPRESA_ATTRIBUTES } from '../../../constants/EmpresaConstant';
-// import { REPRESENTANTE_LEGAL_ATTRIBUTES } from '../../../constants/RepresentanteLegalConstant';
 import { PERSONA_ATTRIBUTES } from "../../../constants/PersonaConstant"
-// import { CARGO_ATTRIBUTES } from '../../../constants/CargoConstant';
-import { DETALLE_PARAMETRO_ATTRIBUTES } from '../../../constants/DetalleParametroConstant'
 import HPagination from '../../../helpers/HPagination';
 
 class EmpresaRepository {

@@ -30,13 +30,15 @@ class UpdatePersonaService {
     async execute(id: string, data: IPersona): Promise<PersonaResponse> {
         let idGrupo: string = ""
 
-        console.log('---- dataPersona execure UpdatePersonaService ----')
+        console.log('---- dataPersona execute UpdatePersonaService ----')
         console.log({ data })
 
         const { nombre_grupo } = data
 
+        console.log({ nombre_grupo })
+
         const response = await this.detalleRepository.getByNombre(nombre_grupo as string)
-        console.log('---- response updatePersona ----')
+        console.log('---- response getDetalleByNombre ----')
         console.log({ response })
 
         const { result: resultDetalle, data: dataDetalle } = response
@@ -48,7 +50,13 @@ class UpdatePersonaService {
 
         const responseUpdate = await this.personaRepository.update(id, data)
 
+        console.log({ responseUpdate })
+
         const { result: resultUpdate, data: dataUpdate } = responseUpdate
+
+        console.log({ resultUpdate })
+
+        console.log({ dataUpdate })
 
         if (resultUpdate && dataUpdate) {
             const payloadGrupoPersona: IGrupoPersona = {
@@ -56,13 +64,30 @@ class UpdatePersonaService {
                 id_grupo: idGrupo
             }
 
-            await this.grupoPersonaRepository.create(payloadGrupoPersona)
+            console.log({ payloadGrupoPersona })
 
-            return responseUpdate
+            const responseValidarGrupo = await this.grupoPersonaRepository.validar(payloadGrupoPersona)
+
+            console.log({ responseValidarGrupo })
+
+            const { result: resultValidarGrupo, data: dataValidarGrupo } = responseValidarGrupo
+
+            console.log({ resultValidarGrupo })
+
+            console.log({ dataValidarGrupo })
+
+            if (!resultValidarGrupo && Array.isArray(dataValidarGrupo) && dataValidarGrupo.length === 0) {
+                console.log('asignar grupo a persona')
+                await this.grupoPersonaRepository.create(payloadGrupoPersona)
+
+                return responseUpdate
+            }
+
+            console.log('tiene grupo asignado')
+
         }
 
         return responseUpdate
-        // return await this.personaRepository.update(id, data);
     }
 }
 

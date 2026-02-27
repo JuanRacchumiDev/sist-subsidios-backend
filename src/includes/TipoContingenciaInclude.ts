@@ -1,7 +1,7 @@
-import { TipoContingencia } from "../app/models/TipoContingencia";
+import { DetalleParametro } from "../app/models/DetalleParametro";
 
 export const TIPO_CONTINGENCIA_INCLUDE = {
-    model: TipoContingencia,
+    model: DetalleParametro,
     as: 'tipoContingencia',
     attributes: ['id', 'nombre']
 }

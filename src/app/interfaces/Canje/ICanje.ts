@@ -1,5 +1,5 @@
 import { ECanje } from "../../enums/ECanje"
-import { IColaborador } from "../Colaborador/IColaborador"
+import { IPersona } from "../Persona/IPersona"
 import { IDescansoMedico } from "../DescansoMedico/IDescansoMedico"
 
 export interface ICanje {
@@ -42,7 +42,7 @@ export interface ICanje {
     sistema?: boolean
     estado?: boolean
     descansoMedico?: IDescansoMedico
-    colaborador?: IColaborador
+    colaborador?: IPersona
 }
 
 export interface CanjeResponse {

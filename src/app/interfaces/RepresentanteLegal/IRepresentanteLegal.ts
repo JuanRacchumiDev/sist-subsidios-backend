@@ -1,6 +1,5 @@
-import { ICargo } from "../Cargo/ICargo"
+import { IDetalleParametro } from "../DetalleParametro/IDetalleParametro"
 import { IEmpresa } from "../Empresa/IEmpresa"
-import { ITipoDocumento } from "../TipoDocumento/ITipoDocumento"
 
 export interface IRepresentanteLegal {
     id?: string
@@ -21,9 +20,9 @@ export interface IRepresentanteLegal {
     user_elimina?: string
     sistema?: boolean
     estado?: boolean
-    tipoDocumento?: ITipoDocumento
+    tipoDocumento?: IDetalleParametro
     empresa?: IEmpresa
-    cargo?: ICargo
+    cargo?: IDetalleParametro
 }
 
 export interface RepresentanteLegalResponse {

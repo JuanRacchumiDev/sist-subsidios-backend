@@ -2,7 +2,7 @@ import { Adjunto } from "../app/models/Adjunto";
 
 export const ADJUNTO_INCLUDE = {
     model: Adjunto,
-    as: 'adjuntos',
+    as: 'adjunto',
     attributes: [
         'id',
         'id_tipoadjunto',

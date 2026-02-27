@@ -1,7 +1,7 @@
-import { TipoEstablecimiento } from "../app/models/TipoEstablecimiento";
+import { DetalleParametro } from "../app/models/DetalleParametro";
 
 export const TIPO_ESTABLECIMIENTO_INCLUDE = {
-    model: TipoEstablecimiento,
+    model: DetalleParametro,
     as: 'tipoEstablecimiento',
     attributes: ['id', 'nombre']
 }

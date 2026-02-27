@@ -3,9 +3,7 @@ import { ICanje } from '../interfaces/Canje/ICanje';
 import { ECanje } from '../enums/ECanje';
 import { DescansoMedico } from './DescansoMedico';
 import sequelize from '../../config/database'
-import { Reembolso } from './Reembolso';
 import { Persona } from './Persona'
-// import { Colaborador } from './Colaborador';
 
 interface CanjeCreationAttributes extends Optional<ICanje, 'id'> { }
 

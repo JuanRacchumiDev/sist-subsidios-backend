@@ -18,10 +18,7 @@ export interface IUsuario {
     user_elimina?: string
     sistema?: boolean
     estado?: boolean
-    // perfil?: IPerfil
     perfil?: IDetalleParametro
-    // colaborador?: IColaborador
-    // trabajadorSocial?: ITrabajadorSocial
     persona?: IPersona
 }
 

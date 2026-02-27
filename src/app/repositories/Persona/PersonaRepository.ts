@@ -1,16 +1,11 @@
 import sequelize from '../../../config/database'
-// import { PERFIL_ATTRIBUTES } from '../../../constants/PerfilConstant';
 import { PERSONA_ATTRIBUTES } from '../../../constants/PersonaConstant';
-import { DETALLE_PARAMETRO_INCLUDE } from '../../../includes/DetalleParametroInclude'
-// import { TIPO_DOCUMENTO_INCLUDE } from '../../../includes/TipoDocumentoInclude';
 import { IPersona, IPersonaPaginate, PersonaResponse, PersonaResponsePaginate } from "../../interfaces/Persona/IPersona";
 import { Persona } from "../../models/Persona";
-import { DetalleParametro } from "../../models/DetalleParametro"
 import { Op } from 'sequelize';
 import HPagination from "../../../helpers/HPagination";
 import { TIPO_DOCUMENTO_INCLUDE } from '../../../includes/TipoDocumentoInclude';
 import { CARGO_INCLUDE } from '../../../includes/CargoInclude'
-// import { TipoDocumento } from "../../models/TipoDocumento";
 
 class PersonaRepository {
     /**
@@ -198,36 +193,6 @@ class PersonaRepository {
                 LIMIT :limit OFFSET :offset;
             `;
 
-            // const queryData = `
-            //     SELECT dp2.abreviatura, e.nombre_o_razon_social, dp3.nombre as nombre_cargo, p.*
-            //     FROM persona p INNER JOIN grupo_persona gp ON gp.id_persona  = p.id
-            //     INNER JOIN detalle_parametro dp on dp.id = gp.id_grupo
-            //     INNER JOIN detalle_parametro dp2 on dp2.id = p.id_tipodocumento
-            //     INNER JOIN detalle_parametro dp3 on dp3.id = p.id_cargo
-            //     INNER JOIN empresa e on e.id = p.id_empresa
-            //     WHERE dp.nombre = :nombreGrupo
-            //     ORDER BY p.apellido_paterno ASC
-            //     LIMIT :limit OFFSET :offset;
-            // `
-
-            // const queryCount = `
-            //     SELECT COUNT(p.id) as total
-            //     FROM persona p
-            //     INNER JOIN grupo_persona gp ON gp.id_persona = p.id
-            //     INNER JOIN detalle_parametro dp ON dp.id = gp.id_grupo
-            //     WHERE dp.nombre = :nombreGrupo
-            // `
-
-            // const queryCount = `
-            //     SELECT COUNT(p.id) as total
-            //     FROM persona p INNER JOIN grupo_persona gp ON gp.id_persona  = p.id
-            //     INNER JOIN detalle_parametro dp on dp.id = gp.id_grupo
-            //     INNER JOIN detalle_parametro dp2 on dp2.id = p.id_tipodocumento
-            //     INNER JOIN detalle_parametro dp3 on dp3.id = p.id_cargo
-            //     INNER JOIN empresa e on e.id = p.id_empresa
-            //     WHERE dp.nombre = :nombreGrupo
-            // `
-
             const queryCount = `SELECT COUNT(p.id) as total ${baseQuery}`;
 
             const rows = await sequelize.query(queryData, {
@@ -262,54 +227,6 @@ class PersonaRepository {
                 pagination,
                 status: 200
             }
-
-            // const { count, rows } = await Persona.findAndCountAll({
-            //     attributes: PERSONA_ATTRIBUTES,
-            //     include: [
-            //         {
-            //             model: DetalleParametro,
-            //             as: 'grupos', // Mismo alias definido en setupDatabase
-            //             where: {
-            //                 nombre: nombreGrupo // Filtro: 'GRUPO TRABAJADOR SOCIAL'
-            //             },
-            //             attributes: [], // No traemos columnas de la tabla de grupos
-            //             through: {
-            //                 attributes: [] // No traemos columnas de la tabla intermedia
-            //             },
-            //             required: true // Fuerza el INNER JOIN
-            //         }
-            //     ],
-            //     subQuery: false,
-            //     distinct: true,
-            //     col: 'id',
-            //     order: [
-            //         ['apellido_paterno', 'ASC']
-            //     ],
-            //     limit,
-            //     offset
-            // })
-
-            // const totalPages = Math.ceil(count / limit)
-            // const nextPage = HPagination.getNextPage(page, limit, count)
-            // const previousPage = HPagination.getPreviousPage(page)
-
-            // const pagination: IPersonaPaginate = {
-            //     currentPage: page,
-            //     limit,
-            //     totalPages,
-            //     totalItems: total,
-            //     nextPage,
-            //     previousPage
-            // }
-
-            // return {
-            //     result: true,
-            //     data: rows,
-            //     pagination,
-            //     status: 200
-            // }
-
-            // return { result: true, data: personas, status: 200 }
         } catch (error: any) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }
@@ -321,20 +238,10 @@ class PersonaRepository {
      * @param {string} id - El ID UUID de la persona a buscar
      * @returns {Promise<PersonaResponse>} Respuesta con la persona encontrada o mensaje de no encontrado
      */
-    // async getById(id: string): Promise<PersonaResponse> {
-    //     try {
-
-    //     } catch (error) {
-    //         const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-    //         return { result: false, error: errorMessage, status: 500 }
-    //     }
-    // }
-
     async getById(id: string): Promise<PersonaResponse> {
         try {
             const persona = await Persona.findByPk(id, {
                 attributes: PERSONA_ATTRIBUTES,
-                // include: [DETALLE_PARAMETRO_INCLUDE]
             })
 
             console.log('---- getById PersonaRepository ----')
@@ -366,7 +273,6 @@ class PersonaRepository {
                 },
                 attributes: PERSONA_ATTRIBUTES,
                 include: [
-                    DETALLE_PARAMETRO_INCLUDE,
                     TIPO_DOCUMENTO_INCLUDE,
                     CARGO_INCLUDE
                 ]
@@ -375,6 +281,9 @@ class PersonaRepository {
             if (!persona) {
                 return { result: false, data: [], message: 'Persona no encontrada', status: 404 }
             }
+
+            console.log('---- getByIdTipoDocAndNumDoc ----')
+            console.log({ persona })
 
             return { result: true, data: persona, message: 'Persona encontrada', status: 200 }
         } catch (error) {

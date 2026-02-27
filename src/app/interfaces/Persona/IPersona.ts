@@ -1,7 +1,6 @@
 import { EOrigen } from "../../enums/EOrigen"
 import { IDetalleParametro } from "../DetalleParametro/IDetalleParametro"
 import { IEmpresa } from "../Empresa/IEmpresa"
-// import { ITipoDocumento } from "../TipoDocumento/ITipoDocumento"
 
 export interface IPersona {
     id?: string
