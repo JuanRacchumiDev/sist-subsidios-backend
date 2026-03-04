@@ -1,14 +1,12 @@
+import sequelize from '../../../config/database'
+import fs from 'fs/promises'
 import { DescansoMedico } from "../../models/DescansoMedico";
 import { TipoAdjunto } from "../../models/TipoAdjunto";
 import { Canje } from "../../models/Canje";
 import { Cobro } from "../../models/Cobro";
 import { Reembolso } from "../../models/Reembolso";
-import { Colaborador } from "../../models/Colaborador";
-import { TrabajadorSocial } from "../../models/TrabajadorSocial";
 import { AdjuntoResponse, AdjuntoResponsePaginate, IAdjunto, IAdjuntoPaginate } from "../../interfaces/Adjunto/IAdjunto";
 import { Adjunto } from "../../models/Adjunto";
-import sequelize from '../../../config/database'
-import fs from 'fs/promises'
 import { ADJUNTO_ATTRIBUTES } from "../../../constants/AjuntoConstant";
 import HPagination from "../../../helpers/HPagination";
 import { DocumentoTipoCont } from "../../models/DocumentoTipoCont";
@@ -17,11 +15,10 @@ import { DESCANSOMEDICO_ADJ_INCLUDE } from "../../../includes/DescansoMedicoAdjI
 import { CANJE_INCLUDE } from "../../../includes/CanjeInclude";
 import { COBRO_INCLUDE } from "../../../includes/CobroInclude";
 import { REEMBOLSO_INCLUDE } from "../../../includes/ReembolsoInclude";
-import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude";
-import { TRABAJADOR_SOCIAL_INCLUDE } from "../../../includes/TrabSocialInclude";
+import { PERSONA_INCLUDE } from "../../../includes/PersonaInclude"
 import { DOCUMENTO_TIPO_CONT_INCLUDE } from "../../../includes/DocumentoTipoContInclude";
 import { Op } from "sequelize";
-import { COLABORADOR_ATTRIBUTES } from "../../../constants/ColaboradorConstant";
+import { PERSONA_ATTRIBUTES } from "../../../constants/PersonaConstant";
 
 class AdjuntoRepository {
     /**
@@ -38,8 +35,7 @@ class AdjuntoRepository {
                     CANJE_INCLUDE,
                     COBRO_INCLUDE,
                     REEMBOLSO_INCLUDE,
-                    COLABORADOR_INCLUDE,
-                    TRABAJADOR_SOCIAL_INCLUDE,
+                    PERSONA_INCLUDE,
                     DOCUMENTO_TIPO_CONT_INCLUDE
                 ],
                 order: [
@@ -67,8 +63,7 @@ class AdjuntoRepository {
                     CANJE_INCLUDE,
                     COBRO_INCLUDE,
                     REEMBOLSO_INCLUDE,
-                    COLABORADOR_INCLUDE,
-                    TRABAJADOR_SOCIAL_INCLUDE,
+                    PERSONA_INCLUDE,
                     DOCUMENTO_TIPO_CONT_INCLUDE
                 ],
                 order: [
@@ -172,37 +167,69 @@ class AdjuntoRepository {
 
     /**
      * Actualiza un adjunto existente por su ID
-     * @param {string} id - El ID del adjunto a actualizar 
+     * @param {string} id_descansomedico - El ID de un descanso médico
+     * @param {string} id_documento - El ID de un documento 
      * @param {IAdjunto} data - Los nuevos datos del adjunto 
      * @returns {Promise<AdjuntoResponse>} Respuesta con el adjunto actualizado o error
      */
-    async update(id: string, data: IAdjunto): Promise<AdjuntoResponse> {
-
+    async update(id_descansomedico: string, id_documento: string, data: IAdjunto): Promise<AdjuntoResponse> {
         // Accede a la instancia de Sequelize a travé de db.sequelize
         // const transaction = await sequelize.transaction()
 
         try {
-            // const adjunto = await Adjunto.findByPk(id, { transaction })
-            const adjunto = await Adjunto.findByPk(id)
+            // Validando si exite un adjunto anterior para eliminarlo
+            const existeAdjunto = await Adjunto.findOne({
+                where: {
+                    id_descansomedico,
+                    id_documento
+                }
+            })
 
-            if (!adjunto) {
+            if (!existeAdjunto) {
+                // await transaction.rollback();
+                return { result: false, data: [], message: 'Adjunto no encontrado', status: 200 }
+            }
+
+            console.log({ existeAdjunto })
+
+            const dataAdjunto: Partial<IAdjunto> = data
+
+            console.log({ dataAdjunto })
+
+            const updatedAdjunto = await existeAdjunto.update(dataAdjunto)
+
+            return { result: true, message: 'Adjunto actualizado con éxito', data: updatedAdjunto, status: 200 }
+        } catch (error) {
+            // await transaction.rollback()
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async updateByParams(data: IAdjunto): Promise<AdjuntoResponse> {
+        try {
+            // Obteniendo datos de adjunto
+            const { id_descansomedico, id_documento } = data
+
+            // Validando si exite un adjunto anterior para eliminarlo
+            const existeAdjunto = await Adjunto.findOne({
+                where: {
+                    id_descansomedico,
+                    id_documento
+                }
+            })
+
+            if (!existeAdjunto) {
                 // await transaction.rollback();
                 return { result: false, data: [], message: 'Adjunto no encontrado', status: 200 }
             }
 
             const dataAdjunto: Partial<IAdjunto> = data
 
-            // const updatedAdjunto = await adjunto.update(dataAdjunto, { transaction })
-
-            // await transaction.commit()
-
-            const updatedAdjunto = await adjunto.update(dataAdjunto)
-
-            // await transaction.commit()
+            const updatedAdjunto = await existeAdjunto.update(dataAdjunto)
 
             return { result: true, message: 'Adjunto actualizado con éxito', data: updatedAdjunto, status: 200 }
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -227,34 +254,10 @@ class AdjuntoRepository {
                 }
             );
 
-            // console.log(`Se actualizaron ${numberOfUpdatedRows} registros.`);
+            console.log(`Se actualizaron ${numberOfUpdatedRows} registros.`);
         } catch (error) {
             console.error('Error al actualizar los registros:', error);
         }
-
-        // // Accede a la instancia de Sequelize a travé de db.sequelize
-        // const transaction = await sequelize.transaction()
-
-        // try {
-        //     const adjunto = await Adjunto.findByPk(id, { transaction })
-
-        //     if (!adjunto) {
-        //         await transaction.rollback();
-        //         return { result: false, data: [], message: 'Adjunto no encontrado', status: 200 }
-        //     }
-
-        //     const dataAdjunto: Partial<IAdjunto> = data
-
-        //     const updatedAdjunto = await adjunto.update(dataAdjunto, { transaction })
-
-        //     await transaction.commit()
-
-        //     return { result: true, message: 'Adjunto actualizado con éxito', data: updatedAdjunto, status: 200 }
-        // } catch (error) {
-        //     await transaction.rollback()
-        //     const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-        //     return { result: false, error: errorMessage, status: 500 }
-        // }
     }
 
     /**
@@ -274,6 +277,8 @@ class AdjuntoRepository {
                 transaction
             });
 
+            console.log({ adjuntoOriginal })
+
             if (!adjuntoOriginal) {
                 await transaction.rollback();
                 console.error("No se encontró ningún adjunto con el código temporal.");
@@ -285,28 +290,6 @@ class AdjuntoRepository {
                     }
                 ];
             }
-
-            // console.log({ adjuntoOriginal })
-
-            // const [numberOfUpdatedRows] = await Adjunto.update(
-            //     { id_descansomedico: idDescansoMedico }, // Valores a actualizar
-            //     // { where: { codigo_temp: codigoTemp, id_descansomedico: null } } // Condición
-            //     {
-            //         where: {
-            //             codigo_temp: codigoTemp,
-            //             // id_descansomedico: undefined
-            //         }
-            //     }
-            // );
-
-            // Actualizar el adjunto original con el primer id de descanso médico
-            // await adjuntoOriginal.update(
-            //     {
-            //         id_descansomedico: idDescansosMedicos[0],
-            //         // codigo_temp: null, // Limpiamos el código temporal para evitar duplicados
-            //     },
-            //     { transaction }
-            // );
 
             await Adjunto.update(
                 { id_descansomedico: idDescansosMedicos[0] }, // Valores a actualizar
@@ -328,19 +311,21 @@ class AdjuntoRepository {
 
             // Si hay más de un descanso médico, creamos nuevos registros
             for (let i = 1; i < idDescansosMedicos.length; i++) {
+                const { id_tipoadjunto, id_documento, file_name, file_type, file_path, id_persona, user_crea, sistema, estado } = adjuntoOriginal
+
                 const nuevoAdjunto = await Adjunto.create(
                     {
-                        id_tipoadjunto: adjuntoOriginal.id_tipoadjunto,
+                        id_tipoadjunto,
                         id_descansomedico: idDescansosMedicos[i],
-                        id_documento: adjuntoOriginal.id_documento,
-                        file_name: adjuntoOriginal.file_name,
-                        file_type: adjuntoOriginal.file_type,
-                        file_path: adjuntoOriginal.file_path,
+                        id_documento,
+                        file_name,
+                        file_type,
+                        file_path,
                         // Asignamos el resto de campos relevantes del adjunto original
-                        id_colaborador: adjuntoOriginal.id_colaborador,
-                        user_crea: adjuntoOriginal.user_crea,
-                        sistema: adjuntoOriginal.sistema,
-                        estado: adjuntoOriginal.estado,
+                        id_persona,
+                        user_crea,
+                        sistema,
+                        estado,
                     } as IAdjunto,
                     { transaction }
                 );

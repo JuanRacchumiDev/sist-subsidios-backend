@@ -11,8 +11,6 @@ export class Usuario extends Model<IUsuario, UsuarioCreationAttributes> implemen
     public id?: string | undefined;
     public id_perfil?: string | undefined;
     public id_persona?: string | undefined;
-    public id_colaborador?: string | undefined;
-    public id_trabajadorsocial?: string | undefined;
     public username?: string | undefined;
     public email?: string | undefined;
     public password?: string | undefined;
@@ -46,7 +44,6 @@ Usuario.init({
         type: DataTypes.UUID,
         allowNull: true,
         references: {
-            // model: Perfil,
             model: DetalleParametro,
             key: "id"
         }

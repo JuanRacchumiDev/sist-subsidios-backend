@@ -13,18 +13,14 @@ class UpdateAdjuntoService {
     }
     /**
      * Ejecuta la operación para actualizar un adjunto.
-     * Puede actualizar cualquier campo definido en IAdjunto, incluyendo el nombre y el estado.
-     * @param {string} id - El ID UUID del adjunto a actualizar.
+     * Puede actualizar cualquier campo definido en IAdjunto
+     * @param {string} id_descansomedico - El ID UUID del descanso médico.
+     * @param {string} id_documento - El ID UUID del documento.
      * @param {IAdjunto} data - Los datos parciales o completos del adjunto a actualizar.
      * @returns {Promise<AdjuntoResponse>} La respuesta de la operación.
      */
-    async execute(id: string, data: IAdjunto): Promise<AdjuntoResponse> {
-        // Si solo se está actualizando el estado, podríamos llamar a un método más específico
-        // pero para simplificar, el repositorio 'update' puede manejarlo
-        // if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
-        //     return await AdjuntoRepository.updateEstado(id, data.estado);
-        // }
-        return await this.adjuntoRepository.update(id, data);
+    async execute(id_descansomedico: string, id_documento: string, data: IAdjunto): Promise<AdjuntoResponse> {
+        return await this.adjuntoRepository.update(id_descansomedico, id_documento, data);
     }
 }
 

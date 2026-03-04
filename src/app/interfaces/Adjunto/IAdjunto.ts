@@ -1,11 +1,9 @@
 import { ICanje } from "../Canje/ICanje"
 import { ICobro } from "../Cobro/ICobro"
-// import { IColaborador } from "../Colaborador/IColaborador"
 import { IDescansoMedico } from "../DescansoMedico/IDescansoMedico"
 import { IDocumentoTipoCont } from "../DocumentoTipoCont/IDocumentoTipoCont"
 import { IReembolso } from "../Reembolso/IReembolso"
 import { ITipoAdjunto } from "../TipoAdjunto/ITipoAdjunto"
-// import { ITrabajadorSocial } from "../TrabajadorSocial/ITrabajadorSocial"
 import { IPersona } from "../Persona/IPersona"
 
 export interface IAdjunto {
@@ -16,8 +14,6 @@ export interface IAdjunto {
     id_cobro?: string
     id_reembolso?: string
     id_persona?: string
-    // id_colaborador?: string
-    // id_trabajadorsocial?: string
     id_documento?: string
     file_name?: string
     file_type?: string
@@ -34,9 +30,7 @@ export interface IAdjunto {
     canje?: ICanje
     cobro?: ICobro
     reembolso?: IReembolso
-    // colaborador?: IColaborador
     persona?: IPersona
-    // trabajadorSocial?: ITrabajadorSocial
     documento?: IDocumentoTipoCont
 }
 

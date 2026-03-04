@@ -556,8 +556,6 @@ class DescansoMedicoRepository {
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
                 include: [
                     COLABORADOR_DM_INCLUDE,
-                    // TIPODM_INCLUDE,
-                    // TIPO_CONTINGENCIA_INCLUDE,
                     DETALLE_PARAMETRO_INCLUDE,
                     DIAGNOSTICO_INCLUDE,
                     ADJUNTO_INCLUDE

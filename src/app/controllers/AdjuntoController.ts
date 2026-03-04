@@ -110,8 +110,7 @@ class AdjuntoController {
                 id_canje,
                 id_cobro,
                 id_reembolso,
-                id_colaborador,
-                id_trabajadorsocial,
+                id_persona,
                 id_documento,
                 codigo_temp,
                 ruc,
@@ -162,30 +161,18 @@ class AdjuntoController {
             // Guardar el archivo en el disco
             fs.writeFileSync(finalPath, buffer);
 
-            // let relativePath: string = ""
-
-            // if (ruc && numero_documento) {
-            //     const currentYear = HDate.getCurrentYear()
-
-            //     relativePath = path.join('uploads', ruc, currentYear, numero_documento, filename)
-            // } else {
-            //     relativePath = path.join('uploads', filename)
-            // }
-
             const fileData: IAdjunto = {
                 id_tipoadjunto,
                 id_descansomedico,
                 id_canje,
                 id_cobro,
                 id_reembolso,
-                id_colaborador,
-                id_trabajadorsocial,
+                id_persona,
                 id_documento,
                 file_name: originalname,
                 file_type: mimetype,
                 file_data: buffer,
                 file_path: relativePath,
-                // file_path: finalPath,
                 codigo_temp
             }
 
@@ -200,10 +187,82 @@ class AdjuntoController {
 
     async updateAdjunto(req: Request, res: Response, next: NextFunction) {
         try {
-            const { id } = req.params;
-            const cargoAdjunto: IAdjunto = req.body;
-            const result = await UpdateAdjuntoService.execute(id, cargoAdjunto);
-            res.status(result.status || 200).json(result);
+            console.log({ req })
+
+            const { query, body, file } = req
+
+            if (!file) {
+                return res.status(400).json({
+                    result: false,
+                    message: 'No se ha agregado ningún archivo',
+                    status: 400
+                });
+            }
+
+            console.log({ query })
+
+            console.log({ body })
+
+            const { ruc, numero_documento } = body
+
+            const { id_descansomedico, id_documento } = query
+
+            const idDescansoMedico = id_descansomedico as string
+
+            const idDocumento = id_documento as string
+
+            const { originalname, mimetype, buffer } = file
+
+            // Generar un nombre único para el archivo
+            const uniqueSuffix: string = `${Date.now()}-${Math.round(Math.random() * 1E9)}`
+            const extension: string = path.extname(originalname)
+            const filename: string = `${uniqueSuffix}${extension}`
+
+            let relativePath: string = ""
+
+            let finalPath: string = ""
+
+            const currentYear = HDate.getCurrentYear();
+
+            if (ruc && numero_documento) {
+                console.log('---- existe ruc y numero_documento ----')
+                console.log({ ruc })
+                console.log({ numero_documento })
+
+                // Definición del path y creación de directorios
+                relativePath = path.join('uploads', ruc, currentYear, numero_documento, filename);
+                finalPath = path.join(process.cwd(), 'public', relativePath);
+
+                console.log({ relativePath })
+                console.log({ finalPath })
+
+                const dir = path.dirname(finalPath);
+                fs.mkdirSync(dir, { recursive: true });
+            } else {
+                console.log('---- no existe ruc y numero_documento ----')
+
+                relativePath = path.join('uploads', filename);
+                finalPath = path.join(process.cwd(), 'public', relativePath);
+
+                console.log({ relativePath })
+                console.log({ finalPath })
+            }
+
+            // Guardar el archivo en el disco
+            fs.writeFileSync(finalPath, buffer);
+
+            const payloadAdjunto: IAdjunto = body
+
+            payloadAdjunto.file_name = originalname
+            payloadAdjunto.file_type = mimetype
+            payloadAdjunto.file_data = buffer
+            payloadAdjunto.file_path = relativePath
+
+            console.log({ payloadAdjunto })
+
+            const result = await UpdateAdjuntoService.execute(idDescansoMedico, idDocumento, payloadAdjunto)
+
+            res.status(result.status || 201).json(result);
         } catch (error) {
             next(error);
         }

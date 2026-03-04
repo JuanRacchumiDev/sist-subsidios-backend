@@ -1,10 +1,6 @@
 import { DescansoMedico } from "../app/models/DescansoMedico";
 import { COLABORADOR_DM_INCLUDE } from "./ColaboradorDMInclude";
-// import { PERSONA_INCLUDE } from "./PersonaInclude"
-// import { COLABORADOR_INCLUDE } from "./ColaboradorInclude";
 import { DIAGNOSTICO_INCLUDE } from "./DiagnosticoInclude";
-// import { TIPO_CONTINGENCIA_INCLUDE } from "./TipoContingenciaInclude";
-// import { TIPODM_INCLUDE } from "./TipoDescansoMedicoInclude";
 import { DETALLE_PARAMETRO_INCLUDE } from "./DetalleParametroInclude"
 
 export const DESCANSOMEDICO_INCLUDE = {
@@ -13,6 +9,7 @@ export const DESCANSOMEDICO_INCLUDE = {
     attributes: [
         'id',
         'id_colaborador',
+        'id_empresa',
         'id_tipodescansomedico',
         'id_tipocontingencia',
         'codcie10_diagnostico',

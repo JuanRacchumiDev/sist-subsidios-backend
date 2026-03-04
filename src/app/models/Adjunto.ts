@@ -7,6 +7,7 @@ import { Cobro } from "./Cobro";
 import { Reembolso } from "./Reembolso";
 import { Persona } from "./Persona"
 import sequelize from '../../config/database'
+import { DetalleParametro } from "./DetalleParametro";
 
 interface AdjuntoCreationAttributes extends Optional<IAdjunto, 'id'> { }
 
@@ -42,6 +43,7 @@ export class Adjunto extends Model<IAdjunto, AdjuntoCreationAttributes> implemen
     public getCobro?: () => Promise<Cobro>
     public getReembolso?: () => Promise<Reembolso>
     public getPersona?: () => Promise<Persona>
+    public getDocumentoTipoContingencia?: () => Promise<DetalleParametro>
 }
 
 Adjunto.init({
@@ -103,7 +105,7 @@ Adjunto.init({
         type: DataTypes.UUID,
         allowNull: true,
         references: {
-            model: 'DocumentoTipoCont',
+            model: 'DetalleParametro',
             key: 'id'
         }
     },

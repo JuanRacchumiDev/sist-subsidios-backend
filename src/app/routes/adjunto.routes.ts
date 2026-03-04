@@ -13,7 +13,7 @@ router.get('/:id', authToken, AdjuntoController.getAdjuntoById)
 
 router.post('/', authToken, upload.single('file'), AdjuntoController.createAdjunto)
 
-router.patch('/:id', authToken, AdjuntoController.updateAdjunto)
+router.patch('/', authToken, upload.single('file'), AdjuntoController.updateAdjunto)
 
 router.delete('/:id', authToken, AdjuntoController.deleteAdjunto)
 

@@ -1,6 +1,7 @@
 export const DESCANSOMEDICO_ATTRIBUTES = [
     'id',
     'id_colaborador',
+    'id_empresa',
     'id_tipodescansomedico',
     'id_tipocontingencia',
     'codcie10_diagnostico',

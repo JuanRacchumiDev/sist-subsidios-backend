@@ -17,6 +17,8 @@ class CreateAdjuntoService {
      * @returns {Promise<AdjuntoResponse>} La respuesta de la operación.
      */
     async execute(data: IAdjunto): Promise<AdjuntoResponse> {
+        console.log('---- CreateAdjunto - createAdjuntoService ----')
+        console.log({ data })
         return await this.adjuntoRepository.create(data);
     }
 }

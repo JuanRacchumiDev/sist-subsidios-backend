@@ -41,12 +41,11 @@ app.use(cors({
 const setupDatabase = async () => {
     try {
         Adjunto.belongsTo(TipoAdjunto, { foreignKey: 'id_tipoadjunto', as: 'tipoAdjunto' })
-        Adjunto.belongsTo(DescansoMedico, { foreignKey: 'id_descansomedico', as: 'descansoMedico_adj' })
+        Adjunto.belongsTo(DescansoMedico, { foreignKey: 'id_descansomedico', as: 'descansoMedicoAdjunto' })
         Adjunto.belongsTo(Canje, { foreignKey: 'id_canje', as: 'canje' })
         Adjunto.belongsTo(Cobro, { foreignKey: 'id_cobro', as: 'cobro' })
         Adjunto.belongsTo(Reembolso, { foreignKey: 'id_reembolso', as: 'reembolso' })
-        Adjunto.belongsTo(Persona, { foreignKey: 'id_colaborador', as: 'colaborador' })
-        Adjunto.belongsTo(Persona, { foreignKey: 'id_trabajadorsocial', as: 'trabajadorSocial' })
+        Adjunto.belongsTo(Persona, { foreignKey: 'id_persona', as: 'persona' })
         Adjunto.belongsTo(DocumentoTipoCont, { foreignKey: 'id_documento', as: 'documentoTipoCont' })
 
         Canje.hasMany(Adjunto, { foreignKey: 'id_canje', as: 'adjuntos' })
