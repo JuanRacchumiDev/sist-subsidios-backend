@@ -51,6 +51,10 @@ module.exports = {
         type: Sequelize.STRING(12),
         allowNull: true
       },
+      fecha_pago: {
+        type: Sequelize.STRING(12),
+        allowNull: true
+      },
       is_cobrable: {
         type: Sequelize.BOOLEAN,
         allowNull: false,

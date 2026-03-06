@@ -71,8 +71,6 @@ class CreateDescansoService {
 
         let nombreDiagnostico: string = ""
 
-        let descansoMedico: IDescansoMedico = {}
-
         const recordsToCreateDM: IDescansoMedico[] = []
 
         let responsesDM: DescansoMedicoResponse | DescansoMedicoResponse[]

@@ -595,10 +595,7 @@ class DescansoMedicoRepository {
      */
     async isDescansoConsecutivo(idColaborador: string, fechaInicioNuevo: string): Promise<boolean> {
         try {
-            // console.log('obteniendo el último descanso médico')
-
-            // console.log('idColaborador in isDescansoConsecutivo', idColaborador)
-            // console.log('fechaInicioNuevo in inDescansoConsecutivo', fechaInicioNuevo)
+            console.log({ fechaInicioNuevo })
 
             const ultimoDescanso = await DescansoMedico.findOne({
                 where: { id_colaborador: idColaborador },
@@ -608,21 +605,27 @@ class DescansoMedicoRepository {
                 limit: 1
             });
 
-            // console.log({ ultimoDescanso })
-
             // Si no hay descansos previos, es el primero y se considera continuo.
             if (!ultimoDescanso) {
                 return true;
             }
 
+            console.log({ ultimoDescanso })
+
             const { fecha_final } = ultimoDescanso
 
             const fechaFinal = fecha_final as string
 
+            console.log({ fechaFinal })
+
             // Convertir las fechas a objetos Date
             const fechaFinalAnterior = parseISO(fechaFinal);
 
+            console.log({ fechaFinalAnterior })
+
             const fechaInicioNueva = parseISO(fechaInicioNuevo);
+
+            console.log({ fechaInicioNueva })
 
             // Sumar 1 día a la fecha final del descanso anterior
             const diaSiguiente = addDays(fechaFinalAnterior, 1);
@@ -673,27 +676,6 @@ class DescansoMedicoRepository {
 
         console.log({ esContinuo })
 
-        // const resultValidateFechas = await this.validateAcoplamiento(id_colaborador!, fecha_inicio!, fecha_final!)
-
-        // if (!resultValidateFechas) {
-        //     return {
-        //         result: false,
-        //         message: "Error al validar las fechas",
-        //         data: [],
-        //         status: 422
-        //     }
-        // }
-
-        // console.log({ resultValidateFechas })
-
-        // const { fechaInicio, fechaFinal } = resultValidateFechas
-
-        // data.fecha_otorgamiento = fechaInicio
-
-        // data.fecha_inicio = fechaInicio
-
-        // data.fecha_final = fechaFinal
-
         data.total_dias = HDate.differenceDates(fechaInicio, fechaFinal) + 1
 
         const [
@@ -728,20 +710,6 @@ class DescansoMedicoRepository {
 
         try {
             const newDescanso = await DescansoMedico.create(payload)
-            // const newDescanso = await DescansoMedico.create(data)
-
-            // console.log({ newDescanso })
-
-            // const { id: idDescanso } = newDescanso
-
-            // if (!idDescanso) {
-            //     return {
-            //         result: false,
-            //         error: 'Error al registrar el descanso médico',
-            //         data: [],
-            //         status: 500
-            //     }
-            // }
 
             if (!newDescanso || !newDescanso.id) {
                 return {
@@ -794,9 +762,10 @@ class DescansoMedicoRepository {
                 const fechaInicio = fecha_inicio as string
                 const fechaFinal = fecha_final as string
 
-                const esContinuo = await this.isDescansoConsecutivo(idColaborador, fechaInicio)
+                // const esContinuo = await this.isDescansoConsecutivo(idColaborador, fechaInicio)
+                // console.log({ esContinuo })
 
-                console.log({ esContinuo })
+                const esContinuo = true
 
                 // Obteniendo fecha de inicio, mes y año de fecha de inicio y fecha final
                 const [
@@ -1051,6 +1020,8 @@ class DescansoMedicoRepository {
                 }
             });
 
+            console.log({ existingDescansos })
+
             if (existingDescansos.length > 0) {
                 let adjustedStartDate = new Date(fechaInicio);
 
@@ -1086,6 +1057,9 @@ class DescansoMedicoRepository {
                 processedDescansos.push(newDescanso);
             }
         }
+
+        console.log({ processedDescansos })
+
         return processedDescansos;
     }
 

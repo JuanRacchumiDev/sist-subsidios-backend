@@ -17,6 +17,7 @@ export class Reembolso extends Model<IReembolso, ReembolsoCreationAttributes> im
     public fecha_reembolso?: string | undefined;
     public fecha_maxima_reembolso?: string | undefined;
     public fecha_maxima_subsanar?: string | undefined;
+    public fecha_pago?: string | undefined;
     public is_cobrable?: boolean | undefined;
     public observacion?: string | undefined;
     public estado_registro?: EReembolso | undefined;
@@ -80,6 +81,10 @@ Reembolso.init({
         allowNull: false
     },
     fecha_maxima_subsanar: {
+        type: new DataTypes.STRING(12),
+        allowNull: true
+    },
+    fecha_pago: {
         type: new DataTypes.STRING(12),
         allowNull: true
     },
