@@ -18,23 +18,15 @@ class EmpresaApiRepository {
     async getInfoApi(ruc: string): Promise<EmpresaResponse> {
         try {
             const urlApi = `${API_RUC}${ruc}`
-            console.log({ urlApi })
 
             const { env } = process
             const { TOKEN_API_DOCS } = env
-
-            console.log({ env })
-
-            console.log({ TOKEN_API_DOCS })
 
             const response = await axios.get(`${urlApi}`, {
                 headers: {
                     Authorization: `Bearer ${TOKEN_API_DOCS}`
                 }
             })
-
-            console.log('---- response getInfoApi ----')
-            console.log({ response })
 
             const { status, data: apiData } = response
 
@@ -89,8 +81,9 @@ class EmpresaApiRepository {
                 if (createdEmpresaResult) {
                     return {
                         result: createdEmpresaResult,
-                        data: createdEmpresaData,
+                        error: '',
                         message: createdEmpresaMessage,
+                        data: createdEmpresaData,
                         status: createdEmpresaStatus
                     }
                 }
@@ -98,7 +91,9 @@ class EmpresaApiRepository {
                 return {
                     result: createdEmpresaResult,
                     error: createdEmpresaError,
-                    status: createdEmpresaStatus
+                    message: createdEmpresaMessage,
+                    data: createdEmpresaData,
+                    status: createdEmpresaStatus,
                 }
             }
 
@@ -106,6 +101,7 @@ class EmpresaApiRepository {
 
             return {
                 result: false,
+                error: '',
                 message: "Error al obtener datos de la empresa",
                 data: [],
                 status
@@ -115,9 +111,21 @@ class EmpresaApiRepository {
 
             if (errorMessage === 'Request failed with status code 404') {
                 const message = `No se encontró información con el RUC: ${ruc}`
-                return { result: false, message, status: 404 }
+                return {
+                    result: false,
+                    error: '',
+                    message,
+                    data: [],
+                    status: 404
+                }
             } else {
-                return { result: false, error: errorMessage, status: 500 }
+                return {
+                    result: false,
+                    error: errorMessage,
+                    message: '',
+                    data: [],
+                    status: 500
+                }
             }
         }
     }

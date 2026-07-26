@@ -1,46 +1,68 @@
-import { Sequelize } from "sequelize"
-import dotenv from "dotenv"
+import { Sequelize } from 'sequelize';
+import config from './config';
 
-dotenv.config()
+const env = process.env.NODE_ENV || 'development';
+const dbConfig = (config as any)[env];
 
-// console.log('variables en process.env', process.env)
-
-const { DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT, DATABASE_URL, NODE_ENV } = process.env
-
-let sequelize: Sequelize
-
-if (NODE_ENV === 'production' && DATABASE_URL) {
-    console.log('Modo Producción: Usuario DATABASE_URL')
-
-    // Conexión usando la URL unificada
-    sequelize = new Sequelize(DATABASE_URL, {
-        dialect: 'postgres',
-        dialectOptions: {
-            ssl: {
-                require: true,
-                rejectUnauthorized: false
-            }
-        },
-        logging: false,
-        timezone: '-05:00'
-    })
-} else {
-    if (!DB_HOST || !DB_USER || !DB_PASS || !DB_NAME || !DB_PORT) {
-        throw new Error('No se encontraron algunas variables de entorno')
+const sequelizeInstance = new Sequelize(
+    dbConfig.database,
+    dbConfig.username,
+    dbConfig.password,
+    {
+        host: dbConfig.host,
+        port: dbConfig.port,
+        dialect: dbConfig.dialect,
+        logging: dbConfig.logging,
+        define: {
+            timestamps: true
+        }
     }
+);
 
-    console.log('Modo Desarrollo: Usando variables separadas')
+export default sequelizeInstance;
 
-    sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
-        host: DB_HOST,
-        dialect: 'postgres',
-        port: parseInt(DB_PORT, 10),
-        timezone: '-05:00',
-        logging: false
-    })
-}
 
-export default sequelize
+// import { Sequelize } from "sequelize"
+// import dotenv from "dotenv"
+
+// dotenv.config()
+
+// const { DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT, DATABASE_URL, NODE_ENV } = process.env
+
+// let sequelize: Sequelize
+
+// if (NODE_ENV === 'production' && DATABASE_URL) {
+//     console.log('Modo Producción: Usuario DATABASE_URL')
+
+//     // Conexión usando la URL unificada
+//     sequelize = new Sequelize(DATABASE_URL, {
+//         dialect: 'postgres',
+//         dialectOptions: {
+//             ssl: {
+//                 require: true,
+//                 rejectUnauthorized: false
+//             }
+//         },
+//         logging: false,
+//         timezone: '-05:00'
+//     })
+// } else {
+//     if (!DB_HOST || !DB_USER || !DB_PASS || !DB_NAME || !DB_PORT) {
+//         throw new Error('No se encontraron algunas variables de entorno')
+//     }
+
+//     console.log('Modo Desarrollo: Usando variables separadas')
+
+//     sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
+//         host: DB_HOST,
+//         dialect: 'postgres',
+//         port: parseInt(DB_PORT, 10),
+//         timezone: '-05:00',
+//         logging: false
+//     })
+// }
+
+// export default sequelize
 
 // const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
 //     host: DB_HOST,

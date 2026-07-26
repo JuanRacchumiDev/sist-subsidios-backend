@@ -18,3 +18,21 @@ export interface DiagnosticoResponse {
     error?: string
     status?: number
 }
+
+export interface IDiagnosticoPaginate {
+    currentPage: number
+    limit: number
+    totalPages: number
+    totalItems: number
+    nextPage: number | null
+    previousPage: number | null
+}
+
+export interface DiagnosticoResponsePaginate {
+    result: boolean
+    message?: string
+    data?: IDiagnostico[]
+    pagination?: IDiagnosticoPaginate
+    error?: string
+    status?: number
+}

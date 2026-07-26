@@ -1,20 +1,18 @@
 import { Request, Response, NextFunction } from 'express'
 import CreateDetalleService from '../services/DetalleParametro/CreateDetalle'
-// import DeleteDetalleService from '../services/DetalleParametro/DeleteDetalle'
 import GetDetalleService from '../services/DetalleParametro/GetDetalle'
 import GetDetallesService from '../services/DetalleParametro/GetDetalles'
-// import GetCargoByNombreService from '../services/DetalleParametro/GetByNombre'
 import GetDetallesPaginateService from '../services/DetalleParametro/GetDetallesPaginate'
 import UpdateDetalleService from '../services/DetalleParametro/UpdateDetalle'
-// import UpdateEstadoService from '../services/DetalleParametro/UpdateEstado'
 import { IDetalleParametro } from '../interfaces/DetalleParametro/IDetalleParametro';
 
 class DetalleParametroController {
     async getAllDetalles(req: Request, res: Response, next: NextFunction) {
         try {
-            const { query: { clase, estado } } = req
+            const { query: { clase, estado, enPersona } } = req
             const paramClase = parseInt(clase as string)
             const paramEstado = ((estado as string) === "true") ? true : false
+            // const paramIsPersona = ((enPersona as string) === "true") ? true : false
             const result = await GetDetallesService.execute(paramClase, paramEstado)
             res.status(result.status || 200).json(result)
         } catch (error) {
@@ -24,9 +22,6 @@ class DetalleParametroController {
 
     async getAllDetallesPaginated(req: Request, res: Response, next: NextFunction) {
         try {
-            // const { query: { clase, estado } } = req
-            // const paramClase = parseInt(clase as string)
-            // const paramEstado = ((estado as string) === "true") ? true : false
 
             const { query, params } = req
             const { clase } = params
@@ -60,9 +55,10 @@ class DetalleParametroController {
 
     async createDetalle(req: Request, res: Response, next: NextFunction) {
         try {
-            const detalleData: IDetalleParametro = req.body;
+            const { body } = req
+            const detalleData: IDetalleParametro = body;
             const result = await CreateDetalleService.execute(detalleData);
-            // res.status(result.status || 201).json(result);
+            console.log({ result })
             const { status: statusDetalle } = result
 
             if (statusDetalle === 201) {
@@ -85,16 +81,6 @@ class DetalleParametroController {
             next(error);
         }
     }
-
-    // async deleteDetalle(req: Request, res: Response, next: NextFunction) {
-    //     try {
-    //         const { id } = req.params;
-    //         const result = await DeleteDetalleService.execute(id);
-    //         res.status(result.status || 200).json(result);
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // }
 }
 
 export default new DetalleParametroController()

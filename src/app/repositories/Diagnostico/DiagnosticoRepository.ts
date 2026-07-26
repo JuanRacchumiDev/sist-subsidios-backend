@@ -1,9 +1,9 @@
 import { Diagnostico } from "../../models/Diagnostico";
 import HString from "../../../helpers/HString";
-import { IDiagnostico, DiagnosticoResponse } from '../../interfaces/Diagnostico/IDiagnostico';
+import { IDiagnostico, DiagnosticoResponse, DiagnosticoResponsePaginate, IDiagnosticoPaginate } from '../../interfaces/Diagnostico/IDiagnostico';
 import { Op } from 'sequelize'
 import { DIAGNOSTICO_ATTRIBUTES } from "../../../constants/DiagnosticoConstant";
-
+import HPagination from "../../../helpers/HPagination";
 
 class DiagnosticoRepository {
     /**
@@ -20,6 +20,54 @@ class DiagnosticoRepository {
             })
 
             return { result: true, data: diagnosticos, status: 200 }
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getAllWithPaginate(
+        page: number,
+        limit: number,
+        filter: string
+    ): Promise<DiagnosticoResponsePaginate> {
+        try {
+            // Obtenemos los parámetros de consulta
+            const offset = HPagination.getOffset(page, limit)
+
+            const { count, rows } = await Diagnostico.findAndCountAll({
+                attributes: DIAGNOSTICO_ATTRIBUTES,
+                where: {
+                    nombre: { [Op.iLike]: `%${filter}%` }
+                },
+                limit,
+                offset,
+                order: [
+                    ['nombre', 'ASC']
+                ],
+            })
+
+            const totalPages = Math.ceil(count / limit)
+            const nextPage = HPagination.getNextPage(page, limit, count)
+            const previousPage = HPagination.getPreviousPage(page)
+
+            const pagination: IDiagnosticoPaginate = {
+                currentPage: page,
+                limit,
+                totalPages,
+                totalItems: count,
+                nextPage,
+                previousPage
+            }
+
+            return {
+                result: true,
+                message: 'Diagnósticos paginados obtenidos con éxito',
+                data: rows,
+                pagination,
+                status: 200
+            }
+
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }

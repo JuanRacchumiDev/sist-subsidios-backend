@@ -8,12 +8,12 @@
     "build": "cross-env NODE_ENV=production npx tsc",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "migrate": "npx sequelize-cli db:migrate",
-    "create": "npx sequelize-cli db:create",
-    "drop": "npx sequelize-cli db:drop",
-    "migrate:undo": "npx sequelize-cli db:migrate:undo",
-    "seed": "npx sequelize-cli db:seed:all",
-    "seed:undo": "npx sequelize-cli db:seed:undo:all"
+    "db:migrate": "tsx ./node_modules/sequelize-cli/lib/sequelize db:migrate",
+    "db:create": "tsx --env-file=.env ./node_modules/sequelize-cli/lib/sequelize db:create",
+    "db:drop": "tsx ./node_modules/sequelize-cli/lib/sequelize db:drop",
+    "db:migrate:undo": "tsx ./node_modules/sequelize-cli/lib/sequelize db:migrate:undo",
+    "db:seed": "tsx ./node_modules/sequelize-cli/lib/sequelize db:seed:all",
+    "db:seed:undo": "tsx ./node_modules/sequelize-cli/lib/sequelize db:seed:undo:all"
   },
   "keywords": [],
   "author": "",
@@ -37,6 +37,7 @@
     "sequelize-cli": "^6.6.3",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "tsx": "^4.22.3",
     "typescript": "^5.8.3"
   },
   "dependencies": {

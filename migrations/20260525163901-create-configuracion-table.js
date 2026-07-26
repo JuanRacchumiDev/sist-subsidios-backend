@@ -2,49 +2,28 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('usuario', {
+    await queryInterface.createTable('configuracion', {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
         allowNull: false
       },
-      id_perfil: {
-        type: Sequelize.UUID,
-        allowNull: true,
-        references: {
-          model: 'detalle_parametro',
-          key: 'id'
-        }
-      },
-      id_persona: {
-        type: Sequelize.UUID,
-        allowNull: true,
-        references: {
-          model: 'persona',
-          key: 'id'
-        }
-      },
-      username: {
-        type: Sequelize.STRING(10),
+      clave: {
+        type: Sequelize.STRING(50),
         allowNull: false
       },
-      email: {
-        type: Sequelize.STRING(60),
-        allowNull: false,
-        unique: true
-      },
-      password: {
-        type: Sequelize.STRING(255),
+      valor: {
+        type: Sequelize.TEXT,
         allowNull: false
       },
-      nombre_persona: {
-        type: Sequelize.STRING(80),
+      descripcion: {
+        type: Sequelize.STRING(200),
         allowNull: true
       },
-      remember_token: {
-        type: Sequelize.STRING(100),
-        allowNull: true
+      criterio: {
+        type: Sequelize.STRING(50),
+        allowNull: false
       },
       user_crea: {
         type: Sequelize.UUID,
@@ -85,10 +64,10 @@ module.exports = {
     }, {
       charset: 'utf8mb4',
       collate: 'utf8mb4_unicode_ci'
-    })
+    });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('usuario');
+    await queryInterface.dropTable('configuracion')
   }
 };

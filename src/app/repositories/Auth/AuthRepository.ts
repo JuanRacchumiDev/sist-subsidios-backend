@@ -2,26 +2,19 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Usuario } from "../../models/Usuario";
 import dotenv from "dotenv"
-// import { Colaborador } from '../../models/Colaborador';
-// import { TrabajadorSocial } from '../../models/TrabajadorSocial';
-// import { Perfil } from '../../models/Perfil';
 import { AuthCredenciales, AuthResponse } from '../../types/Auth/TAuth';
 import HString from '../../../helpers/HString';
 import { DetalleParametro } from '../../models/DetalleParametro'
 import { Persona } from '../../models/Persona';
 import { IUsuario } from '../../interfaces/Usuario/IUsuario';
-// import { IColaborador } from '../../interfaces/Colaborador/IColaborador';
 import { IPersona } from '../../interfaces/Persona/IPersona'
 import PersonaRepository from '../Persona/PersonaRepository'
-// import ColaboradorRepository from '../Colaborador/ColaboradorRepository'
 import { TCodigoTemp } from '../../types/DescansoMedico/TCodigoTemp';
 
 class AuthRepository {
-    // private colaboradorRepository: ColaboradorRepository
     private personaRepository: PersonaRepository
 
     constructor() {
-        // this.colaboradorRepository = new ColaboradorRepository()
         this.personaRepository = new PersonaRepository()
     }
     /**
@@ -57,7 +50,6 @@ class AuthRepository {
                     },
                     include: [
                         {
-                            // model: Perfil,
                             model: DetalleParametro,
                             as: 'perfil'
                         },
@@ -68,9 +60,6 @@ class AuthRepository {
                     ]
                 }
             )
-
-            console.log('---- existsUsuario ----')
-            console.log({ existsUsuario })
 
             if (!existsUsuario) {
                 return {
@@ -140,39 +129,6 @@ class AuthRepository {
             }
 
             const { nombre_url, nombre: nombrePerfil } = perfil as DetalleParametro
-
-            // if (persona) {
-            //     const {
-            //         nombres,
-            //         apellido_paterno,
-            //         apellido_materno,
-            //         id_tipodocumento,
-            //         numero_documento
-            //     } = persona
-
-            //     nombreCompleto = `${nombres} ${apellido_paterno} ${apellido_materno}`;
-
-            //     /// Validando si existe colaborador
-            //     // const responseColaborador = await this.colaboradorRepository.getByIdTipoDocAndNumDoc(
-            //     //     id_tipodocumento as string,
-            //     //     numero_documento as string
-            //     // )
-
-            //     const responseColaborador = await this.personaRepository.getByIdTipoDocAndNumDoc(
-            //         id_tipodocumento as string,
-            //         numero_documento as string
-            //     )
-
-            //     const { result, data } = responseColaborador
-
-            //     if (result && data) {
-            //         // const { id, id_empresa } = data as IColaborador
-            //         const { id, id_empresa } = data as IPersona
-
-            //         idColaborador = id as string
-            //         idEmpresa = id_empresa as string
-            //     }
-            // }
 
             const dataUsuario = {
                 id_usuario: idUsuario,

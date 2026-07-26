@@ -17,7 +17,6 @@ class AuthController {
             }
 
             const result = await LoginService.execute(dataAuth)
-            // res.status(result.status || 200).json(result)
 
             const { status } = result
 

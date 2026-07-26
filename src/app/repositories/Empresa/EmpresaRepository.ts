@@ -193,7 +193,10 @@ class EmpresaRepository {
             const { nombre_o_razon_social, numero } = data
 
             if (!nombre_o_razon_social || !numero) {
-                return { result: false, message: 'La razón social o el número de ruc son requeridos para crear una empresa' }
+                return {
+                    result: false,
+                    message: 'La razón social o el número de ruc son requeridos para crear una empresa'
+                }
             }
 
             const fields = { nombre: nombre_o_razon_social, numero }
@@ -204,10 +207,19 @@ class EmpresaRepository {
 
             console.log({ validateFields })
 
-            const { result: resultValidate, message: messageValidate } = validateFields
+            const {
+                result: resultValidate,
+                message: messageValidate
+            } = validateFields
 
             if (resultValidate) {
-                return { result: !resultValidate, message: messageValidate, status: 409 }
+                return {
+                    result: !resultValidate,
+                    error: '',
+                    message: messageValidate,
+                    data,
+                    status: 409
+                }
             }
 
             console.log({ data })
@@ -219,14 +231,32 @@ class EmpresaRepository {
             await transaction.commit()
 
             if (newEmpresa.id) {
-                return { result: true, message: 'Empresa registrada con éxito', data: newEmpresa, status: 200 }
+                return {
+                    result: true,
+                    error: '',
+                    message: 'Empresa registrada con éxito',
+                    data: newEmpresa,
+                    status: 200
+                }
             }
 
-            return { result: false, error: 'Error al registrar la empresa', data: [], status: 500 }
+            return {
+                result: false,
+                error: 'Error al registrar la empresa',
+                message: '',
+                data: [],
+                status: 500
+            }
         } catch (error) {
             await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-            return { result: false, error: errorMessage, status: 500 }
+            return {
+                result: false,
+                error: errorMessage,
+                message: '',
+                data: [],
+                status: 500
+            }
         }
     }
 

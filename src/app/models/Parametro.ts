@@ -19,8 +19,6 @@ export class Parametro extends Model<IParametro, ParametroCreationAttributes> im
     public readonly created_at!: Date
     public readonly updated_at!: Date
     public readonly deleted_at!: Date
-
-    // Asociaciones
 }
 
 Parametro.init({

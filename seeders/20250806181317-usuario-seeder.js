@@ -1,24 +1,13 @@
 'use strict';
 
-// const { default: bcrypt } = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid')
 const bcrypt = require('bcryptjs');
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-    */
-    // Obtener el ID del perfil administrador
-    // const queryAdmin = `SELECT id FROM perfil WHERE nombre = 'ADMINISTRADOR' LIMIT 1`;
+
     let queryAdmin = `SELECT dp.id `;
+
     queryAdmin += `FROM detalle_parametro dp INNER JOIN parametro pr ON pr.clase = dp.parametro_clase `;
     queryAdmin += `WHERE pr.nombre = 'PERFIL' and dp.nombre = 'ADMINISTRADOR' LIMIT 1`;
 
@@ -34,8 +23,6 @@ module.exports = {
       return;
     }
 
-    // Obtener el ID del perfil especialista
-    // const queryEsp = `SELECT id FROM perfil WHERE nombre = 'ESPECIALISTA' LIMIT 1`;
     let queryEspSH = `SELECT dp.id `;
     queryEspSH += `FROM detalle_parametro dp INNER JOIN parametro pr ON pr.clase = dp.parametro_clase `;
     queryEspSH += `WHERE pr.nombre = 'PERFIL' and dp.nombre = 'ESPECIALISTA SOPHIA HUMAN' LIMIT 1`;
@@ -52,7 +39,6 @@ module.exports = {
       return;
     }
 
-    // Hash a password default
     const salt = await bcrypt.genSalt(10)
     const hashedPasswordAdmin = await bcrypt.hash('admin', salt)
     const hashedPasswordEspecialistaSH = await bcrypt.hash('espsh', salt)
@@ -66,7 +52,7 @@ module.exports = {
         username: 'admin',
         email: 'admin@gmail.com',
         password: hashedPasswordAdmin,
-        sistema: true,
+        sistema: false,
         estado: true,
         created_at: now,
         updated_at: now
@@ -77,7 +63,7 @@ module.exports = {
         username: 'espsh',
         email: 'esp@sophiahuman.com',
         password: hashedPasswordEspecialistaSH,
-        sistema: true,
+        sistema: false,
         estado: true,
         created_at: now,
         updated_at: now
@@ -86,12 +72,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
     await queryInterface.bulkDelete('usuario', null, {})
   }
 };

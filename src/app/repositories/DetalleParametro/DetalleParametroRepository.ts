@@ -10,7 +10,6 @@ import HPagination from "../../../helpers/HPagination"
 import { DETALLE_PARAMETRO_ATTRIBUTES } from "../../../constants/DetalleParametroConstant"
 import { Op } from 'sequelize'
 import { DOCUMENTO_TIPO_CONT_INCLUDE } from "../../../includes/DocumentoTipoContInclude"
-// import { TTipoDocumentoSearch } from "@/types/TipoDocumento/TTipoDocumentoSearch"
 
 class DetalleParametroRepository {
     /**
@@ -86,13 +85,19 @@ class DetalleParametroRepository {
 
             return {
                 result: true,
+                message: "Parámetros paginados obtenidos con éxito",
                 data: rows,
                 pagination,
                 status: 200
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-            return { result: false, error: errorMessage, status: 500 }
+            return {
+                result: false,
+                message: "Error al obtener la paginación de parámetros",
+                error: errorMessage,
+                status: 500
+            }
         }
     }
 
@@ -206,38 +211,64 @@ class DetalleParametroRepository {
      */
     async create(data: IDetalleParametro): Promise<DetalleParametroResponse> {
         try {
-            const { nombre } = data
+            const { parametro_clase, nombre } = data
 
             // Nos aseguramos que el nombre exista
             if (!nombre) {
-                return { result: false, message: 'El nombre es requerido para crear un detalle', status: 400 }
+                return {
+                    result: false,
+                    message: 'El nombre es requerido para crear un detalle',
+                    status: 400,
+                    error: ''
+                }
             }
 
+            const nombreLimpio = nombre.trim().toUpperCase()
+
+            data.nombre = nombreLimpio
             data.nombre_url = HString.convertToUrlString(nombre)
 
             // Verificar si el nombre existe antes de crear
             const existingDetalle = await DetalleParametro.findOne({
                 where: {
-                    nombre
+                    parametro_clase,
+                    nombre: {
+                        [Op.iLike]: nombreLimpio
+                    }
                 }
             })
 
             if (existingDetalle) {
-                return { result: false, message: 'El detalle por registrar ya existe', status: 409 }
+                return {
+                    result: false,
+                    message: 'El detalle por registrar ya existe',
+                    status: 409,
+                    error: ''
+                }
             }
 
             const newDetalle = await DetalleParametro.create(data as IDetalleParametro)
 
-            const { id } = newDetalle
-
-            if (id) {
-                return { result: true, message: 'Detalle registrado con éxito', data: newDetalle, status: 200 }
+            if (newDetalle && newDetalle.id) {
+                return {
+                    result: true,
+                    message: 'Detalle registrado con éxito',
+                    data: newDetalle,
+                    status: 200,
+                    error: ''
+                }
             }
 
             return { result: false, message: 'Error al registrar el detalle', status: 500 }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-            return { result: false, message: 'No se pudo crear el detalle', error: errorMessage, status: 500 }
+            return {
+                result: false,
+                message: 'No se pudo crear el detalle',
+                error: errorMessage,
+                status: 500,
+                // error: ''
+            }
         }
     }
 

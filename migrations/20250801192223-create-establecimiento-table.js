@@ -53,7 +53,7 @@ module.exports = {
       sistema: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
-        defaultValue: true
+        defaultValue: false
       },
       estado: {
         type: Sequelize.BOOLEAN,
