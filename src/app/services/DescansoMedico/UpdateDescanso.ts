@@ -5,8 +5,7 @@ import { IPersona } from '../../interfaces/Persona/IPersona'
 import { EDescansoMedico } from '../../enums/EDescansoMedico';
 import { notificationDescansoMedicoIncorrecto } from '../../utils/emailTemplate';
 import { TDetalleEmail } from '../../types/DescansoMedico/TDetalleEmail';
-import transporter from '../../../config/mailer';
-import { DescansoMedico } from '../../models/DescansoMedico';
+// import transporter from '../../../config/mailer';
 import PersonaRepository from '../../repositories/Persona/PersonaRepository'
 import { Persona } from '../../models/Persona'
 // import ColaboradorRepository from '../../repositories/Colaborador/ColaboradorRepository';
@@ -17,6 +16,7 @@ import { CanjeResponse, ICanje } from '../../interfaces/Canje/ICanje';
 import { ECanje } from '../../enums/ECanje';
 import CanjeRepository from '../../repositories/Canje/CanjeRepository';
 import { addMonths, differenceInCalendarDays, endOfMonth, format, isSameMonth, parseISO, startOfMonth } from 'date-fns';
+import { EmailRepository } from '../../repositories/Email/EmailRepository'
 
 // type TFechas = {
 //     fechaInicio: string
@@ -30,14 +30,14 @@ import { addMonths, differenceInCalendarDays, endOfMonth, format, isSameMonth, p
 class UpdateDescansoService {
     protected descansoMedicoRepository: DescansoMedicoRepository
     protected personaRepository: PersonaRepository
-    // protected colaboradorRepository: ColaboradorRepository
     protected canjeRepository: CanjeRepository
+    protected emailRepository: EmailRepository
 
     constructor() {
         this.descansoMedicoRepository = new DescansoMedicoRepository()
         this.personaRepository = new PersonaRepository()
-        // this.colaboradorRepository = new ColaboradorRepository()
         this.canjeRepository = new CanjeRepository()
+        this.emailRepository = new EmailRepository()
     }
 
     /**
@@ -106,17 +106,25 @@ class UpdateDescansoService {
                     appUrl: process.env.APP_URL || 'http://localhost:3000'
                 }
 
-                const mailOptions = {
-                    from: process.env.EMAIL_USER_GMAIL,
-                    to: email,
-                    subject: '¡ESTADO DEL PROCESO DE DESCANSO MÉDICO',
-                    html: notificationDescansoMedicoIncorrecto(dataEmail)
-                }
+                const htmlContent = notificationDescansoMedicoIncorrecto(dataEmail)
 
-                const responseEmail = await transporter.sendMail(mailOptions);
+                await this.emailRepository.sendEmail({
+                    to: email,
+                    subject: '¡ESTADO DEL PROCESO DE DESCANSO MÉDICO!',
+                    html: htmlContent
+                });
+
+                // const mailOptions = {
+                //     from: process.env.EMAIL_USER_GMAIL,
+                //     to: email,
+                //     subject: '¡ESTADO DEL PROCESO DE DESCANSO MÉDICO',
+                //     html: notificationDescansoMedicoIncorrecto(dataEmail)
+                // }
+
+                // const responseEmail = await transporter.sendMail(mailOptions);
                 console.log(`Correo de notificación de estado de descanso médico ${nombreCompleto}`);
 
-                console.log({ responseEmail })
+                // console.log({ responseEmail })
             } else if (estado_registro === EDescansoMedico.REGISTRO_EXITOSO) {
 
                 console.log('creando canjes desde update descanso')

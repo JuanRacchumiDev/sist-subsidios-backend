@@ -27,7 +27,7 @@ class CobroRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<CobroResponsePaginate> {
+    async getAllPaginate(page: number, limit: number, estado?: boolean): Promise<CobroResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)

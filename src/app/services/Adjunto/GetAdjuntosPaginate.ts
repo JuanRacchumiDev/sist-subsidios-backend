@@ -18,7 +18,7 @@ class GetAdjuntosPaginateService {
      * @returns {Promise<AdjuntoResponsePaginate>} La respuesta de obtener las empresas
      */
     async execute(page: number, limit: number): Promise<AdjuntoResponsePaginate> {
-        return await this.adjuntoRepository.getAllWithPaginate(page, limit)
+        return await this.adjuntoRepository.getAllPaginate(page, limit)
     }
 }
 

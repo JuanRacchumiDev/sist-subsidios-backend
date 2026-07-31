@@ -10,25 +10,20 @@ const getEnv = NODE_ENV || 'development'
 
 const envFilePath = path.resolve(process.cwd(), `.env.${getEnv}`)
 
-// console.log({ getEnv })
-
-// console.log({ envFilePath })
-
 dotenv.config({ path: envFilePath })
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
+export const transporter = nodemailer.createTransport({
+    host: process.env.MAIL_HOST,
+    port: Number(process.env.MAIL_PORT) || 2525,
     auth: {
-        user: process.env.EMAIL_USER_GMAIL,
-        pass: process.env.EMAIL_PASS_GMAIL
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS
     }
-    // host: process.env.EMAIL_HOST,
-    // port: parseInt(process.env.EMAIL_PORT as string),
-    // secure: process.env.EMAIL_SECURE === 'true',
+    // service: 'gmail',
     // auth: {
-    //     user: process.env.EMAIL_USER,
-    //     pass: process.env.EMAIL_PASS
+    //     user: process.env.EMAIL_USER_GMAIL,
+    //     pass: process.env.EMAIL_PASS_GMAIL
     // }
 })
 
-export default transporter
+// export default transporter

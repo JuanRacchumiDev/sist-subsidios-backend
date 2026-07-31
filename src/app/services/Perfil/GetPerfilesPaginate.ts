@@ -19,7 +19,7 @@ class GetPerfilesPaginateService {
      * @returns {Promise<PerfilResponsePaginate>} La respuesta de obtener los perfiles
      */
     async execute(page: number, limit: number): Promise<PerfilResponsePaginate> {
-        return await this.perfilRepository.getAllWithPaginate(page, limit)
+        return await this.perfilRepository.getAllPaginate(page, limit)
     }
 }
 

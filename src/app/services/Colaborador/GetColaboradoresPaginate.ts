@@ -21,7 +21,7 @@ class GetColaboradoresPaginateService {
      * @returns {Promise<ColaboradorResponsePaginate>} La respuesta de obtener los colaboradores
      */
     async execute(page: number, limit: number, filters: IColaboradorFilter = {}): Promise<ColaboradorResponsePaginate> {
-        return await this.colaboradorRepository.getAllWithPaginate(page, limit, filters)
+        return await this.colaboradorRepository.getAllPaginate(page, limit, filters)
     }
 }
 

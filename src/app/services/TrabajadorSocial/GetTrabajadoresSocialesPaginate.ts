@@ -21,7 +21,7 @@ class GetTrabajadoresSocialesPaginateService {
      * @returns {Promise<TrabajadorSocialResponsePaginate>} La respuesta de obtener los trabajadores sociales
      */
     async execute(page: number, limit: number, filters: ITrabajadorSocialFilter = {}): Promise<TrabajadorSocialResponsePaginate> {
-        return await this.trabajadorSocialRepository.getAllWithPaginate(page, limit, filters)
+        return await this.trabajadorSocialRepository.getAllPaginate(page, limit, filters)
     }
 }
 

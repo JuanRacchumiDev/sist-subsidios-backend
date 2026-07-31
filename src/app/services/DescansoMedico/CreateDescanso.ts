@@ -1,8 +1,6 @@
 import DescansoMedicoRepository from '../../repositories/DescansoMedico/DescansoMedicoRepository';
 import { IDescansoMedico, DescansoMedicoResponse } from '../../interfaces/DescansoMedico/IDescansoMedico';
-// import ColaboradorRepository from '../../repositories/Colaborador/ColaboradorRepository';
 import PersonaRepository from '../../repositories/Persona/PersonaRepository'
-// import TipoDescansoMedicoRepository from '../../repositories/TipoDescansoMedico/TipoDescansoMedicoRepository';
 import DetalleRepository from '../../repositories/DetalleParametro/DetalleParametroRepository'
 import TipoContingenciaRepository from '../../repositories/TipoContingencia/TipoContingenciaRepository';
 import DiagnosticoRepository from '../../repositories/Diagnostico/DiagnosticoRepository';
@@ -13,8 +11,11 @@ import { ICanje, CanjeResponse } from '../../interfaces/Canje/ICanje';
 import HDate from '../../../helpers/HDate';
 import { ECanje } from '../../enums/ECanje';
 import AdjuntoRepository from '../../repositories/Adjunto/AdjuntoRepository';
-import { newNotificationDescansoMedico, notificationDescansoMedicoIncorrecto } from '../../utils/emailTemplate';
-import transporter from '../../../config/mailer';
+import { EmailRepository } from '../../repositories/Email/EmailRepository'
+import {
+    newNotificationDescansoMedico,
+    notificationDescansoMedicoIncorrecto
+} from '../../utils/emailTemplate';
 import {
     isSameMonth,
     endOfMonth,
@@ -36,25 +37,23 @@ import { IDiagnostico } from '../../interfaces/Diagnostico/IDiagnostico';
  */
 class CreateDescansoService {
     private descansoMedicoRepository: DescansoMedicoRepository;
-    // private colaboradorRepository: ColaboradorRepository;
     private adjuntoRepository: AdjuntoRepository;
-    // private tipoDescansoMedicoRepository: TipoDescansoMedicoRepository
     private detalleRepository: DetalleRepository
     private tipoContingenciaRepository: TipoContingenciaRepository
     private diagnosticoRepository: DiagnosticoRepository
     private canjeRepository: CanjeRepository
     private personaRepository: PersonaRepository
+    private emailRepository: EmailRepository
 
     constructor() {
         this.descansoMedicoRepository = new DescansoMedicoRepository();
-        // this.colaboradorRepository = new ColaboradorRepository();
         this.adjuntoRepository = new AdjuntoRepository();
-        // this.tipoDescansoMedicoRepository = new TipoDescansoMedicoRepository()
         this.tipoContingenciaRepository = new TipoContingenciaRepository()
         this.diagnosticoRepository = new DiagnosticoRepository()
         this.canjeRepository = new CanjeRepository()
         this.personaRepository = new PersonaRepository()
         this.detalleRepository = new DetalleRepository()
+        this.emailRepository = new EmailRepository()
     }
 
     /**
@@ -84,7 +83,6 @@ class CreateDescansoService {
             fecha_inicio,
             fecha_final,
             total_dias,
-            id_usuario,
             slug_perfil,
             codigo_temp,
             estado_registro,
@@ -120,7 +118,6 @@ class CreateDescansoService {
             status: 400
         }
 
-        // const responseColaborador = await this.colaboradorRepository.getById(id_colaborador)
         const responseColaborador = await this.personaRepository.getById(id_colaborador)
         console.log({ responseColaborador })
 
@@ -137,7 +134,6 @@ class CreateDescansoService {
             }
         }
 
-        // const responseTipoDM = await this.tipoDescansoMedicoRepository.getById(id_tipodescansomedico)
         const responseTipoDM = await this.detalleRepository.getById(id_tipodescansomedico)
 
         const { result: resultTipoDM, data: dataTipoDM } = responseTipoDM
@@ -152,7 +148,6 @@ class CreateDescansoService {
 
         nombreTipoDescansoMedico = (dataTipoDM as ITipoDescansoMedico).nombre as string
 
-        // const responseTipoContingencia = await this.tipoContingenciaRepository.getById(id_tipocontingencia)
         const responseTipoContingencia = await this.detalleRepository.getById(id_tipocontingencia)
 
         const {
@@ -274,7 +269,8 @@ class CreateDescansoService {
             console.log({ responsesDM })
 
             if (Array.isArray(responsesDM)) {
-                console.log('results varios registros')
+                console.log('resultados varios registros')
+
                 // Caso: responsesDM es un array de DescansoMedicoResponse
                 const allSuccessful = responsesDM.every(res => res.result);
 
@@ -285,13 +281,6 @@ class CreateDescansoService {
                         status: 500,
                     };
                 }
-
-                // Obteniendo el descanso médico creado
-                // const firstDescansoMedico = responsesDM[0]
-
-                // const { data: dataResult } = firstDescansoMedico
-
-                // descansoMedico = dataResult as IDescansoMedico
             } else {
                 console.log('un solo registro')
 
@@ -299,28 +288,14 @@ class CreateDescansoService {
                 const responseDescansoMedico = responsesDM;
 
                 const {
-                    result: resultDM,
-                    // data: dataDM
+                    result: resultDM
                 } = responseDescansoMedico;
 
                 // Error de descanso médico
                 if (!resultDM) {
                     return responseDescansoMedico
                 }
-
-                // descansoMedico = dataDM as IDescansoMedico
             }
-
-            // const {
-            //     id,
-            //     nombre_tipocontingencia,
-            //     nombre_tipodescansomedico,
-            //     nombre_diagnostico,
-            //     nombre_establecimiento,
-            //     observacion
-            // } = descansoMedico
-
-            // const idDescansoMedico = id as string
 
             if (Array.isArray(responsesDM)) {
                 // Obtener los IDs de los descansos médicos creados
@@ -360,17 +335,15 @@ class CreateDescansoService {
                     appUrl: process.env.APP_URL || 'http://localhost:3000'
                 }
 
-                const mailOptions = {
-                    from: process.env.EMAIL_USER_GMAIL,
-                    to: correo_personal,
+                const htmlContent = notificationDescansoMedicoIncorrecto(dataEmail)
+
+                await this.emailRepository.sendEmail({
+                    to: correoPersonal,
                     subject: '¡ESTADO DEL PROCESO DE DESCANSO MÉDICO',
-                    html: notificationDescansoMedicoIncorrecto(dataEmail)
-                }
+                    html: htmlContent
+                });
 
-                const responseEmail = await transporter.sendMail(mailOptions);
                 console.log(`Correo de notificación de estado de descanso médico ${nombreColaborador}`);
-
-                console.log({ responseEmail })
             }
 
             console.log({ nombreTipoContingencia })
@@ -395,11 +368,6 @@ class CreateDescansoService {
                 console.log('creando canjes como especialista')
                 console.log('creando canjes desde nuevo descanso')
 
-                // const totalDiasActual = total_dias as number
-
-                // console.log({ totalDiasActual })
-
-                // const createSubsidios = esMaternidad || (totalDiasActual > TOTAL_DIAS_DESCANSO_MEDICO)
                 if (esMaternidad) {
                     console.log('crear subsidio por maternidad')
 
@@ -414,7 +382,6 @@ class CreateDescansoService {
                                 id,
                                 fecha_inicio: itemDescansoFechaInicio,
                                 fecha_final: itemDescansoFechaFinal,
-                                total_dias
                             } = itemDescanso
 
                             fechaInicioSubsidio = itemDescansoFechaInicio as string;
@@ -503,8 +470,6 @@ class CreateDescansoService {
 
                             const itemDescanso = data as IDescansoMedico
 
-                            // console.log({ itemDescanso })
-
                             const {
                                 id,
                                 fecha_otorgamiento: itemDescansoFechaOtorgamiento,
@@ -518,9 +483,6 @@ class CreateDescansoService {
                                 id as string,
                                 itemDescansoFechaOtorgamiento as string
                             )
-
-                            // console.log('console.log responseTotalDias')
-                            // console.log({ responseTotalDias })
 
                             const {
                                 result: resultTotalDias,
@@ -551,7 +513,6 @@ class CreateDescansoService {
 
                             // Si la suma de días (anteriores + actual) es menor o igual a 20, no se generan canjes
                             if (newDiasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
-                                // if (diasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
                                 console.log('creando canjes desde create descanso')
                                 console.log('bb')
 
@@ -569,14 +530,10 @@ class CreateDescansoService {
                                 console.log('nuevos días acumulados mayor a los días total_dias_descanso_medico')
 
                                 const diasMaximo = TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados;
-                                // const fechaFinalPrimerCanje = HDate.addDaysToDate(fechaInicio, diasMaximo - 1);
-                                // const diasMaximo = TOTAL_DIAS_DESCANSO_MEDICO
                                 const fechaFinalPrimerCanje = HDate.addDaysToDate(itemDescansoFechaInicio as string, diasMaximo - 1)
 
-                                // fechaInicioSubsidio = fechaInicio;
                                 fechaInicioSubsidio = itemDescansoFechaInicio as string;
                                 fechaFinalSubsidio = fechaFinalPrimerCanje;
-                                // isReembolsable = false;
 
                                 console.log({ diasMaximo })
                                 console.log({ fechaFinalPrimerCanje })
@@ -589,8 +546,6 @@ class CreateDescansoService {
                                     fecha_otorgamiento,
                                     fecha_inicio_subsidio: fechaInicioSubsidio,
                                     fecha_final_subsidio: fechaFinalSubsidio,
-                                    // fecha_inicio_dm: fecha_inicio,
-                                    // fecha_final_dm: fecha_final,
                                     fecha_inicio_dm: itemDescansoFechaInicio,
                                     fecha_final_dm: itemDescansoFechaFinal,
                                     fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, FECHA_MAXIMA_CANJE),
@@ -603,7 +558,7 @@ class CreateDescansoService {
                                     nombre_tipodescansomedico: nombreTipoDescansoMedico
                                 };
 
-                                // console.log({ payloadCanjeWithoutSubsidio })
+                                console.log({ payloadCanjeWithoutSubsidio })
 
                                 recordsToCreateCanje.push(payloadCanjeWithoutSubsidio);
                             }
@@ -623,7 +578,6 @@ class CreateDescansoService {
                                     fechaInicioSegundoCanje = itemDescansoFechaInicio as string;
                                 } else {
                                     console.log('qqqqq')
-                                    // const fechaFinalPrimerCanje = HDate.addDaysToDate(fechaInicio, TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados - 1);
                                     console.log('TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados', (TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados))
                                     const fechaFinalPrimerCanje = HDate.addDaysToDate(itemDescansoFechaInicio as string, TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados - 1)
                                     fechaInicioSegundoCanje = HDate.addDaysToDate(fechaFinalPrimerCanje, 1);
@@ -635,7 +589,6 @@ class CreateDescansoService {
 
                                 fechaInicioSubsidio = fechaInicioSegundoCanje;
                                 fechaFinalSubsidio = itemDescansoFechaFinal as string;
-                                // isReembolsable = true;
 
                                 console.log({ fechaInicioSegundoCanje })
                                 console.log({ fechaInicioSubsidio })
@@ -659,7 +612,7 @@ class CreateDescansoService {
                                     nombre_tipodescansomedico: nombreTipoDescansoMedico
                                 };
 
-                                // console.log({ payloadCanjeWithSubsidio })
+                                console.log({ payloadCanjeWithSubsidio })
 
                                 recordsToCreateCanje.push(payloadCanjeWithSubsidio);
                             }
@@ -703,7 +656,6 @@ class CreateDescansoService {
                         const diasAcumulados = typeof totalDiasAcumulados === 'string'
                             ? parseInt(totalDiasAcumulados)
                             : totalDiasAcumulados as number;
-                        // const totalDiasActual = total_dias as number;
 
                         console.log({ diasAcumulados })
                         console.log(typeof diasAcumulados)
@@ -714,7 +666,6 @@ class CreateDescansoService {
 
                         // Si la suma de días (anteriores + actual) es menor o igual a 20, no se generan canjes
                         if (newDiasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
-                            // if (diasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
                             console.log('creando canjes desde create descanso')
                             console.log('bb')
 
@@ -732,13 +683,10 @@ class CreateDescansoService {
                             console.log('nuevos días acumulados mayor a los días total_dias_descanso_medico')
 
                             const diasMaximo = TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados;
-                            // const fechaFinalPrimerCanje = HDate.addDaysToDate(fechaInicio, diasMaximo - 1);
-                            // const diasMaximo = TOTAL_DIAS_DESCANSO_MEDICO
                             const fechaFinalPrimerCanje = HDate.addDaysToDate(fecha_inicio as string, diasMaximo - 1)
 
                             fechaInicioSubsidio = fecha_inicio as string;
                             fechaFinalSubsidio = fechaFinalPrimerCanje;
-                            // isReembolsable = false;
 
                             console.log({ diasMaximo })
                             console.log({ fechaFinalPrimerCanje })
@@ -763,8 +711,6 @@ class CreateDescansoService {
                                 nombre_tipodescansomedico: nombreTipoDescansoMedico
                             };
 
-                            // console.log({ payloadCanjeWithoutSubsidio })
-
                             recordsToCreateCanje.push(payloadCanjeWithoutSubsidio);
                         }
 
@@ -783,7 +729,6 @@ class CreateDescansoService {
                                 fechaInicioSegundoCanje = fecha_inicio as string;
                             } else {
                                 console.log('qqqqq')
-                                // const fechaFinalPrimerCanje = HDate.addDaysToDate(fechaInicio, TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados - 1);
                                 console.log('TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados', (TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados))
                                 const fechaFinalPrimerCanje = HDate.addDaysToDate(fecha_inicio as string, TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados - 1)
                                 fechaInicioSegundoCanje = HDate.addDaysToDate(fechaFinalPrimerCanje, 1);
@@ -795,7 +740,6 @@ class CreateDescansoService {
 
                             fechaInicioSubsidio = fechaInicioSegundoCanje;
                             fechaFinalSubsidio = fecha_final as string;
-                            // isReembolsable = true;
 
                             console.log({ fechaInicioSegundoCanje })
                             console.log({ fechaInicioSubsidio })
@@ -819,7 +763,7 @@ class CreateDescansoService {
                                 nombre_tipodescansomedico: nombreTipoDescansoMedico
                             };
 
-                            // console.log({ payloadCanjeWithSubsidio })
+                            console.log({ payloadCanjeWithSubsidio })
 
                             recordsToCreateCanje.push(payloadCanjeWithSubsidio);
                         }
@@ -828,12 +772,9 @@ class CreateDescansoService {
 
                 // Aquí se llama a la función para gestionar los solapamientos de fechas
                 const recordsToCreateWithOverlapHandling = await this.canjeRepository.validateSolapamientoFechas(recordsToCreateCanje)
-                // console.log({ recordsToCreateWithOverlapHandling })
 
                 // Se eliminan los canjes que queden sin días después del manejo del solapamiento
                 const finalRecordsToCreate = recordsToCreateWithOverlapHandling.filter(canje => HDate.differenceDates(canje.fecha_inicio_subsidio as string, canje.fecha_final_subsidio as string) + 1 > 0);
-
-                // console.log({ finalRecordsToCreate })
 
                 if (finalRecordsToCreate.length > 0) {
                     const resultsCanjes = await this.canjeRepository.createMultiple(finalRecordsToCreate) as CanjeResponse[];
@@ -876,22 +817,20 @@ class CreateDescansoService {
         correo_personal: string
     ) {
         try {
-            // Send notification email
             const dataEmail = {
                 nombreCompleto: nombreColaborador,
-                appUrl: process.env.APP_URL || 'http://localhost:3000',
+                appUrl: process.env.BASE_URL || 'http://localhost:3000',
             };
 
-            const mailOptions = {
-                from: process.env.EMAIL_USER_GMAIL,
+            const htmlContent = newNotificationDescansoMedico(dataEmail)
+
+            await this.emailRepository.sendEmail({
                 to: correo_personal,
                 subject: '¡REGISTRO DE NUEVO DESCANSO MÉDICO!',
-                html: newNotificationDescansoMedico(dataEmail),
-            };
+                html: htmlContent
+            })
 
-            const responseEmail = await transporter.sendMail(mailOptions);
             console.log(`Registro de nuevo descanso enviado a ${nombreColaborador}`);
-            console.log({ responseEmail });
         } catch (emailError) {
             console.error("Error sending email:", emailError);
         }

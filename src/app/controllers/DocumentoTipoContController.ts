@@ -22,21 +22,18 @@ class DocumentoTipoContController {
 
     async getAllDocumentosPaginated(req: Request, res: Response, next: NextFunction) {
         try {
-            const page = parseInt(req.query.page as string) || 1
+            const { query: { page, limit, id_tipocontingencia, search } } = req
 
-            const limit = parseInt(req.query.limit as string) || 10
+            const setPage = parseInt(page as string) || 1
 
-            const {
-                id_tipocontingencia,
-                nombre
-            } = req.query
+            const setLimit = parseInt(limit as string) || 10
 
             const filters: IDocumentoTipoContFilter = {
                 id_tipocontingencia: id_tipocontingencia as string,
-                nombre: nombre as string
+                nombre: search as string
             }
 
-            const result = await GetDocumentosTipoContPaginateService.execute(page, limit, filters)
+            const result = await GetDocumentosTipoContPaginateService.execute(setPage, setLimit, filters)
 
             res.status(result.status || 200).json(result)
         } catch (error) {

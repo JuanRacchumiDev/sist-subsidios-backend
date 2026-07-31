@@ -19,7 +19,7 @@ class GetReembolsosPaginateService {
      * @returns {Promise<ReembolsoResponsePaginate>} La respuesta de obtener los reembolsos
      */
     async execute(page: number, limit: number): Promise<ReembolsoResponsePaginate> {
-        return await this.reembolsoRepository.getAllWithPaginate(page, limit)
+        return await this.reembolsoRepository.getAllPaginate(page, limit)
     }
 }
 

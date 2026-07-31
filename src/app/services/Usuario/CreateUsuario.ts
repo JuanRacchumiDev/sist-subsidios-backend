@@ -1,10 +1,13 @@
 import UsuarioRepository from '../../repositories/Usuario/UsuarioRepository';
 import PersonaRepository from '../../repositories/Persona/PersonaRepository'
+import DetalleParametroRepository from '../../repositories/DetalleParametro/DetalleParametroRepository'
 import { IUsuario, UsuarioResponse } from '../../interfaces/Usuario/IUsuario';
 import { newUserNotificationTemplate } from '../../utils/emailTemplate';
-import transporter from '../../../config/mailer';
+// import transporter from '../../../config/mailer';
 import { generateTemporaryPassword } from '../../utils/generatePassword';
-import { IPersona } from '../../interfaces/Persona/IPersona';
+import { EmailRepository } from '../../repositories/Email/EmailRepository'
+import { IPersona, PersonaResponse } from '../../interfaces/Persona/IPersona';
+import { IDetalleParametro, DetalleParametroResponse } from '../../interfaces/DetalleParametro/IDetalleParametro'
 /**
  * @class CreateUsuarioService
  * @description Servicio para crear un nuevo usuario.
@@ -12,10 +15,14 @@ import { IPersona } from '../../interfaces/Persona/IPersona';
 class CreateUsuarioService {
     protected usuarioRepository: UsuarioRepository
     protected personaRepository: PersonaRepository
+    protected emailRepository: EmailRepository
+    protected detalleParametroRepository: DetalleParametroRepository
 
     constructor() {
         this.usuarioRepository = new UsuarioRepository()
         this.personaRepository = new PersonaRepository()
+        this.emailRepository = new EmailRepository()
+        this.detalleParametroRepository = new DetalleParametroRepository()
     }
 
     /**
@@ -24,89 +31,77 @@ class CreateUsuarioService {
      * @returns {Promise<UsuarioResponse>} La respuesta de la operación.
      */
     async execute(data: IUsuario): Promise<UsuarioResponse> {
-        let fullName: string = ""
-
-        let numeroDocumento: string = ""
-
-        const { id_persona, username, email } = data
-
-        const userNameStr = username as string
-
-        const emailStr = email as string
+        let { id_persona, id_perfil, username, email } = data
 
         try {
+            if (id_persona && id_perfil) {
+                // Obteniendo la persona seleccionada
+                const responsePersona = await this.personaRepository.getById(id_persona) as PersonaResponse
 
-            // Obteniendo la persona registrada
-            if (id_persona) {
-                const responsePersona = await this.personaRepository.getById(id_persona)
+                const { result: resultPersona, data: dataPersona } = responsePersona
 
-                const { data: dataPersona } = responsePersona
-
-                const detailPersona = dataPersona as IPersona
-
-                const { numero_documento, nombres, apellido_paterno, apellido_materno } = detailPersona
-                fullName = `${nombres} ${apellido_paterno} ${apellido_materno}`
-
-                numeroDocumento = numero_documento as string
-
-                data.nombre_persona = fullName
-            } else {
-                fullName = userNameStr
-            }
-
-            // Generar una contraseña temporal antes de hashearla
-            const tempPassword: string = generateTemporaryPassword()
-
-            // data.password = tempPassword
-
-            data.password = (numeroDocumento) ? numeroDocumento : tempPassword
-
-            console.log('---- data new usuario ----')
-            console.log({ data })
-
-            const response = await this.usuarioRepository.create(data);
-
-            console.log('---- response createUsuario ----')
-            console.log({ response })
-
-            const { result: resultUsuario, data: dataUsuario } = response
-
-            if (resultUsuario && dataUsuario) {
-
-                console.log('existe resultUsuario y existe dataUsuario')
-
-                const dataEmail = {
-                    name: fullName,
-                    email: emailStr,
-                    temporaryPassword: data.password,
-                    appUrl: process.env.APP_URL || 'http://localhost:3000',
+                if (resultPersona && dataPersona) {
+                    data.persona = dataPersona as IPersona
                 }
 
-                console.log({ dataEmail })
+                // Obteniendo el perfil seleccionado
+                const responsePerfil = await this.detalleParametroRepository.getById(id_perfil) as DetalleParametroResponse
 
-                const mailOptions = {
-                    from: process.env.EMAIL_USER_GMAIL,
-                    to: email,
-                    subject: '¡Bienvenido a la plataforma',
-                    html: newUserNotificationTemplate(dataEmail)
+                const { result: resultPerfil, data: dataPerfil } = responsePerfil
+
+                if (resultPerfil && dataPerfil) {
+                    data.perfil = dataPerfil as IDetalleParametro
                 }
 
-                console.log({ mailOptions })
+                // Definiendo contraseña de acceso
+                const tempPassword: string = generateTemporaryPassword()
 
-                const responseEmail = await transporter.sendMail(mailOptions);
-                console.log({ responseEmail })
-                console.log(`Correo de bienvenida enviado a ${username}`);
+                const isValidDocumento = data.persona && data.persona.numero_documento
 
-                return response
-            } else {
-                console.log('no existe resultUsuario, no existe dataUsuario')
+                data.password = (isValidDocumento) ? data.persona?.numero_documento : tempPassword
+
+                // Obteniendo el resultado del registro de un usuario
+                const responseUsuario = await this.usuarioRepository.create(data)
+
+                console.log({ responseUsuario })
+
+                const { result: resultUsuario, data: dataUsuario, error: errorUsuario } = responseUsuario
+
+                if (resultUsuario && dataUsuario) {
+                    const usuario = dataUsuario as IUsuario
+
+                    const dataEmail = {
+                        persona: data.persona,
+                        perfil: data.perfil,
+                        username: usuario.username,
+                        email: usuario.email,
+                        password: data.password,
+                        appUrl: process.env.APP_URL || "http://localhost:3000"
+                    }
+
+                    console.log({ dataEmail })
+
+                    const htmlContent = newUserNotificationTemplate(dataEmail)
+
+                    await this.emailRepository.sendEmail({
+                        to: usuario.email as string,
+                        subject: '¡Bienvenido a la plataforma!',
+                        html: htmlContent
+                    });
+
+                    console.log(`Correo de bienvenida enviado a ${username}`);
+
+                    return responseUsuario
+                }
+
+                return responseUsuario
             }
 
             return {
                 result: false,
                 status: 422,
-                message: "No se pudo crear el nuevo usuario",
-                data: []
+                message: "La selección de la persona o perfil no son correctos",
+                data: [],
             }
 
         } catch (error) {
@@ -118,6 +113,7 @@ class CreateUsuarioService {
                 status: 422,
                 message: "Error al crear el nuevo usuario",
                 data: [],
+                error
             }
         }
     }

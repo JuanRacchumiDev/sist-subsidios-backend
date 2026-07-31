@@ -81,6 +81,7 @@ const setupDatabase = async () => {
             otherKey: 'id_grupo',
             as: 'grupos'
         });
+        Persona.hasOne(Usuario, { foreignKey: 'id_persona', as: 'usuario' });
 
         Reembolso.belongsTo(Canje, { foreignKey: 'id_canje', as: 'canje' })
         Reembolso.hasMany(Adjunto, { foreignKey: 'id_reembolso', as: 'adjuntos' })

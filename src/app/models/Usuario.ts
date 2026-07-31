@@ -4,6 +4,7 @@ import { IUsuario } from "../interfaces/Usuario/IUsuario";
 import { DetalleParametro } from './DetalleParametro'
 import { IDetalleParametro } from "../interfaces/DetalleParametro/IDetalleParametro"
 import { Persona } from './Persona';
+import { IPersona } from '@/interfaces/Persona/IPersona';
 
 interface UsuarioCreationAttributes extends Optional<IUsuario, 'id'> { }
 
@@ -22,6 +23,7 @@ export class Usuario extends Model<IUsuario, UsuarioCreationAttributes> implemen
     public sistema?: boolean | undefined;
     public estado?: boolean | undefined;
     public perfil?: IDetalleParametro | undefined;
+    public persona?: IPersona | undefined;
 
     // Timestamps
     public readonly created_at!: Date

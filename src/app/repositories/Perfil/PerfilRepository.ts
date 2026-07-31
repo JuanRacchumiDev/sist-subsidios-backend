@@ -26,7 +26,7 @@ class PerfilRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number, estado?: boolean): Promise<PerfilResponsePaginate> {
+    async getAllPaginate(page: number, limit: number, estado?: boolean): Promise<PerfilResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)

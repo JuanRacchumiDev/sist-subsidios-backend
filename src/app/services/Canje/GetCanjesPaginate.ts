@@ -21,7 +21,7 @@ class GetCanjesPaginateService {
      * @returns {Promise<CanjeResponsePaginate>} La respuesta de obtener los canjes
      */
     async execute(page: number, limit: number, filters: ICanjeFilter = {}): Promise<CanjeResponsePaginate> {
-        return await this.canjeRepository.getAllWithPaginate(page, limit, filters)
+        return await this.canjeRepository.getAllPaginate(page, limit, filters)
     }
 }
 

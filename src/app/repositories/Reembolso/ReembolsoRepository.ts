@@ -35,7 +35,7 @@ class ReembolsoRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number): Promise<ReembolsoResponsePaginate> {
+    async getAllPaginate(page: number, limit: number): Promise<ReembolsoResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)

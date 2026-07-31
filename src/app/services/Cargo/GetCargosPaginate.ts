@@ -20,7 +20,7 @@ class GetCargosPaginateService {
      * @returns {Promise<CargoResponsePaginate>} La respuesta de obtener los cargos
      */
     async execute(page: number, limit: number, filter: string): Promise<CargoResponsePaginate> {
-        return await this.cargoRepository.getAllWithPaginate(page, limit, filter)
+        return await this.cargoRepository.getAllPaginate(page, limit, filter)
     }
 }
 

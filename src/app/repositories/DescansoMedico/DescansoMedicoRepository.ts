@@ -74,7 +74,7 @@ class DescansoMedicoRepository {
         }
     }
 
-    async getAllWithPaginate(
+    async getAllPaginate(
         page: number,
         limit: number,
         filters: IDescansoMedicoFilter = {}

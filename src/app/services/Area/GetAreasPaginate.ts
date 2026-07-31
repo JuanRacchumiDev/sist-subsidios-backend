@@ -19,7 +19,7 @@ class GetAreasPaginateService {
      * @returns {Promise<AreaResponsePaginate>} La respuesta de obtener las áreas
      */
     async execute(page: number, limit: number): Promise<AreaResponsePaginate> {
-        return await this.areaRepository.getAllWithPaginate(page, limit)
+        return await this.areaRepository.getAllPaginate(page, limit)
     }
 }
 

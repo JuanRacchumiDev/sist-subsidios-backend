@@ -1,8 +1,6 @@
 import sequelize from '../../../config/database'
 import { Usuario } from "../../models/Usuario";
 import { IUsuario, UsuarioResponse } from '../../interfaces/Usuario/IUsuario';
-import { Colaborador } from "../../models/Colaborador";
-import { TrabajadorSocial } from "../../models/TrabajadorSocial";
 import bcrypt from 'bcryptjs';
 import { Perfil } from '../../models/Perfil';
 import HPagination from '../../../helpers/HPagination';
@@ -29,9 +27,7 @@ class UsuarioRepository {
                 attributes: USUARIO_ATTRIBUTES,
                 include: [
                     PERFIL_INCLUDE,
-                    PERSONA_INCLUDE,
-                    COLABORADOR_INCLUDE,
-                    TRABAJADOR_SOCIAL_INCLUDE
+                    PERSONA_INCLUDE
                 ],
                 order: [
                     ['email', 'ASC']
@@ -45,12 +41,14 @@ class UsuarioRepository {
         }
     }
 
-    async getAllWithPaginate(
+    async getAllPaginate(
         page: number,
         limit: number,
         filters: IUsuarioFilter = {}
     ): Promise<UsuarioResponsePaginate> {
         try {
+            console.log({ filters })
+
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
@@ -61,75 +59,62 @@ class UsuarioRepository {
                 email
             } = filters
 
-            const conditions = ["1 = 1"];
-            const replacements: any = { limit, offset };
+            // Construimos el filtro dinámico para el modelo principal (Usuario)
+            const whereUsuario: WhereOptions = {}
 
             if (id_perfil) {
-                conditions.push("us.id_perfil = :id_perfil")
-                replacements.id_perfil = id_perfil
-            }
-
-            if (nombre_persona) {
-                conditions.push("LOWER(us.nombre_persona) LIKE LOWER(:nombre_persona)")
-                replacements.nombre_persona = `%${nombre_persona}%`
+                whereUsuario.id_perfil = id_perfil
             }
 
             if (username) {
-                conditions.push("LOWER(us.username) LIKE LOWER(:username)")
-                replacements.username = `%${username}%`
+                whereUsuario.username = { [Op.iLike]: `%${username}%` }
             }
 
             if (email) {
-                conditions.push("LOWER(us.email) LIKE LOWER(:email)")
-                replacements.email = `%${email}%`
+                whereUsuario.email = { [Op.iLike]: `%${email}%` }
             }
 
-            const whereClause = `WHERE ${conditions.join(" AND ")}`
+            // Filtro para la tabla/relación Persona
+            const wherePersona: WhereOptions = {}
 
-            const baseQuery = `
-                FROM usuario us
-                INNER JOIN detalle_parametro dp
-                ON dp.id = us.id_perfil
-                ${whereClause}
-            `
+            if (nombre_persona) {
+                wherePersona.nombre_completo = { [Op.iLike]: `%${nombre_persona}%` }
+            }
 
-            const queryData = `
-                SELECT
-                    us.id, id_perfil, id_persona, username, email, nombre_persona, dp.nombre as nombre_perfil, us.estado
-                ${baseQuery}
-                ORDER BY us.username ASC
-                LIMIT :limit OFFSET :offset;
-            `
-
-            const queryCount = `SELECT COUNT(us.id) as total ${baseQuery}`
-
-            const rows = await sequelize.query(queryData, {
-                replacements,
-                type: 'SELECT',
-                model: Usuario,
-                mapToModel: true
+            const { count, rows } = await Usuario.findAndCountAll({
+                attributes: USUARIO_ATTRIBUTES,
+                where: whereUsuario,
+                include: [
+                    {
+                        ...PERFIL_INCLUDE,
+                        required: false
+                    },
+                    {
+                        ...PERSONA_INCLUDE,
+                        where: Object.keys(wherePersona).length > 0 ? wherePersona : undefined,
+                        required: false
+                    }
+                ],
+                limit,
+                offset,
+                order: [
+                    ['username', 'ASC']
+                ],
+                distinct: true
             });
 
-            console.log({ rows })
-
-            const [countResult]: any = await sequelize.query(queryCount, {
-                replacements,
-                type: 'SELECT'
-            });
-
-            const total = parseInt(countResult.total);
-            const totalPages = Math.ceil(total / limit)
-            const nextPage = HPagination.getNextPage(page, limit, total)
-            const previousPage = HPagination.getPreviousPage(page)
+            const totalPages = Math.ceil(count / limit);
+            const nextPage = HPagination.getNextPage(page, limit, count);
+            const previousPage = HPagination.getPreviousPage(page);
 
             const pagination: IUsuarioPaginate = {
                 currentPage: page,
                 limit,
                 totalPages,
-                totalItems: total,
+                totalItems: count,
                 nextPage,
                 previousPage
-            }
+            };
 
             return {
                 result: true,
@@ -182,6 +167,9 @@ class UsuarioRepository {
     async create(data: IUsuario): Promise<UsuarioResponse> {
         // Accede a la instancia de Sequelize a través de db.sequelize
         // const transaction = await sequelize.transaction()
+
+        console.log('---- data usuario create ----')
+        console.log({ data })
 
         try {
             const { password } = data

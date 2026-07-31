@@ -46,7 +46,7 @@ class DetalleParametroRepository {
      * @param {boolean} estado - Define el estado de los detalles 
      * @returns {Promise<DetalleParametroResponsePaginate>} - Respuesta con la lista de detalles paginados
      */
-    async getAllWithPaginate(
+    async getAllPaginate(
         clase: number,
         page: number,
         limit: number,

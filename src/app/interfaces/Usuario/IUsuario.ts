@@ -5,8 +5,6 @@ export interface IUsuario {
     id?: string
     id_perfil?: string
     id_persona?: string
-    id_colaborador?: string
-    id_trabajadorsocial?: string
     username?: string
     email?: string
     password?: string
@@ -26,7 +24,7 @@ export interface UsuarioResponse {
     result?: boolean
     message?: string
     data?: IUsuario | IUsuario[],
-    error?: string
+    error?: string | unknown
     status?: number
 }
 

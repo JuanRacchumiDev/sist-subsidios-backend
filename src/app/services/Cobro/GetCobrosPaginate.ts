@@ -19,7 +19,7 @@ class GetCobrosPaginateService {
      * @returns {Promise<CobroResponsePaginate>} La respuesta de obtener los cobros
      */
     async execute(page: number, limit: number): Promise<CobroResponsePaginate> {
-        return await this.cobroRepository.getAllWithPaginate(page, limit)
+        return await this.cobroRepository.getAllPaginate(page, limit)
     }
 }
 

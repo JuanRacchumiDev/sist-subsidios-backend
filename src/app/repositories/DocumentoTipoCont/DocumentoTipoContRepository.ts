@@ -34,7 +34,7 @@ class DocumentoTipoContRepository {
         }
     }
 
-    async getAllWithPaginate(
+    async getAllPaginate(
         page: number,
         limit: number,
         filters: IDocumentoTipoContFilter

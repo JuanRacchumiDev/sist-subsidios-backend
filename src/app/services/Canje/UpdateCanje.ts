@@ -7,10 +7,11 @@ import { ECanje } from '../../enums/ECanje';
 import { TDetalleEmail } from '../../types/Canje/TDetalleEmail';
 import { IDescansoMedico } from '../../interfaces/DescansoMedico/IDescansoMedico';
 import { notificationCanjeObservado } from '../../utils/emailTemplate';
-import transporter from '../../../config/mailer';
+// import transporter from '../../../config/mailer';
 import { EReembolso } from '../../enums/EReembolso';
 import ReembolsoRepository from '../../repositories/Reembolso/ReembolsoRepository';
 import HDate from '../../../helpers/HDate';
+import { EmailRepository } from '../../repositories/Email/EmailRepository'
 
 /**
  * @class UpdateCanjeService
@@ -19,10 +20,12 @@ import HDate from '../../../helpers/HDate';
 class UpdateCanjeService {
     private canjeRepository: CanjeRepository
     private reembolsoRepository: ReembolsoRepository
+    private emailRepository: EmailRepository
 
     constructor() {
         this.canjeRepository = new CanjeRepository()
         this.reembolsoRepository = new ReembolsoRepository()
+        this.emailRepository = new EmailRepository()
     }
 
     /**
@@ -105,17 +108,25 @@ class UpdateCanjeService {
                 appUrl: process.env.APP_URL || 'http://localhost:3000'
             }
 
-            const mailOptions = {
-                from: process.env.EMAIL_USER_GMAIL,
+            const htmlContent = notificationCanjeObservado(dataEmail)
+
+            await this.emailRepository.sendEmail({
                 to: email,
                 subject: '¡ESTADO DEL PROCESO DE CANJE!',
-                html: notificationCanjeObservado(dataEmail)
-            }
+                html: htmlContent
+            });
 
-            const responseEmail = await transporter.sendMail(mailOptions);
+            // const mailOptions = {
+            //     from: process.env.EMAIL_USER_GMAIL,
+            //     to: email,
+            //     subject: '¡ESTADO DEL PROCESO DE CANJE!',
+            //     html: notificationCanjeObservado(dataEmail)
+            // }
+
+            // const responseEmail = await transporter.sendMail(mailOptions);
             console.log(`Correo de notificación de estado de descanso médico ${nombreCompleto}`);
 
-            console.log({ responseEmail })
+            // console.log({ responseEmail })
         } else if (estado_registro === ECanje.CANJE_CONFORME) {
             // Registrar nuevo reembolso
             const fechaActual: string = HDate.getCurrentDateToString('yyyy-MM-dd')

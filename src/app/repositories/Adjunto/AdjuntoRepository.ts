@@ -50,7 +50,7 @@ class AdjuntoRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number): Promise<AdjuntoResponsePaginate> {
+    async getAllPaginate(page: number, limit: number): Promise<AdjuntoResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)

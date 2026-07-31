@@ -20,7 +20,7 @@ class GetEmpresasPaginateService {
      * @returns {Promise<EmpresaResponsePaginate>} La respuesta de obtener las empresas
      */
     async execute(page: number, limit: number, filter: string): Promise<EmpresaResponsePaginate> {
-        return await this.empresaRepository.getAllWithPaginate(page, limit, filter)
+        return await this.empresaRepository.getAllPaginate(page, limit, filter)
     }
 }
 

@@ -1,7 +1,7 @@
-import { Perfil } from "../app/models/Perfil";
+import { DetalleParametro } from "../app/models/DetalleParametro";
 
 export const PERFIL_INCLUDE = {
-    model: Perfil,
+    model: DetalleParametro,
     as: 'perfil',
     attributes: ['id', 'nombre']
 }

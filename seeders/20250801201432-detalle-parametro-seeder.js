@@ -136,8 +136,8 @@ module.exports = {
       {
         id: uuidv4(),
         parametro_clase: parametroPerfilClase,
-        nombre: 'ESPECIALISTA EMPRESA',
-        nombre_url: 'especialista-empresa',
+        nombre: 'ESPECIALISTA CLIENTE',
+        nombre_url: 'especialista-cliente',
         abreviatura: 'ESP',
         en_persona: false,
         en_empresa: false,
@@ -222,8 +222,8 @@ module.exports = {
       {
         id: uuidv4(),
         parametro_clase: parametroGrupoClase,
-        nombre: 'GRUPO ESPECIALISTA EMPRESA',
-        nombre_url: 'grupo-especialista-empresa',
+        nombre: 'GRUPO ESPECIALISTA CLIENTE',
+        nombre_url: 'grupo-especialista-cliente',
         en_persona: false,
         en_empresa: false,
         compra: false,

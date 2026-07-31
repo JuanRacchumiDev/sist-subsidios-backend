@@ -63,6 +63,7 @@ class UsuarioController {
     async createUsuario(req: Request, res: Response, next: NextFunction) {
         try {
             const usuarioData: IUsuario = req.body;
+            console.log({ usuarioData })
             const result = await CreateUsuarioService.execute(usuarioData);
             res.status(result.status || 201).json(result);
         } catch (error) {

@@ -20,7 +20,7 @@ class GetDiagnosticosPaginateService {
      * @returns {Promise<DiagnosticoResponsePaginate>} La respuesta de obtener los diagnósticos
      */
     async execute(page: number, limit: number, filter: string): Promise<DiagnosticoResponsePaginate> {
-        return await this.diagnosticoRepository.getAllWithPaginate(page, limit, filter)
+        return await this.diagnosticoRepository.getAllPaginate(page, limit, filter)
     }
 }
 

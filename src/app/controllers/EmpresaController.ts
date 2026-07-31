@@ -47,14 +47,14 @@ class EmpresaController {
 
     async getAllEmpresasPaginated(req: Request, res: Response, next: NextFunction) {
         try {
-            const page = parseInt(req.query.page as string) || 1
+            const { query: { page, limit, search } } = req
+            const setPage = parseInt(page as string) || 1
 
-            const limit = parseInt(req.query.limit as string) || 10
+            const setLimit = parseInt(limit as string) || 10
 
-            // Extracción de filtros opcionales de req.query
-            const filter = req.query.filter as string || ""
+            const setSearch = search as string || ""
 
-            const result = await GetEmpresasPaginateService.execute(page, limit, filter)
+            const result = await GetEmpresasPaginateService.execute(setPage, setLimit, setSearch)
 
             res.status(result.status || 200).json(result)
         } catch (error) {

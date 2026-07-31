@@ -21,7 +21,7 @@ class GetDescansosPaginateService {
      * @returns {Promise<DescansoMedicoResponsePaginate>} La respuesta de obtener los descansos médicos
      */
     async execute(page: number, limit: number, filters: IDescansoMedicoFilter = {}): Promise<DescansoMedicoResponsePaginate> {
-        return await this.descansoMedicoRepository.getAllWithPaginate(page, limit, filters)
+        return await this.descansoMedicoRepository.getAllPaginate(page, limit, filters)
     }
 }
 

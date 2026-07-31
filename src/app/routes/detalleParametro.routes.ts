@@ -4,7 +4,7 @@ import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
-router.get('/paginate/:clase', authToken, DetalleParametroController.getAllDetallesPaginated)
+router.get('/paginate', authToken, DetalleParametroController.getAllDetallesPaginated)
 
 // router.get('/buscar', authToken, DetalleParametroController.getDetalleByNombre)
 

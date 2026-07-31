@@ -4,8 +4,6 @@ import { authToken } from '../middlewares/authMiddleware'
 
 const router = Router()
 
-// router.get('/paginate', authToken, PersonaController.getAllPersonasPaginated)
-
 router.get('/buscar-por-tipodoc-numdoc', authToken, PersonaController.getPersonaByIdTipoDocAndNumDoc)
 
 router.get('/buscar-por-empresa-por-grupo', authToken, PersonaController.getAllPersonaByEmpresaWithGrupo)
@@ -19,6 +17,8 @@ router.get('/empresa/:idEmpresa', authToken, PersonaController.getAllPersonasByE
 router.get('/buscar-unico', authToken, PersonaController.getPersonaUnique)
 
 router.get('/', authToken, PersonaController.getAllPersonas)
+
+router.get('/no-usuarios', authToken, PersonaController.getAllPersonasSinUsuario)
 
 router.get('/:id', authToken, PersonaController.getPersonaById)
 

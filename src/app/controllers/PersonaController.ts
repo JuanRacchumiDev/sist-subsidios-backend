@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import CreatePersonaService from '../services/Persona/CreatePersona'
 import GetPersonasService from '../services/Persona/GetPersonas'
 import GetPersonaService from '../services/Persona/GetPersona'
+import GetPersonasSinUsuarioService from '../services/Persona/GetPersonasSinUsuario'
 import UpdatePersonaService from '../services/Persona/UpdatePersona'
 import GetInfoApiService from '../services/Persona/GetInfoApi'
 import GetByIdTipoAndNumDocService from '../services/Persona/GetByIdTipoAndNumDoc'
@@ -43,6 +44,15 @@ class PersonaController {
     async getAllPersonas(req: Request, res: Response, next: NextFunction) {
         try {
             const result = await GetPersonasService.execute()
+            res.status(result.status || 200).json(result)
+        } catch (error) {
+            next(error) // Pasa al error al middleware de manejo de errores
+        }
+    }
+
+    async getAllPersonasSinUsuario(req: Request, res: Response, next: NextFunction) {
+        try {
+            const result = await GetPersonasSinUsuarioService.execute()
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error) // Pasa al error al middleware de manejo de errores
@@ -119,12 +129,19 @@ class PersonaController {
 
     async getPersonasByGrupoPaginated(req: Request, res: Response, next: NextFunction) {
         try {
-            const page = parseInt(req.query.page as string) || 1
+            const {
+                query: {
+                    page,
+                    limit,
+                    nombreGrupo,
+                    numero_documento,
+                    search
+                }
+            } = req
 
-            const limit = parseInt(req.query.limit as string) || 10
+            const setPage = parseInt(page as string) || 1
 
-            // Extraemos todos los posibles filtros del query
-            const { nombreGrupo, id_empresa, numero_documento, id_tipodocumento, nombre_completo } = req.query;
+            const setLimit = parseInt(limit as string) || 10
 
             if (!nombreGrupo) {
                 return res.status(400).json({
@@ -133,16 +150,13 @@ class PersonaController {
                 });
             }
 
-            // Agrupamos los filtros en un objeto para mayor limpieza
             const filters = {
                 nombreGrupo: (nombreGrupo as string)?.trim(),
-                id_empresa: id_empresa as string,
                 numero_documento: (numero_documento as string)?.trim(),
-                id_tipodocumento: id_tipodocumento as string,
-                nombre_completo: (nombre_completo as string)?.trim()
+                search: (search as string)?.trim()
             };
 
-            const result = await GetPersonasByGrupoPaginateService.execute(page, limit, filters)
+            const result = await GetPersonasByGrupoPaginateService.execute(setPage, setLimit, filters)
 
             res.status(result.status || 200).json(result);
         } catch (error) {

@@ -21,7 +21,7 @@ class GetDocumentosTipoContPaginateService {
      * @returns {Promise<DocumentoTipoContResponsePaginate>} La respuesta de obtener los documentos
      */
     async execute(page: number, limit: number, filters: IDocumentoTipoContFilter): Promise<DocumentoTipoContResponsePaginate> {
-        return await this.documentoTipoContRepository.getAllWithPaginate(page, limit, filters)
+        return await this.documentoTipoContRepository.getAllPaginate(page, limit, filters)
     }
 }
 

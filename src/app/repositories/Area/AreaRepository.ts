@@ -26,7 +26,7 @@ class AreaRepository {
         }
     }
 
-    async getAllWithPaginate(page: number, limit: number): Promise<AreaResponsePaginate> {
+    async getAllPaginate(page: number, limit: number): Promise<AreaResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)

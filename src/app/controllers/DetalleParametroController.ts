@@ -24,17 +24,16 @@ class DetalleParametroController {
         try {
 
             const { query, params } = req
-            const { clase } = params
-            const { page, limit, filter } = query
+            const { page, limit, search, parametro_clase } = query
 
             const definePage = parseInt(page as string) || 1
 
             const defineLimit = parseInt(limit as string) || 10
 
             // Extracción de filtros opcionales de req.query
-            const defineFilter = filter as string || ""
+            const defineFilter = search as string || ""
 
-            const result = await GetDetallesPaginateService.execute(+clase, definePage, defineLimit, defineFilter)
+            const result = await GetDetallesPaginateService.execute(+(parametro_clase as string), definePage, defineLimit, defineFilter)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

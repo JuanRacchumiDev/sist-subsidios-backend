@@ -34,7 +34,7 @@ class EmpresaRepository {
         }
     }
 
-    async getAllWithPaginate(
+    async getAllPaginate(
         page: number,
         limit: number,
         filter: string

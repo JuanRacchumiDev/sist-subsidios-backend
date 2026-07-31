@@ -5,9 +5,9 @@ import generate from 'generate-password';
  * @description Genera una contraseña temporal segura.
  * @returns {string} La contraseña temporal generada.
  */
-export const generateTemporaryPassword = (): string => {
+export const generateTemporaryPassword = (length: number = 8): string => {
     return generate.generate({
-        length: 12,
+        length,
         numbers: true,
         symbols: false,
         uppercase: false,

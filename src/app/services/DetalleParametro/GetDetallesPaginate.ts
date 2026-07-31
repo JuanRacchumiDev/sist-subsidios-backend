@@ -21,7 +21,7 @@ class GetDetallesPaginateService {
      * @returns {Promise<DetalleParametroResponsePaginate>} La respuesta de obtener los detalles
      */
     async execute(clase: number, page: number, limit: number, filter: string): Promise<DetalleParametroResponsePaginate> {
-        return await this.detalleParametroRepository.getAllWithPaginate(clase, page, limit, filter)
+        return await this.detalleParametroRepository.getAllPaginate(clase, page, limit, filter)
     }
 }
 

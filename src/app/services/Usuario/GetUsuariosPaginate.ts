@@ -21,7 +21,7 @@ class GetUsuariosPaginateService {
      * @returns {Promise<UsuarioResponsePaginate>} La respuesta de obtener los usuarios
      */
     async execute(page: number, limit: number, filters: IUsuarioFilter = {}): Promise<UsuarioResponsePaginate> {
-        return await this.usuarioRepository.getAllWithPaginate(page, limit, filters)
+        return await this.usuarioRepository.getAllPaginate(page, limit, filters)
     }
 }
 
