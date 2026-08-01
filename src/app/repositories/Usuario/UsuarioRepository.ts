@@ -1,8 +1,6 @@
-import sequelize from '../../../config/database'
 import { Usuario } from "../../models/Usuario";
 import { IUsuario, UsuarioResponse } from '../../interfaces/Usuario/IUsuario';
 import bcrypt from 'bcryptjs';
-import { Perfil } from '../../models/Perfil';
 import HPagination from '../../../helpers/HPagination';
 import {
     IUsuarioPaginate,
@@ -14,7 +12,7 @@ import { COLABORADOR_INCLUDE } from '../../../includes/ColaboradorInclude';
 import { TRABAJADOR_SOCIAL_INCLUDE } from '../../../includes/TrabSocialInclude';
 import { PERSONA_INCLUDE } from '../../../includes/PersonaInclude';
 import { IUsuarioFilter } from '../../interfaces/Usuario/IUsuarioFilter';
-import { Op, QueryTypes, WhereOptions } from 'sequelize';
+import { Op, WhereOptions } from 'sequelize';
 
 class UsuarioRepository {
     /**
@@ -54,32 +52,24 @@ class UsuarioRepository {
 
             const {
                 id_perfil,
-                nombre_persona,
-                username,
-                email
+                search
             } = filters
 
-            // Construimos el filtro dinámico para el modelo principal (Usuario)
-            const whereUsuario: WhereOptions = {}
+            const orConditions: any[] = [];
 
-            if (id_perfil) {
-                whereUsuario.id_perfil = id_perfil
+            if (search && search.trim() !== '') {
+                const searchPattern = `%${search.trim()}%`;
+                orConditions.push(
+                    { username: { [Op.iLike]: searchPattern } },
+                    { email: { [Op.iLike]: searchPattern } },
+                    { nombre_persona: { [Op.iLike]: searchPattern } }
+                );
             }
 
-            if (username) {
-                whereUsuario.username = { [Op.iLike]: `%${username}%` }
-            }
-
-            if (email) {
-                whereUsuario.email = { [Op.iLike]: `%${email}%` }
-            }
-
-            // Filtro para la tabla/relación Persona
-            const wherePersona: WhereOptions = {}
-
-            if (nombre_persona) {
-                wherePersona.nombre_completo = { [Op.iLike]: `%${nombre_persona}%` }
-            }
+            const whereUsuario: WhereOptions = {
+                ...(id_perfil ? { id_perfil } : {}),
+                ...(orConditions.length > 0 ? { [Op.or]: orConditions } : {})
+            };
 
             const { count, rows } = await Usuario.findAndCountAll({
                 attributes: USUARIO_ATTRIBUTES,
@@ -91,7 +81,7 @@ class UsuarioRepository {
                     },
                     {
                         ...PERSONA_INCLUDE,
-                        where: Object.keys(wherePersona).length > 0 ? wherePersona : undefined,
+                        as: 'persona',
                         required: false
                     }
                 ],
@@ -139,9 +129,7 @@ class UsuarioRepository {
                 attributes: USUARIO_ATTRIBUTES,
                 include: [
                     PERFIL_INCLUDE,
-                    PERSONA_INCLUDE,
-                    COLABORADOR_INCLUDE,
-                    TRABAJADOR_SOCIAL_INCLUDE
+                    PERSONA_INCLUDE
                 ],
                 order: [
                     ['email', 'ASC']

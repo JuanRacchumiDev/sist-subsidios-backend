@@ -21,28 +21,27 @@ class UsuarioController {
 
     async getAllUsuariosPaginated(req: Request, res: Response, next: NextFunction) {
         try {
-            const page = parseInt(req.query.page as string) || 1
-            const limit = parseInt(req.query.limit as string) || 10
-
-            const { query } = req
-
-            // Extracción de filtros opcionales de req.query
             const {
-                id_perfil,
-                nombre_persona,
-                username,
-                email
-            } = query
+                query: {
+                    page,
+                    limit,
+                    id_perfil,
+                    search
+                }
+            } = req
+
+            const setPage = parseInt(page as string) || 1
+            const setLimit = parseInt(limit as string) || 10
 
             // Construir el objeto de filtros
             const filter: IUsuarioFilter = {
                 id_perfil: id_perfil as string,
-                nombre_persona: nombre_persona as string,
-                username: username as string,
-                email: email as string
+                search: search as string,
             }
 
-            const result = await GetUsuariosPaginateService.execute(page, limit, filter)
+            console.log({ filter })
+
+            const result = await GetUsuariosPaginateService.execute(setPage, setLimit, filter)
 
             res.status(result.status || 200).json(result)
         } catch (error) {

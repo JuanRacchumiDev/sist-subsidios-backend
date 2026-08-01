@@ -24,18 +24,22 @@ class ColaboradorController {
 
     async getAllColaboradoresPaginated(req: Request, res: Response, next: NextFunction) {
         try {
-            const page = parseInt(req.query.page as string) || 1
-
-            const limit = parseInt(req.query.limit as string) || 10
-
-            // Extracción de filtros opcionales de req.query
             const {
-                id_tipodocumento,
-                id_empresa,
-                id_cargo,
-                numero_documento,
-                nombre_completo
-            } = req.query;
+                query:
+                {
+                    page,
+                    limit,
+                    id_tipodocumento,
+                    id_empresa,
+                    id_cargo,
+                    numero_documento,
+                    nombre_completo
+                }
+            } = req
+
+            const setPage = parseInt(page as string) || 1
+
+            const setLimit = parseInt(limit as string) || 10
 
             // Construir el objeto de filtros
             const filters: IColaboradorFilter = {
@@ -46,7 +50,7 @@ class ColaboradorController {
                 nombre_completo: nombre_completo as string
             }
 
-            const result = await GetColaboradoresPaginateService.execute(page, limit, filters)
+            const result = await GetColaboradoresPaginateService.execute(setPage, setLimit, filters)
 
             res.status(result.status || 200).json(result)
         } catch (error) {

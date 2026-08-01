@@ -4,20 +4,13 @@ import {
     IDescansoMedico,
     IDescansoMedicoPaginate
 } from "../../interfaces/DescansoMedico/IDescansoMedico";
-// import { Colaborador } from "../../models/Colaborador";
 import { DescansoMedico } from "../../models/DescansoMedico";
-import { Diagnostico } from "../../models/Diagnostico";
-import { Establecimiento } from "../../models/Establecimiento";
-// import { TipoContingencia } from "../../models/TipoContingencia";
-// import { TipoDescansoMedico } from "../../models/TipoDescansoMedico";
 import sequelize from "../../../config/database";
 import { DESCANSOMEDICO_ATTRIBUTES } from "../../../constants/DescansoMedicoConstant";
 import HPagination from "../../../helpers/HPagination";
 import { TTotalDias } from '../../types/DescansoMedico/TTotalDias';
 import { parseISO, addDays } from 'date-fns';
 import { COLABORADOR_DM_INCLUDE } from "../../../includes/ColaboradorDMInclude";
-// import { TIPODM_INCLUDE } from "../../../includes/TipoDescansoMedicoInclude";
-// import { TIPO_CONTINGENCIA_INCLUDE } from "../../../includes/TipoContingenciaInclude";
 import { DIAGNOSTICO_INCLUDE } from "../../../includes/DiagnosticoInclude";
 import { Op, WhereOptions } from 'sequelize';
 import HDate from "../../../helpers/HDate"

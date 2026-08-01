@@ -24,22 +24,22 @@ class CanjeController {
 
     async getAllCanjesPaginated(req: Request, res: Response, next: NextFunction) {
         try {
-            const page = parseInt(req.query.page as string) || 1
-            const limit = parseInt(req.query.limit as string) || 10
-
-            const { query } = req
-
-            // Extracción de filtros opcionales de req.query
             const {
-                id_tipodescansomedico,
-                id_tipocontingencia,
-                nombre_colaborador,
-                codigo_canje,
-                codigo_citt,
-                fecha_inicio_subsidio,
-                fecha_final_subsidio,
-                estado
-            } = query;
+                query: {
+                    page,
+                    limit,
+                    id_tipodescansomedico,
+                    id_tipocontingencia,
+                    nombre_colaborador,
+                    codigo_canje,
+                    codigo_citt,
+                    fecha_inicio_subsidio,
+                    fecha_final_subsidio,
+                }
+            } = req
+
+            const setPage = parseInt(page as string) || 1
+            const setLimit = parseInt(limit as string) || 10
 
             // Construir el objeto de filtros (maneja el estado como booleano si es necesario)
             const filters: ICanjeFilter = {
@@ -54,7 +54,7 @@ class CanjeController {
 
             console.log({ filters })
 
-            const result = await GetCanjesPaginateService.execute(page, limit, filters)
+            const result = await GetCanjesPaginateService.execute(setPage, setLimit, filters)
 
             res.status(result.status || 200).json(result)
         } catch (error) {

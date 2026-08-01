@@ -33,6 +33,8 @@ class DocumentoTipoContController {
                 nombre: search as string
             }
 
+            console.log({ filters })
+
             const result = await GetDocumentosTipoContPaginateService.execute(setPage, setLimit, filters)
 
             res.status(result.status || 200).json(result)

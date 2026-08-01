@@ -21,14 +21,16 @@ class CargoController {
 
     async getAllCargosPaginated(req: Request, res: Response, next: NextFunction) {
         try {
-            const page = parseInt(req.query.page as string) || 1
+            const { query: { page, limit, filter } } = req
 
-            const limit = parseInt(req.query.limit as string) || 10
+            const setPage = parseInt(page as string) || 1
+
+            const setLimit = parseInt(limit as string) || 10
 
             // Extracción de filtros opcionales de req.query
-            const filter = req.query.filter as string || ""
+            const setFilter = filter as string || ""
 
-            const result = await GetCargosPaginateService.execute(page, limit, filter)
+            const result = await GetCargosPaginateService.execute(setPage, setLimit, setFilter)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

@@ -23,14 +23,12 @@ class DetalleParametroController {
     async getAllDetallesPaginated(req: Request, res: Response, next: NextFunction) {
         try {
 
-            const { query, params } = req
-            const { page, limit, search, parametro_clase } = query
+            const { query: { page, limit, search, parametro_clase } } = req
 
             const definePage = parseInt(page as string) || 1
 
             const defineLimit = parseInt(limit as string) || 10
 
-            // Extracción de filtros opcionales de req.query
             const defineFilter = search as string || ""
 
             const result = await GetDetallesPaginateService.execute(+(parametro_clase as string), definePage, defineLimit, defineFilter)

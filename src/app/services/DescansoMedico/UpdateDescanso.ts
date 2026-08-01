@@ -1,15 +1,10 @@
 import DescansoMedicoRepository from '../../repositories/DescansoMedico/DescansoMedicoRepository';
 import { IDescansoMedico, DescansoMedicoResponse } from '../../interfaces/DescansoMedico/IDescansoMedico';
-// import { IColaborador } from '../../interfaces/Colaborador/IColaborador';
 import { IPersona } from '../../interfaces/Persona/IPersona'
 import { EDescansoMedico } from '../../enums/EDescansoMedico';
 import { notificationDescansoMedicoIncorrecto } from '../../utils/emailTemplate';
-import { TDetalleEmail } from '../../types/DescansoMedico/TDetalleEmail';
-// import transporter from '../../../config/mailer';
+import { TDetalleDescansoMedico } from '../../types/TDetalleEmail'
 import PersonaRepository from '../../repositories/Persona/PersonaRepository'
-import { Persona } from '../../models/Persona'
-// import ColaboradorRepository from '../../repositories/Colaborador/ColaboradorRepository';
-// import { Colaborador } from '../../models/Colaborador';
 import { TOTAL_DIAS_DESCANSO_MEDICO } from '../../../helpers/HParameter';
 import HDate from '../../../helpers/HDate';
 import { CanjeResponse, ICanje } from '../../interfaces/Canje/ICanje';
@@ -17,11 +12,9 @@ import { ECanje } from '../../enums/ECanje';
 import CanjeRepository from '../../repositories/Canje/CanjeRepository';
 import { addMonths, differenceInCalendarDays, endOfMonth, format, isSameMonth, parseISO, startOfMonth } from 'date-fns';
 import { EmailRepository } from '../../repositories/Email/EmailRepository'
-
-// type TFechas = {
-//     fechaInicio: string
-//     fechaFinal: string
-// }
+import UsuarioRepository from '../../repositories/Usuario/UsuarioRepository'
+import { IUsuario } from '@/interfaces/Usuario/IUsuario';
+import { IDetalleParametro } from '@/interfaces/DetalleParametro/IDetalleParametro';
 
 /**
  * @class UpdateDescansoService
@@ -32,12 +25,14 @@ class UpdateDescansoService {
     protected personaRepository: PersonaRepository
     protected canjeRepository: CanjeRepository
     protected emailRepository: EmailRepository
+    protected usuarioRepository: UsuarioRepository
 
     constructor() {
         this.descansoMedicoRepository = new DescansoMedicoRepository()
         this.personaRepository = new PersonaRepository()
         this.canjeRepository = new CanjeRepository()
         this.emailRepository = new EmailRepository()
+        this.usuarioRepository = new UsuarioRepository()
     }
 
     /**
@@ -56,14 +51,14 @@ class UpdateDescansoService {
 
             console.log({ responseDescansoMedico })
 
-            const { result, data } = responseDescansoMedico
+            const { result: resultDM, data: dataDM } = responseDescansoMedico
 
-            if (!result) {
+            if (!resultDM) {
                 return responseDescansoMedico
             }
 
             // Si el estado es incorrecto, enviar correo de notificación al colaborador
-            const descanso = data as IDescansoMedico
+            const descanso = dataDM as IDescansoMedico
             console.log('descanso update', descanso)
 
             const {
@@ -83,13 +78,16 @@ class UpdateDescansoService {
                 user_crea
             } = descanso
 
-            if (estado_registro === EDescansoMedico.DOCUMENTACION_INCORRECTA) {
-                // const { correo_personal, nombre_completo } = colaborador_dm as IColaborador
-                const { email_personal: correo_personal, nombre_completo } = colaborador_dm as IPersona
-                nombreCompleto = nombre_completo as string
-                email = correo_personal as string
+            console.log({ estado_registro })
 
-                const detalleDescanso: TDetalleEmail = {
+            if (estado_registro === EDescansoMedico.DOCUMENTACION_INCORRECTA) {
+
+                // Preparando notificación para colaborador
+                const { email_personal, nombre_completo } = colaborador_dm as IPersona
+                nombreCompleto = nombre_completo as string
+                email = email_personal as string
+
+                const detalleDescanso: TDetalleDescansoMedico = {
                     fecha_inicio,
                     fecha_final,
                     total_dias,
@@ -106,25 +104,72 @@ class UpdateDescansoService {
                     appUrl: process.env.APP_URL || 'http://localhost:3000'
                 }
 
+                console.log({ dataEmail })
+
                 const htmlContent = notificationDescansoMedicoIncorrecto(dataEmail)
 
                 await this.emailRepository.sendEmail({
                     to: email,
-                    subject: '¡ESTADO DEL PROCESO DE DESCANSO MÉDICO!',
+                    subject: 'Observación en Registro de Descanso Médico',
                     html: htmlContent
                 });
 
-                // const mailOptions = {
-                //     from: process.env.EMAIL_USER_GMAIL,
-                //     to: email,
-                //     subject: '¡ESTADO DEL PROCESO DE DESCANSO MÉDICO',
-                //     html: notificationDescansoMedicoIncorrecto(dataEmail)
-                // }
+                console.log(`Correo de notificación de estado de descanso médico para colaborador ${nombreCompleto}`);
 
-                // const responseEmail = await transporter.sendMail(mailOptions);
-                console.log(`Correo de notificación de estado de descanso médico ${nombreCompleto}`);
+                // Preparando notificación para especialista empresa
+                const responseUsuario = await this.usuarioRepository.getById(user_crea as string)
 
-                // console.log({ responseEmail })
+                console.log('user_crea')
+                console.log({ user_crea })
+
+                console.log('---- responseUsuario ----')
+                console.log({ responseUsuario })
+
+                const { result: resultUsuario, data: dataUsuario } = responseUsuario
+
+                if (resultUsuario && dataUsuario) {
+                    const usuario = dataUsuario as IUsuario
+
+                    console.log({ usuario })
+
+                    const isValidaEspCliente = usuario && usuario.perfil && (usuario.perfil.nombre_url as string) === 'especialista-empresa'
+
+                    console.log({ isValidaEspCliente })
+
+                    if (isValidaEspCliente) {
+                        const { email: emailEspCliente } = usuario
+
+                        const detalleDescanso: TDetalleDescansoMedico = {
+                            fecha_inicio,
+                            fecha_final,
+                            total_dias,
+                            nombre_tipocontingencia,
+                            nombre_tipodescansomedico,
+                            nombre_diagnostico,
+                            nombre_establecimiento,
+                            observacion
+                        }
+
+                        const dataEmail = {
+                            nombreCompleto,
+                            detalle: detalleDescanso,
+                            appUrl: process.env.APP_URL || 'http://localhost:3000'
+                        }
+
+                        console.log({ dataEmail })
+
+                        const htmlContent = notificationDescansoMedicoIncorrecto(dataEmail)
+
+                        await this.emailRepository.sendEmail({
+                            to: emailEspCliente as string,
+                            subject: 'Observación en Registro de Descanso Médico',
+                            html: htmlContent
+                        });
+
+                        console.log(`Correo de notificación de estado de descanso médico para especialista cliente`);
+                    }
+                }
+
             } else if (estado_registro === EDescansoMedico.REGISTRO_EXITOSO) {
 
                 console.log('creando canjes desde update descanso')
@@ -144,7 +189,6 @@ class UpdateDescansoService {
                 const userCrea = user_crea as string
 
                 // Obteniendo datos del colaborador
-                // const responseColaborador = await this.colaboradorRepository.getById(idColaborador)
                 const responseColaborador = await this.personaRepository.getById(idColaborador)
 
                 const { result: resultColaborador, data: dataColaborador } = responseColaborador
@@ -291,9 +335,7 @@ class UpdateDescansoService {
 
                     const newDiasAcumulados = diasAcumulados + totalDiasActual
 
-                    // Si la suma de días (anteriores + actual) es menor o igual a 20, no se generan canjes
                     if (newDiasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
-                        // if (diasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
                         console.log('creando canjes desde update descanso')
                         console.log('bb')
 
@@ -305,7 +347,6 @@ class UpdateDescansoService {
 
                     // Lógica del primer canje (no subsidiado)
                     // Se crean canjes para los días no subsidiados (hasta 20 días en total)
-                    // if (diasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
                     if (newDiasAcumulados > TOTAL_DIAS_DESCANSO_MEDICO) {
                         console.log('nuevos días acumulados mayor a los días total_dias_descanso_medico')
 
@@ -316,8 +357,6 @@ class UpdateDescansoService {
                         fechaInicioSubsidio = fechaInicio;
 
                         fechaFinalSubsidio = fechaFinalPrimerCanje;
-
-                        // isReembolsable = false;
 
                         console.log({ diasMaximo })
                         console.log({ fechaFinalPrimerCanje })
@@ -364,7 +403,6 @@ class UpdateDescansoService {
                             fechaInicioSegundoCanje = fechaInicio;
                         } else {
                             console.log('qqqqq')
-                            // const fechaFinalPrimerCanje = HDate.addDaysToDate(fechaInicio, TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados - 1);
                             console.log('TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados', (TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados))
                             const fechaFinalPrimerCanje = HDate.addDaysToDate(fechaInicio, TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados - 1)
                             fechaInicioSegundoCanje = HDate.addDaysToDate(fechaFinalPrimerCanje, 1);
@@ -377,8 +415,6 @@ class UpdateDescansoService {
                         fechaInicioSubsidio = fechaInicioSegundoCanje;
 
                         fechaFinalSubsidio = fechaFinal;
-
-                        // isReembolsable = true;
 
                         console.log({ fechaInicioSegundoCanje })
                         console.log({ fechaInicioSubsidio })

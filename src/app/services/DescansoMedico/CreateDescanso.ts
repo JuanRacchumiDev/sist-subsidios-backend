@@ -26,7 +26,7 @@ import {
     parseISO
 } from 'date-fns';
 import { EDescansoMedico } from '../../enums/EDescansoMedico';
-import { TDetalleEmail } from '../../types/DescansoMedico/TDetalleEmail';
+import { TDetalleDescansoMedico } from '../../types/TDetalleEmail';
 import { ITipoContingencia } from '../../interfaces/TipoContingencia/ITipoContingencia';
 import { ITipoDescansoMedico } from '../../interfaces/TipoDescansoMedico/ITipoDescansoMedico';
 import { IDiagnostico } from '../../interfaces/Diagnostico/IDiagnostico';
@@ -318,7 +318,7 @@ class CreateDescansoService {
             await this.handleSuccess(nombreColaborador, correoPersonal)
 
             if (estado_registro === EDescansoMedico.DOCUMENTACION_INCORRECTA) {
-                const detalleDescanso: TDetalleEmail = {
+                const detalleDescanso: TDetalleDescansoMedico = {
                     fecha_inicio,
                     fecha_final,
                     total_dias,

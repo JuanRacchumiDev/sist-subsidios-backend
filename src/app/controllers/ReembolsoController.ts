@@ -18,11 +18,13 @@ class ReembolsoController {
 
     async getAllReembolsosPaginated(req: Request, res: Response, next: NextFunction) {
         try {
-            const page = parseInt(req.query.page as string) || 1
+            const { query: { page, limit } } = req
 
-            const limit = parseInt(req.query.limit as string) || 10
+            const setPage = parseInt(page as string) || 1
 
-            const result = await GetReembolsosPaginateService.execute(page, limit)
+            const setLimit = parseInt(limit as string) || 10
+
+            const result = await GetReembolsosPaginateService.execute(setPage, setLimit)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

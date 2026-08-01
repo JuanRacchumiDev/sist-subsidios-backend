@@ -20,7 +20,6 @@ class DocumentoTipoContRepository {
                 attributes: DOCUMENTO_TIPO_CONT_ATTRIBUTES,
                 include: [
                     DETALLE_PARAMETRO_INCLUDE
-                    // TIPO_CONTINGENCIA_INCLUDE
                 ],
                 order: [
                     ['nombre', 'ASC']

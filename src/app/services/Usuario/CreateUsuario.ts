@@ -3,7 +3,6 @@ import PersonaRepository from '../../repositories/Persona/PersonaRepository'
 import DetalleParametroRepository from '../../repositories/DetalleParametro/DetalleParametroRepository'
 import { IUsuario, UsuarioResponse } from '../../interfaces/Usuario/IUsuario';
 import { newUserNotificationTemplate } from '../../utils/emailTemplate';
-// import transporter from '../../../config/mailer';
 import { generateTemporaryPassword } from '../../utils/generatePassword';
 import { EmailRepository } from '../../repositories/Email/EmailRepository'
 import { IPersona, PersonaResponse } from '../../interfaces/Persona/IPersona';
@@ -31,17 +30,25 @@ class CreateUsuarioService {
      * @returns {Promise<UsuarioResponse>} La respuesta de la operación.
      */
     async execute(data: IUsuario): Promise<UsuarioResponse> {
+        let persona: IPersona = {}
+        let perfil: IDetalleParametro = {}
+
         let { id_persona, id_perfil, username, email } = data
 
         try {
             if (id_persona && id_perfil) {
+
                 // Obteniendo la persona seleccionada
                 const responsePersona = await this.personaRepository.getById(id_persona) as PersonaResponse
 
                 const { result: resultPersona, data: dataPersona } = responsePersona
 
                 if (resultPersona && dataPersona) {
-                    data.persona = dataPersona as IPersona
+                    persona = dataPersona as IPersona
+
+                    const { nombre_completo } = persona
+
+                    data.nombre_persona = nombre_completo
                 }
 
                 // Obteniendo el perfil seleccionado
@@ -50,32 +57,34 @@ class CreateUsuarioService {
                 const { result: resultPerfil, data: dataPerfil } = responsePerfil
 
                 if (resultPerfil && dataPerfil) {
-                    data.perfil = dataPerfil as IDetalleParametro
+                    perfil = dataPerfil as IDetalleParametro
                 }
 
                 // Definiendo contraseña de acceso
                 const tempPassword: string = generateTemporaryPassword()
 
-                const isValidDocumento = data.persona && data.persona.numero_documento
+                const isValidDocumento = persona && persona.numero_documento
 
-                data.password = (isValidDocumento) ? data.persona?.numero_documento : tempPassword
+                const passwordBase = (isValidDocumento) ? persona?.numero_documento : tempPassword
+
+                data.password = passwordBase
 
                 // Obteniendo el resultado del registro de un usuario
                 const responseUsuario = await this.usuarioRepository.create(data)
 
                 console.log({ responseUsuario })
 
-                const { result: resultUsuario, data: dataUsuario, error: errorUsuario } = responseUsuario
+                const { result: resultUsuario, data: dataUsuario } = responseUsuario
 
                 if (resultUsuario && dataUsuario) {
                     const usuario = dataUsuario as IUsuario
 
                     const dataEmail = {
-                        persona: data.persona,
-                        perfil: data.perfil,
+                        persona,
+                        perfil,
                         username: usuario.username,
                         email: usuario.email,
-                        password: data.password,
+                        password: passwordBase,
                         appUrl: process.env.APP_URL || "http://localhost:3000"
                     }
 
@@ -88,6 +97,8 @@ class CreateUsuarioService {
                         subject: '¡Bienvenido a la plataforma!',
                         html: htmlContent
                     });
+
+                    delete data.password
 
                     console.log(`Correo de bienvenida enviado a ${username}`);
 

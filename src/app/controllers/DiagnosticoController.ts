@@ -21,18 +21,11 @@ class DiagnosticoController {
 
     async getAllDiagnosticosPaginated(req: Request, res: Response, next: NextFunction) {
         try {
-            // const page = parseInt(req.query.page as string) || 1
-            // const limit = parseInt(req.query.limit as string) || 10
-            // // Extracción de filtros opcionales de req.query
-            // const filter = req.query.filter as string || ""
-
-            const { query } = req
-            const { page, limit, filter } = query
+            const { query: { page, limit, filter } } = req
 
             const definePage = parseInt(page as string) || 1
             const defineLimit = parseInt(limit as string) || 10
 
-            // Extracción de filtros opcionales de req.query
             const defineFilter = filter as string || ""
 
             const result = await GetDiagnosticosPaginateService.execute(definePage, defineLimit, defineFilter)

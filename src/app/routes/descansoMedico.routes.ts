@@ -12,6 +12,8 @@ router.get('/colaborador/paginate', authToken, DescansoMedicoController.getAllDe
 
 router.get('/paginate', authToken, DescansoMedicoController.getAllDescansosPaginated)
 
+router.get('/test/valida-perfil/:id', DescansoMedicoController.getValidaPerfilUserCrea)
+
 router.get('/', authToken, DescansoMedicoController.getAllDescansos)
 
 router.get('/:id', authToken, DescansoMedicoController.getDescansoById)

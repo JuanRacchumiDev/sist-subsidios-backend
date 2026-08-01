@@ -1,6 +1,7 @@
 import { NextFunction, Response, Request } from "express";
 import GetDescansosService from '../services/DescansoMedico/GetDescansos'
 import GetDescansoService from '../services/DescansoMedico/GetDescanso'
+import GetValidaPerfilService from '../services/DescansoMedico/GetValidaPerfil'
 import GetDescansosPaginateService from '../services/DescansoMedico/GetDescansosPaginate'
 import GetDescansosByColaboradorPaginate from "../services/DescansoMedico/GetDescansosByColaboradorPaginate"
 import GetDescansosForReportService from "../services/DescansoMedico/GetDescansosForReport"
@@ -28,22 +29,24 @@ class DescansoMedicoController {
 
     async getAllDescansosPaginated(req: Request, res: Response, next: NextFunction) {
         try {
-            const page = parseInt(req.query.page as string) || 1
-            const limit = parseInt(req.query.limit as string) || 10
-
-            const { query } = req
-
-            // Extracción de filtros opcionales de req.query
             const {
-                id_colaborador,
-                id_tipodescansomedico,
-                id_tipocontingencia,
-                id_empresa,
-                nombre_colaborador,
-                fecha_inicio,
-                fecha_final,
-                user_crea
-            } = query;
+                query:
+                {
+                    page,
+                    limit,
+                    id_colaborador,
+                    id_tipodescansomedico,
+                    id_tipocontingencia,
+                    id_empresa,
+                    search,
+                    fecha_inicio,
+                    fecha_final,
+                    user_crea
+                }
+            } = req
+
+            const setPage = parseInt(page as string) || 1
+            const setLimit = parseInt(limit as string) || 10
 
             // Construir el objeto de filtros (maneja el estado como booleano si es necesario)
             const filters: IDescansoMedicoFilter = {
@@ -51,7 +54,7 @@ class DescansoMedicoController {
                 id_tipodescansomedico: id_tipodescansomedico as string,
                 id_tipocontingencia: id_tipocontingencia as string,
                 id_empresa: id_empresa as string,
-                nombre_colaborador: (nombre_colaborador as string)?.trim(),
+                nombre_colaborador: (search as string)?.trim(),
                 fecha_inicio: fecha_inicio as string,
                 fecha_final: fecha_final as string,
                 user_crea: user_crea as string
@@ -59,7 +62,7 @@ class DescansoMedicoController {
 
             console.log({ filters })
 
-            const result = await GetDescansosPaginateService.execute(page, limit, filters)
+            const result = await GetDescansosPaginateService.execute(setPage, setLimit, filters)
 
             res.status(result.status || 200).json(result)
         } catch (error) {
@@ -69,20 +72,24 @@ class DescansoMedicoController {
 
     async getAllDescansosByColaboradorPaginated(req: Request, res: Response, next: NextFunction) {
         try {
-            const idColaborador = req.query.idColaborador as string
-
-            const page = parseInt(req.query.page as string) || 1
-
-            const limit = parseInt(req.query.limit as string) || 10
-
-            // Extracción de filtros opcionales de req.query
             const {
-                id_tipodescansomedico,
-                id_tipocontingencia,
-                fecha_inicio,
-                fecha_final,
-                estado
-            } = req.query;
+                query:
+                {
+                    idColaborador,
+                    page,
+                    limit,
+                    id_tipodescansomedico,
+                    id_tipocontingencia,
+                    fecha_inicio,
+                    fecha_final,
+                }
+            } = req
+
+            const setIdColaborador = idColaborador as string
+
+            const setPage = parseInt(page as string) || 1
+
+            const setLimit = parseInt(limit as string) || 10
 
             // Construir el objeto de filtros (maneja el estado como booleano si es necesario)
             const filters: IDescansoMedicoFilter = {
@@ -90,10 +97,9 @@ class DescansoMedicoController {
                 id_tipocontingencia: id_tipocontingencia as string,
                 fecha_inicio: fecha_inicio as string,
                 fecha_final: fecha_final as string,
-                // estado: estado !== undefined ? estado === 'true' : undefined // Convierte 'true'/'false' a booleano, o undefined si no está
             };
 
-            const result = await GetDescansosByColaboradorPaginate.execute(idColaborador, page, limit, filters)
+            const result = await GetDescansosByColaboradorPaginate.execute(setIdColaborador, setPage, setLimit, filters)
 
             res.status(result.status || 200).json(result)
         } catch (error) {
@@ -301,6 +307,16 @@ class DescansoMedicoController {
         try {
             const { id } = req.params;
             const result = await GetDescansoService.execute(id);
+            res.status(result.status || 200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getValidaPerfilUserCrea(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { id } = req.params;
+            const result = await GetValidaPerfilService.execute(id);
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);
