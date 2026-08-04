@@ -32,7 +32,7 @@ Parentesco.init({
         allowNull: false
     },
     nombre: {
-        type: new DataTypes.STRING(40),
+        type: DataTypes.STRING(40),
         allowNull: false,
         unique: true,
         set(value: string) {
@@ -40,7 +40,7 @@ Parentesco.init({
         }
     },
     nombre_url: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: false,
         unique: true,
         set(value: string) {

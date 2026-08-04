@@ -44,11 +44,11 @@ Establecimiento.init({
         }
     },
     ruc: {
-        type: new DataTypes.STRING(13),
+        type: DataTypes.STRING(13),
         allowNull: true
     },
     nombre: {
-        type: new DataTypes.STRING(60),
+        type: DataTypes.STRING(60),
         allowNull: false,
         unique: true,
         set(value: string) {
@@ -56,21 +56,21 @@ Establecimiento.init({
         }
     },
     direccion: {
-        type: new DataTypes.STRING(60),
+        type: DataTypes.STRING(60),
         allowNull: true,
         set(value: string) {
             this.setDataValue('direccion', value ? value.trim() : undefined)
         }
     },
     telefono: {
-        type: new DataTypes.STRING(13),
+        type: DataTypes.STRING(13),
         allowNull: true,
         set(value: string) {
             this.setDataValue('telefono', value ? value.trim() : undefined)
         }
     },
     nombre_tipoestablecimiento: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_tipoestablecimiento', value ? value.trim() : undefined)

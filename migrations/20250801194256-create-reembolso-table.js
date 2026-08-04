@@ -17,6 +17,14 @@ module.exports = {
           key: 'id'
         }
       },
+      id_colaborador: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'persona',
+          key: 'id'
+        }
+      },
       correlativo: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -63,6 +71,10 @@ module.exports = {
       observacion: {
         type: Sequelize.TEXT,
         allowNull: true
+      },
+      nombre_colaborador: {
+        type: Sequelize.STRING(80),
+        allowNull: false
       },
       user_crea: {
         type: Sequelize.UUID,

@@ -9,13 +9,13 @@ import { Canje } from "../../models/Canje"
 import sequelize from "../../../config/database"
 import { CANJE_ATTRIBUTES } from "../../../constants/CanjeConstant"
 import HPagination from "../../../helpers/HPagination"
-import { Op, WhereOptions, literal, fn, col } from "sequelize"
+import { Op, literal, fn, col, WhereOptions } from "sequelize"
 import { DESCANSOMEDICO_INCLUDE } from "../../../includes/DescansoMedicoInclude"
 import HDate from "../../../helpers/HDate"
 import { ICanjeFilter } from "../../interfaces/Canje/ICanjeFilter"
 import { TItemReport } from '../../types/Canje/TItemReport'
 import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude"
-import { PERSONA_INCLUDE } from "../../../includes/PersonaInclude"
+import { DescansoMedico } from "../../models/DescansoMedico"
 import { Persona } from "../../models/Persona"
 
 type TReportResponse = {
@@ -64,108 +64,85 @@ class CanjeRepository {
         filters: ICanjeFilter = {}
     ): Promise<CanjeResponsePaginate> {
         try {
-            const offset = HPagination.getOffset(page, limit)
+            const offset = HPagination.getOffset(page, limit);
 
             const {
                 id_tipodescansomedico,
                 id_tipocontingencia,
+                id_empresa,
                 nombre_colaborador,
-                codigo_canje,
-                codigo_citt,
                 fecha_inicio_subsidio,
                 fecha_final_subsidio
-            } = filters
+            } = filters;
 
-            console.log({ id_tipodescansomedico })
-            console.log({ id_tipocontingencia })
-            console.log({ nombre_colaborador })
-            console.log({ fecha_inicio_subsidio })
-            console.log({ fecha_final_subsidio })
+            // Filtros para la tabla Canje
+            const whereCanje: WhereOptions = {};
 
-            // 1. Condiciones iniciales
-            const conditions = ["1 = 1"];
-            const replacements: any = { limit, offset };
+            if (fecha_inicio_subsidio && !fecha_final_subsidio) {
+                whereCanje.fecha_inicio_subsidio = { [Op.gte]: fecha_inicio_subsidio };
+            } else if (!fecha_inicio_subsidio && fecha_final_subsidio) {
+                whereCanje.fecha_final_subsidio = { [Op.lte]: fecha_final_subsidio };
+            } else if (fecha_inicio_subsidio && fecha_final_subsidio) {
+                whereCanje.fecha_inicio_subsidio = { [Op.gte]: fecha_inicio_subsidio };
+                whereCanje.fecha_final_subsidio = { [Op.lte]: fecha_final_subsidio };
+            }
+
+            // Filtros para DescansoMedico
+            const whereDescansoMedico: WhereOptions = {};
 
             if (id_tipodescansomedico) {
-                conditions.push("dm.id_tipodescansomedico = :id_tipodescansomedico");
-                replacements.id_tipodescansomedico = id_tipodescansomedico;
+                whereDescansoMedico.id_tipodescansomedico = id_tipodescansomedico;
             }
 
             if (id_tipocontingencia) {
-                conditions.push("dm.id_tipocontingencia = :id_tipocontingencia");
-                replacements.id_tipocontingencia = id_tipocontingencia;
+                whereDescansoMedico.id_tipocontingencia = id_tipocontingencia;
             }
+
+            if (id_empresa) {
+                whereDescansoMedico.id_empresa = id_empresa;
+            }
+
+            // Filtros para Persona (Colaborador)
+            let wherePersona: WhereOptions | undefined = undefined;
 
             if (nombre_colaborador) {
-                conditions.push("LOWER(p.nombre_completo) LIKE LOWER(:nombre_colaborador)");
-                replacements.nombre_colaborador = `%${nombre_colaborador}%`;
+                wherePersona = {
+                    [Op.or]: [
+                        { nombres: { [Op.iLike]: `%${nombre_colaborador}%` } },
+                        { apellido_paterno: { [Op.iLike]: `%${nombre_colaborador}%` } },
+                        { apellido_materno: { [Op.iLike]: `%${nombre_colaborador}%` } }
+                    ]
+                };
             }
 
-            // Filtro para fecha de inicio
-            if (fecha_inicio_subsidio && !fecha_final_subsidio) {
-                conditions.push("c.fecha_inicio_subsidio >= :fecha_inicio_subsidio")
-                replacements.fecha_inicio_subsidio = fecha_inicio_subsidio
-            }
-
-            // Filtro para fecha final
-            if (!fecha_inicio_subsidio && fecha_final_subsidio) {
-                conditions.push("c.fecha_final_subsidio <= :fecha_final_subsidio")
-                replacements.fecha_final_subsidio = fecha_final_subsidio
-            }
-
-            // Filtro por rango de fechas (Fecha de inicio del descanso)
-            if (fecha_inicio_subsidio && fecha_final_subsidio) {
-                conditions.push("c.fecha_inicio_subsidio >= :fecha_inicio_subsidio AND c.fecha_final_subsidio <= :fecha_final_subsidio");
-                replacements.fecha_inicio_subsidio = fecha_inicio_subsidio;
-                replacements.fecha_final_subsidio = fecha_final_subsidio;
-            }
-
-            const whereClause = `WHERE ${conditions.join(" AND ")}`
-
-            console.log({ whereClause })
-
-            const baseQuery = `
-                FROM canje c
-                INNER JOIN descanso_medico dm on c.id_descansomedico = dm.id
-                INNER JOIN persona p on p.id = c.id_colaborador
-                ${whereClause}
-            `
-
-            const queryData = `
-                SELECT
-                    p.apellido_paterno as apellido_paterno_colaborador,
-                    p.apellido_materno as apellido_materno_colaborador,
-                    p.nombres as nombres_colaborador,
-                    dm.id_tipodescansomedico,
-                    dm.id_tipocontingencia,
-                    c.*
-                ${baseQuery}
-                ORDER BY p.apellido_paterno ASC, c.fecha_inicio_subsidio ASC
-                LIMIT :limit OFFSET :offset;
-            `
-
-            console.log({ queryData })
-
-            const queryCount = `SELECT COUNT(c.id) as total ${baseQuery}`
-
-            const rows = await sequelize.query(queryData, {
-                replacements,
-                type: 'SELECT',
-                model: Canje,
-                mapToModel: true
-            })
-
-            console.log({ rows })
-
-            const [countResult]: any = await sequelize.query(queryCount, {
-                replacements,
-                type: 'SELECT'
+            const { rows, count: total } = await Canje.findAndCountAll({
+                where: whereCanje,
+                limit,
+                offset,
+                distinct: true,
+                include: [
+                    {
+                        model: DescansoMedico,
+                        as: 'descansoMedico',
+                        required: Object.keys(whereDescansoMedico).length > 0,
+                        where: Object.keys(whereDescansoMedico).length > 0 ? whereDescansoMedico : undefined
+                    },
+                    {
+                        model: Persona,
+                        as: 'persona',
+                        required: !!wherePersona,
+                        where: wherePersona
+                    }
+                ],
+                order: [
+                    [{ model: Persona, as: 'persona' }, 'apellido_paterno', 'ASC'],
+                    ['fecha_inicio_subsidio', 'ASC']
+                ]
             });
 
-            const total = parseInt(countResult.total);
-            const totalPages = Math.ceil(total / limit)
-            const nextPage = HPagination.getNextPage(page, limit, total)
-            const previousPage = HPagination.getPreviousPage(page)
+            const totalPages = Math.ceil(total / limit);
+            const nextPage = HPagination.getNextPage(page, limit, total);
+            const previousPage = HPagination.getPreviousPage(page);
 
             const pagination: ICanjePaginate = {
                 currentPage: page,
@@ -174,17 +151,17 @@ class CanjeRepository {
                 totalItems: total,
                 nextPage,
                 previousPage
-            }
+            };
 
             return {
                 result: true,
-                data: rows,
+                data: rows as unknown as ICanje[],
                 pagination,
                 status: 200
             };
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-            return { result: false, error: errorMessage, status: 500 }
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            return { result: false, error: errorMessage, status: 500 };
         }
     }
 

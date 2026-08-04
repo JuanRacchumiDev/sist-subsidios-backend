@@ -1,12 +1,6 @@
 import { IColaborador, ColaboradorResponse, ColaboradorResponsePaginate, IColaboradorPaginate } from "../../interfaces/Colaborador/IColaborador";
-import { Area } from "../../models/Area";
-import { Empresa } from "../../models/Empresa";
-import { Pais } from "../../models/Pais";
-import { Sede } from "../../models/Sede";
-import { TipoDocumento } from "../../models/TipoDocumento";
 import { Colaborador } from "../../models/Colaborador";
 import { Persona } from "../../models/Persona"
-import sequelize from '../../../config/database'
 import { TValidateFields } from "../../types/TTypeFields";
 import { Op, WhereOptions } from "sequelize";
 import { COLABORADOR_ATTRIBUTES } from "../../../constants/ColaboradorConstant";

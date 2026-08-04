@@ -12,6 +12,6 @@ router.get('/:id', authToken, ReembolsoController.getReembolsoById)
 
 router.post('/', authToken, ReembolsoController.createReembolso)
 
-// router.patch('/:id', authToken, ReembolsoController.updateCanje)
+router.patch('/:id', authToken, ReembolsoController.updateReembolso)
 
 export default router

@@ -2,13 +2,16 @@ import { DataTypes, Model, Optional } from 'sequelize'
 import { IReembolso } from '../interfaces/Reembolso/IReembolso';
 import { EReembolso } from '../enums/EReembolso';
 import { Canje } from './Canje';
+import { Persona } from './Persona';
 import sequelize from '../../config/database'
+import { Colaborador } from './Colaborador';
 
 interface ReembolsoCreationAttributes extends Optional<IReembolso, 'id'> { }
 
 export class Reembolso extends Model<IReembolso, ReembolsoCreationAttributes> implements IReembolso {
     public id?: string | undefined;
     public id_canje?: string | undefined;
+    public id_colaborador?: string | undefined;
     public correlativo?: number | undefined;
     public codigo?: string | undefined;
     public codigo_reembolso?: string | undefined;
@@ -21,6 +24,7 @@ export class Reembolso extends Model<IReembolso, ReembolsoCreationAttributes> im
     public is_cobrable?: boolean | undefined;
     public observacion?: string | undefined;
     public estado_registro?: EReembolso | undefined;
+    public nombre_colaborador?: string | undefined;
     public user_crea?: string | undefined;
     public user_actualiza?: string | undefined;
     public user_elimina?: string | undefined;
@@ -34,6 +38,7 @@ export class Reembolso extends Model<IReembolso, ReembolsoCreationAttributes> im
 
     // Asociaciones
     public getCanje!: () => Promise<Canje>
+    public getColaborador!: () => Promise<Colaborador>
 }
 
 Reembolso.init({
@@ -51,25 +56,33 @@ Reembolso.init({
             key: 'id'
         }
     },
+    id_colaborador: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: Persona,
+            key: 'id'
+        }
+    },
     correlativo: {
         type: DataTypes.INTEGER,
         allowNull: false,
         autoIncrement: true
     },
     codigo: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: true
     },
     codigo_reembolso: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: true
     },
     numero_expediente: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: true
     },
     fecha_registro: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     fecha_reembolso: {
@@ -77,15 +90,15 @@ Reembolso.init({
         allowNull: true
     },
     fecha_maxima_reembolso: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     fecha_maxima_subsanar: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     fecha_pago: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     is_cobrable: {
@@ -100,8 +113,15 @@ Reembolso.init({
             this.setDataValue('observacion', value ? value.trim() : undefined)
         }
     },
+    nombre_colaborador: {
+        type: DataTypes.STRING(80),
+        allowNull: false,
+        set(value: string) {
+            this.setDataValue('nombre_colaborador', value ? value.trim() : undefined)
+        }
+    },
     estado_registro: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: false
     },
     user_crea: {

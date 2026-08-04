@@ -1,9 +1,11 @@
 import { EReembolso } from "../../enums/EReembolso"
 import { ICanje } from "../Canje/ICanje"
+import { IColaborador } from "../Colaborador/IColaborador"
 
 export interface IReembolso {
     id?: string
     id_canje?: string
+    id_colaborador?: string
     correlativo?: number
     codigo?: string
     codigo_reembolso?: string
@@ -15,6 +17,7 @@ export interface IReembolso {
     fecha_pago?: string
     is_cobrable?: boolean
     observacion?: string
+    nombre_colaborador?: string
     user_crea?: string
     user_actualiza?: string
     user_elimina?: string
@@ -22,6 +25,7 @@ export interface IReembolso {
     sistema?: boolean
     estado?: boolean
     canje?: ICanje
+    colaborador?: IColaborador
 }
 
 export interface ReembolsoResponse {

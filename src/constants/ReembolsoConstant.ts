@@ -1,6 +1,7 @@
 export const REEMBOLSO_ATTRIBUTES = [
     'id',
     'id_canje',
+    'id_colaborador',
     'correlativo',
     'codigo',
     'codigo_reembolso',
@@ -9,8 +10,12 @@ export const REEMBOLSO_ATTRIBUTES = [
     'fecha_reembolso',
     'fecha_maxima_reembolso',
     'fecha_maxima_subsanar',
+    'fecha_pago',
     'is_cobrable',
     'observacion',
+    'user_crea',
+    'user_actualiza',
     'estado_registro',
-    'estado'
+    'estado',
+    'nombre_colaborador'
 ]

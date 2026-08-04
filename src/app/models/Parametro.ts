@@ -29,21 +29,21 @@ Parametro.init({
         allowNull: false
     },
     nombre: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre', value ? value.trim() : undefined)
         }
     },
     nombre_url: {
-        type: new DataTypes.STRING(120),
+        type: DataTypes.STRING(120),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_url', value ? value.trim() : undefined)
         }
     },
     descripcion: {
-        type: new DataTypes.STRING(120),
+        type: DataTypes.STRING(120),
         allowNull: true,
         set(value: string) {
             this.setDataValue('descripcion', value ? value.trim() : undefined)

@@ -74,7 +74,7 @@ Canje.init({
     },
     id_colaborador: {
         type: DataTypes.UUID,
-        defaultValue: false,
+        allowNull: false,
         references: {
             model: Persona,
             key: 'id'
@@ -86,68 +86,68 @@ Canje.init({
         autoIncrement: true
     },
     codigo: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: true,
         set(value: string) {
             this.setDataValue('codigo', value ? value.trim() : undefined)
         }
     },
     codigo_canje: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: true,
         set(value: string) {
             this.setDataValue('codigo_canje', value ? value.trim() : undefined)
         }
     },
     codigo_citt: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: true,
         set(value: string) {
             this.setDataValue('codigo_citt', value ? value.trim() : undefined)
         }
     },
     fecha_inicio_subsidio: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     fecha_final_subsidio: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     fecha_otorgamiento: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     fecha_inicio_dm: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     fecha_final_dm: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     fecha_canje: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     fecha_maxima_canje: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     fecha_registro: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     fecha_actualiza: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     fecha_elimina: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     fecha_maxima_subsanar: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     dia_fecha_inicio_subsidio: {
@@ -203,21 +203,21 @@ Canje.init({
         }
     },
     nombre_colaborador: {
-        type: new DataTypes.STRING(80),
+        type: DataTypes.STRING(80),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_colaborador', value ? value.trim() : undefined)
         }
     },
     nombre_tipodescansomedico: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_tipodescansomedico', value ? value.trim() : undefined)
         }
     },
     nombre_tipocontingencia: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_tipocontingencia', value ? value.trim() : undefined)
@@ -236,7 +236,7 @@ Canje.init({
         allowNull: true
     },
     estado_registro: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: false
     },
     sistema: {

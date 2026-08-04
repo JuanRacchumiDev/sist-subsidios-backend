@@ -126,7 +126,7 @@ Colaborador.init({
         }
     },
     numero_documento: {
-        type: new DataTypes.STRING(15),
+        type: DataTypes.STRING(15),
         allowNull: false,
         unique: true,
         set(value: string) {
@@ -134,110 +134,110 @@ Colaborador.init({
         }
     },
     apellido_paterno: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: false,
         set(value: string) {
             this.setDataValue('apellido_paterno', value ? value.trim() : undefined)
         }
     },
     apellido_materno: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: false,
         set(value: string) {
             this.setDataValue('apellido_materno', value ? value.trim() : undefined)
         }
     },
     nombres: {
-        type: new DataTypes.STRING(40),
+        type: DataTypes.STRING(40),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombres', value ? value.trim() : undefined)
         }
     },
     nombre_completo: {
-        type: new DataTypes.STRING(80),
+        type: DataTypes.STRING(80),
         allowNull: false,
         get() {
             return `${this.nombres || ''} ${this.apellido_paterno || ''} ${this.apellido_materno || ''}`.trim()
         }
     },
     fecha_nacimiento: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: false
     },
     fecha_ingreso: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: false
     },
     fecha_salida: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: true
     },
     nombre_area: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_area', value ? value.trim() : undefined)
         }
     },
     nombre_sede: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_sede', value ? value.trim() : undefined)
         }
     },
     nombre_pais: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: true,
         set(value: string) {
             this.setDataValue('nombre_pais', value ? value.trim() : undefined)
         }
     },
     correo_institucional: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: false,
         set(value: string) {
             this.setDataValue('correo_institucional', value ? value.trim() : undefined)
         }
     },
     correo_personal: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: false,
         set(value: string) {
             this.setDataValue('correo_personal', value ? value.trim() : undefined)
         }
     },
     numero_celular: {
-        type: new DataTypes.STRING(13),
+        type: DataTypes.STRING(13),
         allowNull: false,
         set(value: string) {
             this.setDataValue('numero_celular', value ? value.trim() : undefined)
         }
     },
     contacto_emergencia: {
-        type: new DataTypes.STRING(80),
+        type: DataTypes.STRING(80),
         allowNull: true,
         set(value: string) {
             this.setDataValue('contacto_emergencia', value ? value.trim() : undefined)
         }
     },
     numero_celular_emergencia: {
-        type: new DataTypes.STRING(13),
+        type: DataTypes.STRING(13),
         allowNull: true,
         set(value: string) {
             this.setDataValue('numero_celular_emergencia', value ? value.trim() : undefined)
         }
     },
     foto: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: true,
         set(value: string) {
             this.setDataValue('foto', value ? value.trim() : undefined)
         }
     },
     curriculum_vitae: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: true,
         set(value: string) {
             this.setDataValue('curriculum_vitae', value ? value.trim() : undefined)

@@ -1,12 +1,5 @@
 import { ITrabajadorSocial, ITrabajadorSocialPaginate, TrabajadorSocialResponse, TrabajadorSocialResponsePaginate } from "../../interfaces/TrabajadorSocial/ITrabajadorSocial";
-import { Area } from "../../models/Area";
-import { Cargo } from "../../models/Cargo";
-import { Empresa } from "../../models/Empresa";
-import { Pais } from "../../models/Pais";
-import { Sede } from "../../models/Sede";
-import { TipoDocumento } from "../../models/TipoDocumento";
 import { TrabajadorSocial } from "../../models/TrabajadorSocial";
-import sequelize from '../../../config/database'
 import { TValidateFields } from "../../types/TTypeFields";
 import { Op, WhereOptions } from "sequelize";
 import { TRABAJADOR_SOCIAL_ATTRIBUTES } from "../../../constants/TrabajadorSocialAttributes";
@@ -16,7 +9,7 @@ import { EMPRESA_INCLUDE } from "../../../includes/EmpresaInclude";
 import { AREA_INCLUDE } from "../../../includes/AreaInclude";
 import { SEDE_INCLUDE } from "../../../includes/SedeInclude";
 import { PAIS_INCLUDE } from "../../../includes/PaisInclude";
-import { ITrabajadorSocialFilter } from "@/interfaces/TrabajadorSocial/ITrabajadorSocialFilter";
+import { ITrabajadorSocialFilter } from "../../interfaces/TrabajadorSocial/ITrabajadorSocialFilter";
 import HPagination from "../../../helpers/HPagination";
 
 class TrabajadorSocialRepository {

@@ -28,7 +28,7 @@ TipoAdjunto.init({
         allowNull: false
     },
     nombre: {
-        type: new DataTypes.STRING(60),
+        type: DataTypes.STRING(60),
         allowNull: false,
         unique: true,
         set(value: string) {
@@ -36,7 +36,7 @@ TipoAdjunto.init({
         }
     },
     extensiones: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: false,
         set(value: string) {
             this.setDataValue('extensiones', value ? value.trim() : undefined)

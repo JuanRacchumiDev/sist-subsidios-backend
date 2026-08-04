@@ -53,29 +53,29 @@ Cobro.init({
         autoIncrement: true
     },
     codigo: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: false
     },
     codigo_cheque: {
-        type: new DataTypes.STRING(15),
+        type: DataTypes.STRING(15),
         allowNull: true,
         set(value: string) {
             this.setDataValue('codigo_cheque', value ? value.trim() : undefined)
         }
     },
     codigo_voucher: {
-        type: new DataTypes.STRING(15),
+        type: DataTypes.STRING(15),
         allowNull: true,
         set(value: string) {
             this.setDataValue('codigo_voucher', value ? value.trim() : undefined)
         }
     },
     fecha_registro: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: false
     },
     fecha_maxima_cobro: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: false
     },
     observacion: {
@@ -86,7 +86,7 @@ Cobro.init({
         }
     },
     estado_registro: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: false
     },
     user_crea: {

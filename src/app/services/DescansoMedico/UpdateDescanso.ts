@@ -13,8 +13,7 @@ import CanjeRepository from '../../repositories/Canje/CanjeRepository';
 import { addMonths, differenceInCalendarDays, endOfMonth, format, isSameMonth, parseISO, startOfMonth } from 'date-fns';
 import { EmailRepository } from '../../repositories/Email/EmailRepository'
 import UsuarioRepository from '../../repositories/Usuario/UsuarioRepository'
-import { IUsuario } from '@/interfaces/Usuario/IUsuario';
-import { IDetalleParametro } from '@/interfaces/DetalleParametro/IDetalleParametro';
+import { IUsuario } from '../../interfaces/Usuario/IUsuario';
 
 /**
  * @class UpdateDescansoService

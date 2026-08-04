@@ -34,7 +34,6 @@ class DescansoMedicoController {
                 {
                     page,
                     limit,
-                    id_colaborador,
                     id_tipodescansomedico,
                     id_tipocontingencia,
                     id_empresa,
@@ -50,7 +49,6 @@ class DescansoMedicoController {
 
             // Construir el objeto de filtros (maneja el estado como booleano si es necesario)
             const filters: IDescansoMedicoFilter = {
-                id_colaborador: id_colaborador as string,
                 id_tipodescansomedico: id_tipodescansomedico as string,
                 id_tipocontingencia: id_tipocontingencia as string,
                 id_empresa: id_empresa as string,

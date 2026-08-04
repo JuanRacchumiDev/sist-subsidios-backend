@@ -8,6 +8,7 @@ import GetDiagnosticosPaginateService from '../services/Diagnostico/GetDiagnosti
 import UpdateDiagnosticoService from '../services/Diagnostico/UpdateDiagnostico'
 import UpdateEstadoService from '../services/Diagnostico/UpdateEstado'
 import { IDiagnostico } from '../interfaces/Diagnostico/IDiagnostico';
+import { IDiagnosticoFilter } from '../interfaces/Diagnostico/IDiagnosticoFilter'
 
 class DiagnosticoController {
     async getAllDiagnosticos(req: Request, res: Response, next: NextFunction) {
@@ -21,14 +22,17 @@ class DiagnosticoController {
 
     async getAllDiagnosticosPaginated(req: Request, res: Response, next: NextFunction) {
         try {
-            const { query: { page, limit, filter } } = req
+            const { query: { page, limit, search } } = req
 
-            const definePage = parseInt(page as string) || 1
-            const defineLimit = parseInt(limit as string) || 10
+            const setPage = parseInt(page as string) || 1
+            const setLimit = parseInt(limit as string) || 10
 
-            const defineFilter = filter as string || ""
+            // Construir el objeto de filtros
+            const filters: IDiagnosticoFilter = {
+                search: (search as string)?.trim()
+            }
 
-            const result = await GetDiagnosticosPaginateService.execute(definePage, defineLimit, defineFilter)
+            const result = await GetDiagnosticosPaginateService.execute(setPage, setLimit, filters)
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

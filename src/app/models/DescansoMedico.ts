@@ -129,48 +129,48 @@ DescansoMedico.init({
         autoIncrement: true
     },
     codigo: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: true,
         unique: true
     },
     codigo_citt: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: true
     },
     fecha_inicio_ingresado: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     fecha_final_ingresado: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     fecha_otorgamiento: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     fecha_inicio: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     fecha_final: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     fecha_registro: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     fecha_actualiza: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     fecha_elimina: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     fecha_maxima_subsanar: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     dia_fecha_inicio: {
@@ -198,60 +198,60 @@ DescansoMedico.init({
         allowNull: false
     },
     mes_devengado: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: false
     },
     numero_colegiatura: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: false,
         set(value: string) {
             this.setDataValue('numero_colegiatura', value ? value.trim() : undefined)
         }
     },
     medico_tratante: {
-        type: new DataTypes.STRING(80),
+        type: DataTypes.STRING(80),
         allowNull: false,
         set(value: string) {
             this.setDataValue('medico_tratante', value ? value.trim() : undefined)
         }
     },
     nombre_colaborador: {
-        type: new DataTypes.STRING(80),
+        type: DataTypes.STRING(80),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_colaborador', value ? value.trim() : undefined)
         }
     },
     nombre_tipodescansomedico: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_tipodescansomedico', value ? value.trim() : undefined)
         }
     },
     nombre_tipocontingencia: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_tipocontingencia', value ? value.trim() : undefined)
         }
     },
     nombre_diagnostico: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_diagnostico', value ? value.trim() : undefined)
         }
     },
     nombre_establecimiento: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: true,
         set(value: string) {
             this.setDataValue('nombre_establecimiento', value ? value.trim() : undefined)
         }
     },
     observacion: {
-        type: new DataTypes.TEXT,
+        type: DataTypes.TEXT,
         allowNull: true,
         set(value: string) {
             this.setDataValue('observacion', value ? value.trim() : undefined)
@@ -262,7 +262,7 @@ DescansoMedico.init({
         allowNull: false
     },
     codigo_temp: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: true,
         set(value: string) {
             this.setDataValue('codigo_temp', value ? value.trim() : undefined)
@@ -289,7 +289,7 @@ DescansoMedico.init({
         defaultValue: false
     },
     estado_registro: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: false
     },
     user_crea: {

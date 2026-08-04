@@ -28,13 +28,12 @@ class CanjeController {
                 query: {
                     page,
                     limit,
-                    id_tipodescansomedico,
+                    id_empresa,
                     id_tipocontingencia,
-                    nombre_colaborador,
-                    codigo_canje,
-                    codigo_citt,
-                    fecha_inicio_subsidio,
-                    fecha_final_subsidio,
+                    id_tipodescansomedico,
+                    search,
+                    fecha_inicio,
+                    fecha_final,
                 }
             } = req
 
@@ -45,11 +44,10 @@ class CanjeController {
             const filters: ICanjeFilter = {
                 id_tipodescansomedico: id_tipodescansomedico as string,
                 id_tipocontingencia: id_tipocontingencia as string,
-                nombre_colaborador: nombre_colaborador as string,
-                codigo_canje: codigo_canje as string,
-                codigo_citt: codigo_citt as string,
-                fecha_inicio_subsidio: fecha_inicio_subsidio as string,
-                fecha_final_subsidio: fecha_final_subsidio as string,
+                id_empresa: id_empresa as string,
+                nombre_colaborador: (search as string)?.trim(),
+                fecha_inicio_subsidio: fecha_inicio as string,
+                fecha_final_subsidio: fecha_final as string,
             };
 
             console.log({ filters })

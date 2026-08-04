@@ -28,7 +28,7 @@ Perfil.init({
         allowNull: false
     },
     nombre: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: false,
         unique: true,
         set(value: string) {
@@ -36,7 +36,7 @@ Perfil.init({
         }
     },
     nombre_url: {
-        type: new DataTypes.STRING(40),
+        type: DataTypes.STRING(40),
         allowNull: false,
         unique: true,
         set(value: string) {

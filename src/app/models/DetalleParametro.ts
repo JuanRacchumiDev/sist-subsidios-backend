@@ -52,42 +52,42 @@ DetalleParametro.init({
         }
     },
     nombre: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre', value ? value.trim() : undefined)
         }
     },
     nombre_url: {
-        type: new DataTypes.STRING(120),
+        type: DataTypes.STRING(120),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_url', value ? value.trim() : undefined)
         }
     },
     descripcion: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: true,
         set(value: string) {
             this.setDataValue('descripcion', value ? value.trim() : undefined)
         }
     },
     valor: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: true,
         set(value: string) {
             this.setDataValue('valor', value ? value.trim() : undefined)
         }
     },
     abreviatura: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: true,
         set(value: string) {
             this.setDataValue('abreviatura', value ? value.trim() : undefined)
         }
     },
     longitud: {
-        type: new DataTypes.NUMBER,
+        type: DataTypes.NUMBER,
         allowNull: true,
         set(value: number) {
             this.setDataValue('longitud', value ? value : undefined)

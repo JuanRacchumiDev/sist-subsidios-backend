@@ -1,5 +1,4 @@
 export interface IDescansoMedicoFilter {
-    id_colaborador?: string
     id_tipodescansomedico?: string
     id_tipocontingencia?: string
     id_empresa?: string

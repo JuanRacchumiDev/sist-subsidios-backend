@@ -1,9 +1,10 @@
 import { Diagnostico } from "../../models/Diagnostico";
 import HString from "../../../helpers/HString";
 import { IDiagnostico, DiagnosticoResponse, DiagnosticoResponsePaginate, IDiagnosticoPaginate } from '../../interfaces/Diagnostico/IDiagnostico';
-import { Op } from 'sequelize'
+import { Op, WhereOptions } from 'sequelize'
 import { DIAGNOSTICO_ATTRIBUTES } from "../../../constants/DiagnosticoConstant";
 import HPagination from "../../../helpers/HPagination";
+import { IDiagnosticoFilter } from "../../interfaces/Diagnostico/IDiagnosticoFilter";
 
 class DiagnosticoRepository {
     /**
@@ -29,17 +30,31 @@ class DiagnosticoRepository {
     async getAllPaginate(
         page: number,
         limit: number,
-        filter: string
+        filters: IDiagnosticoFilter
     ): Promise<DiagnosticoResponsePaginate> {
         try {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
+            const {
+                search
+            } = filters;
+
+            // Filtros para la tabla Diagnostico
+            let whereDiagnostico: WhereOptions = {};
+
+            if (search) {
+                whereDiagnostico = {
+                    [Op.or]: [
+                        { codCie10: { [Op.iLike]: `${search}` } },
+                        { nombre: { [Op.iLike]: `%${search}%` } },
+                    ]
+                };
+            }
+
             const { count, rows } = await Diagnostico.findAndCountAll({
                 attributes: DIAGNOSTICO_ATTRIBUTES,
-                where: {
-                    nombre: { [Op.iLike]: `%${filter}%` }
-                },
+                where: whereDiagnostico,
                 limit,
                 offset,
                 order: [
@@ -154,37 +169,60 @@ class DiagnosticoRepository {
      * @returns {Promise<DiagnosticoResponse>} Respuesta con el diagnóstico creado
      */
     async create(data: IDiagnostico): Promise<DiagnosticoResponse> {
+        const { nombre } = data
+
+        // Nos aseguramos que el nombre exista
+        if (!nombre) {
+            return { result: false, message: 'El nombre es requerido para crear un diagnóstico', status: 400 }
+        }
+
+        const nombreLimpio = nombre.trim().toUpperCase()
+
         try {
-            const { nombre } = data
-
-            // Nos aseguramos que el nombre exista
-            if (!nombre) {
-                return { result: false, message: 'El nombre es requerido para crear un diagnóstico', status: 400 }
-            }
-
             data.nombre_url = HString.convertToUrlString(nombre)
 
             // Verificar si el nombre existe antes de crear
             const existingsDiagnostico = await Diagnostico.findOne({
                 where: {
-                    nombre: data.nombre
+                    nombre: {
+                        [Op.iLike]: nombreLimpio
+                    }
                 }
             })
 
             if (existingsDiagnostico) {
-                return { result: false, message: 'El diagnóstico por registrar ya existe', status: 409 }
+                return {
+                    result: false,
+                    message: 'El diagnóstico por registrar ya existe',
+                    status: 409
+                }
             }
+
+            data.tiempo = 6
 
             const newDiagnostico = await Diagnostico.create(data as IDiagnostico)
 
-            if (newDiagnostico) {
-                return { result: true, message: 'Diagnóstico registrado con éxito', data: newDiagnostico, status: 200 }
+            if (newDiagnostico && newDiagnostico.codCie10) {
+                return {
+                    result: true,
+                    message: 'Diagnóstico registrado con éxito',
+                    data: newDiagnostico,
+                    status: 200,
+                    error: ''
+                }
             }
 
             return { result: false, message: 'Error al registrar el diagnóstico', status: 500 }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-            return { result: false, error: errorMessage, status: 500 }
+            // return { result: false, error: errorMessage, status: 500 }
+            return {
+                result: false,
+                message: 'No se pudo crear el detalle',
+                error: errorMessage,
+                status: 500,
+                // error: ''
+            }
         }
     }
 

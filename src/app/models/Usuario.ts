@@ -4,7 +4,7 @@ import { IUsuario } from "../interfaces/Usuario/IUsuario";
 import { DetalleParametro } from './DetalleParametro'
 import { IDetalleParametro } from "../interfaces/DetalleParametro/IDetalleParametro"
 import { Persona } from './Persona';
-import { IPersona } from '@/interfaces/Persona/IPersona';
+import { IPersona } from '../interfaces/Persona/IPersona';
 
 interface UsuarioCreationAttributes extends Optional<IUsuario, 'id'> { }
 

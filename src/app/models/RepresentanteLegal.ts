@@ -76,7 +76,7 @@ RepresentanteLegal.init({
         }
     },
     numero_documento: {
-        type: new DataTypes.STRING(15),
+        type: DataTypes.STRING(15),
         allowNull: false,
         unique: true,
         set(value: string) {
@@ -84,56 +84,56 @@ RepresentanteLegal.init({
         }
     },
     nombres: {
-        type: new DataTypes.STRING(40),
+        type: DataTypes.STRING(40),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombres', value ? value.trim() : undefined)
         }
     },
     apellido_paterno: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: false,
         set(value: string) {
             this.setDataValue('apellido_paterno', value ? value.trim() : undefined)
         }
     },
     apellido_materno: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: false,
         set(value: string) {
             this.setDataValue('apellido_materno', value ? value.trim() : undefined)
         }
     },
     direccion_fiscal: {
-        type: new DataTypes.STRING(60),
+        type: DataTypes.STRING(60),
         allowNull: false,
         set(value: string) {
             this.setDataValue('direccion_fiscal', value ? value.trim() : undefined)
         }
     },
     partida_registral: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: false,
         set(value: string) {
             this.setDataValue('partida_registral', value ? value.trim() : undefined)
         }
     },
     telefono: {
-        type: new DataTypes.STRING(13),
+        type: DataTypes.STRING(13),
         allowNull: false,
         set(value: string) {
             this.setDataValue('telefono', value ? value.trim() : undefined)
         }
     },
     correo: {
-        type: new DataTypes.STRING(60),
+        type: DataTypes.STRING(60),
         allowNull: false,
         set(value: string) {
             this.setDataValue('correo', value ? value.trim() : undefined)
         }
     },
     ospe: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: false,
         set(value: string) {
             this.setDataValue('ospe', value ? value.trim() : undefined)

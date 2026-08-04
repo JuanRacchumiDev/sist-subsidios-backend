@@ -44,77 +44,77 @@ Empresa.init({
         allowNull: false
     },
     numero: {
-        type: new DataTypes.STRING(13),
+        type: DataTypes.STRING(13),
         allowNull: false,
         set(value: string) {
             this.setDataValue('numero', value ? value.trim() : undefined)
         }
     },
     nombre_o_razon_social: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_o_razon_social', value ? value.trim() : undefined)
         }
     },
     tipo_contribuyente: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: true,
         set(value: string) {
             this.setDataValue('tipo_contribuyente', value ? value.trim() : undefined)
         }
     },
     estado_sunat: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: false,
         set(value: string) {
             this.setDataValue('estado_sunat', value ? value.trim() : undefined)
         }
     },
     condicion_sunat: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: false,
         set(value: string) {
             this.setDataValue('condicion_sunat', value ? value.trim() : undefined)
         }
     },
     departamento: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: true,
         set(value: string) {
             this.setDataValue('departamento', value ? value.trim() : undefined)
         }
     },
     provincia: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: true,
         set(value: string) {
             this.setDataValue('provincia', value ? value.trim() : undefined)
         }
     },
     distrito: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: true,
         set(value: string) {
             this.setDataValue('distrito', value ? value.trim() : undefined)
         }
     },
     direccion: {
-        type: new DataTypes.STRING(80),
+        type: DataTypes.STRING(80),
         allowNull: false,
         set(value: string) {
             this.setDataValue('direccion', value ? value.trim() : undefined)
         }
     },
     direccion_completa: {
-        type: new DataTypes.STRING(150),
+        type: DataTypes.STRING(150),
         allowNull: false,
         set(value: string) {
             this.setDataValue('direccion_completa', value ? value.trim() : undefined)
         }
     },
     ubigeo_sunat: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: true,
         set(value: string) {
             this.setDataValue('ubigeo_sunat', value ? value.trim() : undefined)

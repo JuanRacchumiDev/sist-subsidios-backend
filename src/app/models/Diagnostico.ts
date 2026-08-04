@@ -34,7 +34,7 @@ Diagnostico.init({
         allowNull: false
     },
     nombre: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: false,
         unique: true,
         set(value: string) {
@@ -42,7 +42,7 @@ Diagnostico.init({
         }
     },
     nombre_url: {
-        type: new DataTypes.STRING(150),
+        type: DataTypes.STRING(150),
         allowNull: false,
         unique: true,
         set(value: string) {

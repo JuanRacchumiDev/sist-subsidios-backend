@@ -30,28 +30,28 @@ Bitacora.init({
         allowNull: false
     },
     tabla: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: false,
         set(value: string) {
             this.setDataValue('tabla', value ? value.trim() : undefined)
         }
     },
     valor_anterior: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: false,
         set(value: string) {
             this.setDataValue('valor_anterior', value ? value.trim() : undefined)
         }
     },
     valor_nuevo: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: false,
         set(value: string) {
             this.setDataValue('valor_nuevo', value ? value.trim() : undefined)
         }
     },
     accion: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: false
     },
     user_crea: {
@@ -67,7 +67,7 @@ Bitacora.init({
         allowNull: true
     },
     nombre_user: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: false
     }
 }, {

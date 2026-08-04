@@ -32,7 +32,7 @@ TipoEstablecimiento.init({
         allowNull: false
     },
     nombre: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: false,
         unique: true,
         set(value: string) {
@@ -40,7 +40,7 @@ TipoEstablecimiento.init({
         }
     },
     nombre_url: {
-        type: new DataTypes.STRING(60),
+        type: DataTypes.STRING(60),
         allowNull: false,
         unique: true,
         set(value: string) {

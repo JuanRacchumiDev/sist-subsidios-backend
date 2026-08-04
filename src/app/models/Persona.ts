@@ -112,136 +112,136 @@ Persona.init({
         }
     },
     numero_documento: {
-        type: new DataTypes.STRING(13),
+        type: DataTypes.STRING(13),
         allowNull: false,
         set(value: string) {
             this.setDataValue('numero_documento', value ? value.trim() : undefined)
         }
     },
     nombres: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombres', value ? value.trim() : undefined)
         }
     },
     apellido_paterno: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: false,
         set(value: string) {
             this.setDataValue('apellido_paterno', value ? value.trim() : undefined)
         }
     },
     apellido_materno: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: false,
         set(value: string) {
             this.setDataValue('apellido_materno', value ? value.trim() : undefined)
         }
     },
     nombre_completo: {
-        type: new DataTypes.STRING(80),
+        type: DataTypes.STRING(80),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_completo', value ? value.trim() : undefined)
         }
     },
     departamento: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: true,
         set(value: string) {
             this.setDataValue('departamento', value ? value.trim() : undefined)
         }
     },
     provincia: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: true,
         set(value: string) {
             this.setDataValue('provincia', value ? value.trim() : undefined)
         }
     },
     distrito: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: true,
         set(value: string) {
             this.setDataValue('distrito', value ? value.trim() : undefined)
         }
     },
     direccion: {
-        type: new DataTypes.STRING(60),
+        type: DataTypes.STRING(60),
         allowNull: true,
         set(value: string) {
             this.setDataValue('direccion', value ? value.trim() : undefined)
         }
     },
     direccion_completa: {
-        type: new DataTypes.STRING(150),
+        type: DataTypes.STRING(150),
         allowNull: true,
         set(value: string) {
             this.setDataValue('direccion_completa', value ? value.trim() : undefined)
         }
     },
     email_personal: {
-        type: new DataTypes.STRING(60),
+        type: DataTypes.STRING(60),
         allowNull: true,
         set(value: string) {
             this.setDataValue('email_personal', value ? value.trim() : undefined)
         }
     },
     email_institucional: {
-        type: new DataTypes.STRING(60),
+        type: DataTypes.STRING(60),
         allowNull: true,
         set(value: string) {
             this.setDataValue('email_institucional', value ? value.trim() : undefined)
         }
     },
     telefono: {
-        type: new DataTypes.STRING(13),
+        type: DataTypes.STRING(13),
         allowNull: true,
         set(value: string) {
             this.setDataValue('telefono', value ? value.trim() : undefined)
         }
     },
     ubigeo_reniec: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true,
         set(value: string) {
             this.setDataValue('ubigeo_reniec', value ? value.trim() : undefined)
         }
     },
     ubigeo_sunat: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true,
         set(value: string) {
             this.setDataValue('ubigeo_sunat', value ? value.trim() : undefined)
         }
     },
     ubigeo: {
-        type: new DataTypes.STRING(12),
+        type: DataTypes.STRING(12),
         allowNull: true
     },
     direccion_fiscal: {
-        type: new DataTypes.STRING(60),
+        type: DataTypes.STRING(60),
         allowNull: true
     },
     partida_registral: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: true
     },
     ospe: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: true
     },
     fecha_nacimiento: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: false
     },
     fecha_ingreso: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: true
     },
     fecha_salida: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: true
     },
     nombre_area: {
@@ -257,28 +257,28 @@ Persona.init({
         allowNull: true
     },
     estado_civil: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: true,
         set(value: string) {
             this.setDataValue('estado_civil', value ? value.trim() : undefined)
         }
     },
     foto: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: true,
         set(value: string) {
             this.setDataValue('foto', value ? value.trim() : undefined)
         }
     },
     sexo: {
-        type: new DataTypes.STRING(2),
+        type: DataTypes.STRING(2),
         allowNull: false,
         set(value: string) {
             this.setDataValue('sexo', value ? value.trim() : undefined)
         }
     },
     origen: {
-        type: new DataTypes.STRING(30),
+        type: DataTypes.STRING(30),
         allowNull: false,
         set(value: EOrigen) {
             this.setDataValue('origen', value ? (value as string).trim() as EOrigen : undefined)

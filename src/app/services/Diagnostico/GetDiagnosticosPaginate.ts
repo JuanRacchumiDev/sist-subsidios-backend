@@ -1,5 +1,6 @@
 import DiagnosticoRepository from "../../repositories/Diagnostico/DiagnosticoRepository";
 import { DiagnosticoResponsePaginate } from '../../interfaces/Diagnostico/IDiagnostico';
+import { IDiagnosticoFilter } from "../../interfaces/Diagnostico/IDiagnosticoFilter";
 
 /**
  * @class GetDiagnosticosPaginateService
@@ -16,11 +17,11 @@ class GetDiagnosticosPaginateService {
      * Ejecuta la operación para obtener diagnósticos paginadas
      * @param {number} page - El número de la página actual
      * @param {number} limit - El número de ítems por página
-     * @param {string} filter - Parámetro a enviar para buscar
+     * @param {IDiagnosticoFilter} filters - los parámetros a enviar para buscar 
      * @returns {Promise<DiagnosticoResponsePaginate>} La respuesta de obtener los diagnósticos
      */
-    async execute(page: number, limit: number, filter: string): Promise<DiagnosticoResponsePaginate> {
-        return await this.diagnosticoRepository.getAllPaginate(page, limit, filter)
+    async execute(page: number, limit: number, filters: IDiagnosticoFilter = {}): Promise<DiagnosticoResponsePaginate> {
+        return await this.diagnosticoRepository.getAllPaginate(page, limit, filters)
     }
 }
 

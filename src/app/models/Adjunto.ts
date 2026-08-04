@@ -110,14 +110,14 @@ Adjunto.init({
         }
     },
     file_name: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: false,
         set(value: string) {
             this.setDataValue('file_name', value ? value.trim() : undefined)
         }
     },
     file_type: {
-        type: new DataTypes.STRING(20),
+        type: DataTypes.STRING(20),
         allowNull: false,
         set(value: string) {
             this.setDataValue('file_type', value ? value.trim() : undefined)
@@ -128,14 +128,14 @@ Adjunto.init({
         allowNull: true
     },
     file_path: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: false,
         set(value: string) {
             this.setDataValue('file_path', value ? value.trim() : undefined)
         }
     },
     codigo_temp: {
-        type: new DataTypes.STRING(10),
+        type: DataTypes.STRING(10),
         allowNull: true
     },
     user_crea: {

@@ -23,7 +23,6 @@ import {
 import { Canje } from "../../models/Canje";
 import { IDescansoMedicoFilter } from '../../interfaces/DescansoMedico/IDescansoMedicoFilter';
 import { DETALLE_PARAMETRO_INCLUDE } from "../../../includes/DetalleParametroInclude"
-import { Persona } from "../../models/Persona";
 
 type TReportDescansosResponse = {
     result: boolean
@@ -201,100 +200,6 @@ class DescansoMedicoRepository {
                 pagination,
                 status: 200
             };
-
-            // if (id_colaborador) {
-            //     where.id_colaborador = id_colaborador
-            // }
-
-            // // Filtro por tipo de descanso médico (id_tipodescansomedico)
-            // if (id_tipodescansomedico) {
-            //     where.id_tipodescansomedico = id_tipodescansomedico
-            // }
-
-            // // Filtro por tipo de contingencia (id_tipocontingencia)
-            // if (id_tipocontingencia) {
-            //     where.id_tipocontingencia = id_tipocontingencia
-            // }
-
-            // if (id_empresa) {
-            //     where.id_empresa = id_empresa
-            // }
-
-            // // Filtro por nombre del colaborador
-            // if (nombre_colaborador) {
-            //     where.nombre_colaborador = {
-            //         [Op.like]: `%${nombre_colaborador}%`
-            //     }
-            // }
-
-            // if (user_crea) {
-            //     where.user_crea = user_crea
-            // }
-
-            // // Filtro por rango de fechas
-            // if (filters.fecha_inicio && filters.fecha_final) {
-            //     where.fecha_inicio = {
-            //         [Op.lte]: filters.fecha_final
-            //     }
-
-            //     where.fecha_final = {
-            //         [Op.gte]: filters.fecha_inicio
-            //     }
-
-            //     /**
-            //     where.fecha_inicio = {
-            //         [Op.between]: [filters.fecha_inicio, filters.fecha_final]
-            //     }
-            //     */
-            // } else if (filters.fecha_inicio) {
-            //     where.fecha_inicio = {
-            //         [Op.gte]: filters.fecha_inicio
-            //     };
-            // } else if (filters.fecha_final) {
-            //     where.fecha_final = {
-            //         [Op.lte]: filters.fecha_final
-            //     };
-            // }
-
-            // console.log({ where })
-
-            // const { count, rows } = await DescansoMedico.findAndCountAll({
-            //     attributes: DESCANSOMEDICO_ATTRIBUTES,
-            //     include: [
-            //         COLABORADOR_DM_INCLUDE,
-            //         // TIPODM_INCLUDE,
-            //         // TIPO_CONTINGENCIA_INCLUDE,
-            //         DETALLE_PARAMETRO_INCLUDE,
-            //         DIAGNOSTICO_INCLUDE
-            //     ],
-            //     whereClause,
-            //     order: [
-            //         [{ model: Persona, as: 'colaborador_dm' }, 'apellido_paterno', 'ASC'],
-            //         ['fecha_inicio', 'ASC']
-            //     ],
-            //     limit,
-            //     offset
-            // })
-
-            // const totalPages = Math.ceil(count / limit)
-            // const nextPage = HPagination.getNextPage(page, limit, count)
-            // const previousPage = HPagination.getPreviousPage(page)
-
-            // const pagination: IDescansoMedicoPaginate = {
-            //     currentPage: page,
-            //     limit,
-            //     totalPages,
-            //     totalItems: count,
-            //     nextPage,
-            //     previousPage
-            // }
-
-            // return {
-            //     result: true,
-            //     data: rows,
-            //     pagination,
-            //     status: 200
-            // }
 
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'

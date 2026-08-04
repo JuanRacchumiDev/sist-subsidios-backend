@@ -33,7 +33,7 @@ TipoDescansoMedico.init({
         allowNull: false
     },
     nombre: {
-        type: new DataTypes.STRING(50),
+        type: DataTypes.STRING(50),
         allowNull: false,
         unique: true,
         set(value: string) {
@@ -41,7 +41,7 @@ TipoDescansoMedico.init({
         }
     },
     nombre_url: {
-        type: new DataTypes.STRING(70),
+        type: DataTypes.STRING(70),
         allowNull: false,
         unique: true,
         set(value: string) {

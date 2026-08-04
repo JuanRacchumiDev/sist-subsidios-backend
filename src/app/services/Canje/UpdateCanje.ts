@@ -52,7 +52,6 @@ class UpdateCanjeService {
         console.log('canje update', canje)
 
         const {
-            id: idCanje,
             fecha_inicio_subsidio,
             fecha_final_subsidio,
             estado_registro,
@@ -79,7 +78,7 @@ class UpdateCanjeService {
 
         console.log({ colaborador })
 
-        const { email_personal, nombre_completo } = colaborador
+        const { id: idColaborador, email_personal, nombre_completo } = colaborador
         nombreCompleto = nombre_completo as string
         email = email_personal as string
 
@@ -105,6 +104,8 @@ class UpdateCanjeService {
                 appUrl: process.env.APP_URL || 'http://localhost:3000'
             }
 
+            console.log({ dataEmail })
+
             const htmlContent = notificationCanjeObservado(dataEmail)
 
             await this.emailRepository.sendEmail({
@@ -119,11 +120,13 @@ class UpdateCanjeService {
             const fechaActual: string = HDate.getCurrentDateToString('yyyy-MM-dd')
 
             const payloadReembolso: IReembolso = {
-                id_canje: idCanje,
+                id_canje: id,
+                id_colaborador: idColaborador,
                 fecha_registro: fechaActual,
                 fecha_maxima_reembolso: fechaActual,
                 is_cobrable: false,
                 estado_registro: EReembolso.REEMBOLSO_INGRESADO,
+                nombre_colaborador: nombreCompleto,
                 user_crea
             }
 

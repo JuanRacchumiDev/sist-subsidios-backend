@@ -42,14 +42,14 @@ DocumentoTipoCont.init({
         }
     },
     nombre: {
-        type: new DataTypes.STRING(60),
+        type: DataTypes.STRING(60),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre', value ? value.trim() : undefined)
         }
     },
     nombre_url: {
-        type: new DataTypes.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: false,
         set(value: string) {
             this.setDataValue('nombre_url', this.nombre ? HString.convertToUrlString(this.nombre.trim()) : undefined)
