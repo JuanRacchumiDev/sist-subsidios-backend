@@ -43,15 +43,14 @@ class UpdateDescansoService {
      */
     async execute(idDescanso: string, payload: IDescansoMedico): Promise<DescansoMedicoResponse> {
         try {
-            let nombreCompleto: string = ""
-            let email: string = ""
-
+            // Obteniendo la respuesta de actulización de descanso médico
             const responseDescansoMedico = await this.descansoMedicoRepository.update(idDescanso, payload);
 
             console.log({ responseDescansoMedico })
 
             const { result: resultDM, data: dataDM } = responseDescansoMedico
 
+            // Validando que la respuesta sea incorrecto
             if (!resultDM) {
                 return responseDescansoMedico
             }
@@ -67,6 +66,7 @@ class UpdateDescansoService {
                 fecha_inicio,
                 fecha_final,
                 total_dias,
+                nombre_colaborador,
                 nombre_tipocontingencia,
                 nombre_tipodescansomedico,
                 nombre_diagnostico,
@@ -77,14 +77,12 @@ class UpdateDescansoService {
                 user_crea
             } = descanso
 
+            // Obteniendo datos del colaborador
+            const { email_personal, nombre_completo } = colaborador_dm as IPersona
+
             console.log({ estado_registro })
 
             if (estado_registro === EDescansoMedico.DOCUMENTACION_INCORRECTA) {
-
-                // Preparando notificación para colaborador
-                const { email_personal, nombre_completo } = colaborador_dm as IPersona
-                nombreCompleto = nombre_completo as string
-                email = email_personal as string
 
                 const detalleDescanso: TDetalleDescansoMedico = {
                     fecha_inicio,
@@ -98,7 +96,7 @@ class UpdateDescansoService {
                 }
 
                 const dataEmail = {
-                    nombreCompleto,
+                    nombreCompleto: nombre_completo as string,
                     detalle: detalleDescanso,
                     appUrl: process.env.APP_URL || 'http://localhost:3000'
                 }
@@ -107,13 +105,13 @@ class UpdateDescansoService {
 
                 const htmlContent = notificationDescansoMedicoIncorrecto(dataEmail)
 
-                await this.emailRepository.sendEmail({
-                    to: email,
-                    subject: 'Observación en Registro de Descanso Médico',
-                    html: htmlContent
-                });
+                // await this.emailRepository.sendEmail({
+                //     to: email_personal as string,
+                //     subject: 'Observación en Registro de Descanso Médico',
+                //     html: htmlContent
+                // });
 
-                console.log(`Correo de notificación de estado de descanso médico para colaborador ${nombreCompleto}`);
+                console.log(`Correo de notificación de estado de descanso médico para colaborador ${nombre_completo as string}`);
 
                 // Preparando notificación para especialista empresa
                 const responseUsuario = await this.usuarioRepository.getById(user_crea as string)
@@ -150,7 +148,7 @@ class UpdateDescansoService {
                         }
 
                         const dataEmail = {
-                            nombreCompleto,
+                            nombreCompleto: nombre_completo as string,
                             detalle: detalleDescanso,
                             appUrl: process.env.APP_URL || 'http://localhost:3000'
                         }
@@ -159,11 +157,11 @@ class UpdateDescansoService {
 
                         const htmlContent = notificationDescansoMedicoIncorrecto(dataEmail)
 
-                        await this.emailRepository.sendEmail({
-                            to: emailEspCliente as string,
-                            subject: 'Observación en Registro de Descanso Médico',
-                            html: htmlContent
-                        });
+                        // await this.emailRepository.sendEmail({
+                        //     to: emailEspCliente as string,
+                        //     subject: 'Observación en Registro de Descanso Médico',
+                        //     html: htmlContent
+                        // });
 
                         console.log(`Correo de notificación de estado de descanso médico para especialista cliente`);
                     }
@@ -172,39 +170,6 @@ class UpdateDescansoService {
             } else if (estado_registro === EDescansoMedico.REGISTRO_EXITOSO) {
 
                 console.log('creando canjes desde update descanso')
-
-                const idColaborador = id_colaborador as string
-
-                const idDescansoMedico = id as string
-
-                const fechaOtorgamiento = fecha_otorgamiento as string
-
-                const fechaInicio = fecha_inicio as string
-
-                const fechaFinal = fecha_final as string
-
-                const totalDiasActual = total_dias as number;
-
-                const userCrea = user_crea as string
-
-                // Obteniendo datos del colaborador
-                const responseColaborador = await this.personaRepository.getById(idColaborador)
-
-                const { result: resultColaborador, data: dataColaborador } = responseColaborador
-
-                if (!resultColaborador || !dataColaborador) return {
-                    result: false,
-                    message: 'Colaborador no encontrado',
-                    status: 404
-                }
-
-                const {
-                    nombres,
-                    apellido_paterno,
-                    apellido_materno,
-                } = dataColaborador as IPersona
-
-                const nombreColaborador = `${nombres} ${apellido_paterno} ${apellido_materno}`
 
                 const fechaActual: string = HDate.getCurrentDateToString('yyyy-MM-dd')
 
@@ -225,8 +190,8 @@ class UpdateDescansoService {
                 if (esMaternidad) {
                     console.log('crear subsidio por maternidad')
 
-                    fechaInicioSubsidio = fechaInicio;
-                    fechaFinalSubsidio = fechaFinal;
+                    fechaInicioSubsidio = fecha_inicio as string;
+                    fechaFinalSubsidio = fecha_final as string;
 
                     console.log({ fechaInicioSubsidio })
                     console.log({ fechaFinalSubsidio })
@@ -239,21 +204,21 @@ class UpdateDescansoService {
                         console.log('fechas de canje en el mismo mes')
 
                         const payloadCanjeMaternidad: ICanje = {
-                            id_descansomedico: idDescansoMedico,
+                            id_descansomedico: id as string,
                             id_colaborador,
                             fecha_otorgamiento,
                             fecha_inicio_subsidio: fechaInicioSubsidio,
                             fecha_final_subsidio: fechaFinalSubsidio,
                             fecha_inicio_dm: fecha_inicio,
                             fecha_final_dm: fecha_final,
-                            fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, 30),
+                            fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
                             fecha_registro: fechaActual,
                             is_reembolsable: isReembolsable,
                             estado_registro: ECanje.CANJE_REGISTRADO,
-                            nombre_colaborador: nombreColaborador,
+                            nombre_colaborador,
                             nombre_tipocontingencia,
                             nombre_tipodescansomedico,
-                            user_crea: userCrea
+                            user_crea
                         };
 
                         recordsToCreateCanje.push(payloadCanjeMaternidad)
@@ -277,7 +242,7 @@ class UpdateDescansoService {
                             console.log({ currentEndDateCanje })
 
                             const payloadCanjeMaternidad: ICanje = {
-                                id_descansomedico: idDescansoMedico,
+                                id_descansomedico: id as string,
                                 id_colaborador,
                                 fecha_otorgamiento,
                                 fecha_inicio_subsidio: format(currentStartDateCanje, "yyyy-MM-dd"),
@@ -285,14 +250,14 @@ class UpdateDescansoService {
                                 total_dias: differenceInCalendarDays(currentEndDateCanje, currentStartDateCanje) + 1,
                                 fecha_inicio_dm: fecha_inicio,
                                 fecha_final_dm: fecha_final,
-                                fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, 30),
+                                fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
                                 fecha_registro: fechaActual,
                                 is_reembolsable: true,
                                 estado_registro: ECanje.CANJE_REGISTRADO,
-                                nombre_colaborador: nombreColaborador,
+                                nombre_colaborador,
                                 nombre_tipocontingencia,
                                 nombre_tipodescansomedico,
-                                user_crea: userCrea
+                                user_crea
                             };
 
                             recordsToCreateCanje.push(payloadCanjeMaternidad)
@@ -306,9 +271,9 @@ class UpdateDescansoService {
                 } else {
                     console.log('crear canje que no es maternidad')
                     const responseTotalDias = await this.descansoMedicoRepository.getTotalDiasByColaboradorWithoutIdDescanso(
-                        idColaborador,
-                        idDescansoMedico,
-                        fechaOtorgamiento
+                        id_colaborador as string,
+                        id as string,
+                        fecha_otorgamiento as string
                     )
 
                     console.log('console.log responseTotalDias')
@@ -332,7 +297,7 @@ class UpdateDescansoService {
                     console.log({ diasAcumulados })
                     console.log(typeof diasAcumulados)
 
-                    const newDiasAcumulados = diasAcumulados + totalDiasActual
+                    const newDiasAcumulados = diasAcumulados + (total_dias as number)
 
                     if (newDiasAcumulados < TOTAL_DIAS_DESCANSO_MEDICO) {
                         console.log('creando canjes desde update descanso')
@@ -351,9 +316,9 @@ class UpdateDescansoService {
 
                         const diasMaximo = TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados;
 
-                        const fechaFinalPrimerCanje = HDate.addDaysToDate(fechaInicio, diasMaximo - 1)
+                        const fechaFinalPrimerCanje = HDate.addDaysToDate(fecha_inicio as string, diasMaximo - 1)
 
-                        fechaInicioSubsidio = fechaInicio;
+                        fechaInicioSubsidio = fecha_inicio as string;
 
                         fechaFinalSubsidio = fechaFinalPrimerCanje;
 
@@ -363,21 +328,21 @@ class UpdateDescansoService {
                         console.log({ fechaFinalSubsidio })
 
                         const payloadCanjeWithoutSubsidio: ICanje = {
-                            id_descansomedico: idDescansoMedico,
+                            id_descansomedico: id as string,
                             id_colaborador,
                             fecha_otorgamiento,
                             fecha_inicio_subsidio: fechaInicioSubsidio,
                             fecha_final_subsidio: fechaFinalSubsidio,
                             fecha_inicio_dm: fecha_inicio,
                             fecha_final_dm: fecha_final,
-                            fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, 30),
+                            fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
                             fecha_registro: fechaActual,
                             is_reembolsable: false,
                             estado_registro: ECanje.CANJE_REGISTRADO,
-                            nombre_colaborador: nombreColaborador,
+                            nombre_colaborador,
                             nombre_tipocontingencia,
                             nombre_tipodescansomedico,
-                            user_crea: userCrea
+                            user_crea
                         };
 
                         console.log({ payloadCanjeWithoutSubsidio })
@@ -399,11 +364,11 @@ class UpdateDescansoService {
 
                         if (diasAcumulados >= TOTAL_DIAS_DESCANSO_MEDICO) {
                             console.log('ppppp')
-                            fechaInicioSegundoCanje = fechaInicio;
+                            fechaInicioSegundoCanje = fecha_inicio as string;
                         } else {
                             console.log('qqqqq')
                             console.log('TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados', (TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados))
-                            const fechaFinalPrimerCanje = HDate.addDaysToDate(fechaInicio, TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados - 1)
+                            const fechaFinalPrimerCanje = HDate.addDaysToDate(fecha_inicio as string, TOTAL_DIAS_DESCANSO_MEDICO - diasAcumulados - 1)
                             fechaInicioSegundoCanje = HDate.addDaysToDate(fechaFinalPrimerCanje, 1);
                             console.log({ fechaFinalPrimerCanje })
                             console.log({ fechaInicioSegundoCanje })
@@ -413,28 +378,28 @@ class UpdateDescansoService {
 
                         fechaInicioSubsidio = fechaInicioSegundoCanje;
 
-                        fechaFinalSubsidio = fechaFinal;
+                        fechaFinalSubsidio = fecha_final as string;
 
                         console.log({ fechaInicioSegundoCanje })
                         console.log({ fechaInicioSubsidio })
                         console.log({ fechaFinalSubsidio })
 
                         const payloadCanjeWithSubsidio: ICanje = {
-                            id_descansomedico: idDescansoMedico,
+                            id_descansomedico: id as string,
                             id_colaborador,
                             fecha_otorgamiento,
                             fecha_inicio_subsidio: fechaInicioSubsidio,
                             fecha_final_subsidio: fechaFinalSubsidio,
                             fecha_inicio_dm: fecha_inicio,
                             fecha_final_dm: fecha_final,
-                            fecha_maxima_canje: HDate.addDaysToDate(fechaOtorgamiento, 30),
+                            fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
                             fecha_registro: fechaActual,
                             is_reembolsable: isReembolsable,
                             estado_registro: ECanje.CANJE_REGISTRADO,
-                            nombre_colaborador: nombreColaborador,
+                            nombre_colaborador,
                             nombre_tipocontingencia,
                             nombre_tipodescansomedico,
-                            user_crea: userCrea
+                            user_crea
                         };
 
                         console.log({ payloadCanjeWithSubsidio })

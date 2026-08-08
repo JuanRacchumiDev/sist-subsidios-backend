@@ -92,11 +92,11 @@ class CreateUsuarioService {
 
                     const htmlContent = newUserNotificationTemplate(dataEmail)
 
-                    await this.emailRepository.sendEmail({
-                        to: usuario.email as string,
-                        subject: '¡Bienvenido a la plataforma!',
-                        html: htmlContent
-                    });
+                    // await this.emailRepository.sendEmail({
+                    //     to: usuario.email as string,
+                    //     subject: '¡Bienvenido a la plataforma!',
+                    //     html: htmlContent
+                    // });
 
                     delete data.password
 

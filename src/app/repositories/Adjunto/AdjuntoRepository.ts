@@ -238,19 +238,25 @@ class AdjuntoRepository {
     /**
      * Actualiza registros de adjuntos basados en un código temporal.
      * @param {string} idDescansoMedico - ID del descanso médico.
+     * @param {string} userCrea - El ID del usuario con sesión iniciada
      * @param {string} codigoTemp - El código temporal usado para identificar los adjuntos.
      * @returns {Promise<void>} Respuesta de las operaciones de la base de datos.
      */
-    async updateForCodeTemp(idDescansoMedico: string, codigoTemp: string): Promise<void> {
+    async updateForCodeTemp(idDescansoMedico: string, userCrea: string, codigoTemp: string): Promise<void> {
+        console.log('---- AdjuntoRepository updateForCodeTemp ----')
+        console.log({ idDescansoMedico })
+        console.log({ userCrea })
+        console.log({ codigoTemp })
+
         try {
             const [numberOfUpdatedRows] = await Adjunto.update(
-                { id_descansomedico: idDescansoMedico }, // Valores a actualizar
-                // { where: { codigo_temp: codigoTemp, id_descansomedico: null } } // Condición
+                { id_descansomedico: idDescansoMedico, user_crea: userCrea }, // Valores a actualizar
                 {
                     where: {
-                        codigo_temp: codigoTemp,
-                        // id_descansomedico: undefined
-                    }
+                        codigo_temp: codigoTemp
+                    },
+                    returning: true,
+                    paranoid: false
                 }
             );
 
@@ -263,12 +269,18 @@ class AdjuntoRepository {
     /**
      * Actualiza registros de adjuntos basados en un código temporal.
      * @param {string[]} idDescansosMedicos - Array de IDs de los descansos médicos.
+     * @param {string} userCrea - Identificador único de usuario
      * @param {string} codigoTemp - El código temporal usado para identificar los adjuntos.
      * @returns {Promise<AdjuntoResponse[]>} Respuesta de las operaciones de la base de datos.
      */
-    async updateAndCreateForCodeTemp(idDescansosMedicos: string[], codigoTemp: string): Promise<AdjuntoResponse[]> {
+    async updateAndCreateForCodeTemp(idDescansosMedicos: string[], userCrea: string, codigoTemp: string): Promise<AdjuntoResponse[]> {
         const transaction = await sequelize.transaction();
         const results: AdjuntoResponse[] = [];
+
+        console.log('---- actualizar adjuntos desde varios descansos médicos ----')
+        console.log({ idDescansosMedicos })
+        console.log({ userCrea })
+        console.log({ codigoTemp })
 
         try {
             // Buscar el adjunto original con el código temporal
@@ -292,13 +304,13 @@ class AdjuntoRepository {
             }
 
             await Adjunto.update(
-                { id_descansomedico: idDescansosMedicos[0] }, // Valores a actualizar
-                // { where: { codigo_temp: codigoTemp, id_descansomedico: null } } // Condición
+                { id_descansomedico: idDescansosMedicos[0], user_crea: userCrea }, // Valores a actualizar
                 {
                     where: {
-                        codigo_temp: codigoTemp,
-                        // id_descansomedico: undefined
-                    }
+                        codigo_temp: codigoTemp
+                    },
+                    returning: true,
+                    paranoid: false
                 }
             )
 
@@ -309,33 +321,37 @@ class AdjuntoRepository {
                 status: 200
             });
 
+            const { id_tipoadjunto, id_documento, file_name, file_type, file_path, id_persona, user_crea, sistema, estado } = adjuntoOriginal
+
             // Si hay más de un descanso médico, creamos nuevos registros
-            for (let i = 1; i < idDescansosMedicos.length; i++) {
-                const { id_tipoadjunto, id_documento, file_name, file_type, file_path, id_persona, user_crea, sistema, estado } = adjuntoOriginal
+            if (idDescansosMedicos.length > 0) {
+                console.log('---- si hay más descansos médicos ----')
+                for (let i = 1; i < idDescansosMedicos.length; i++) {
+                    const nuevoAdjunto = await Adjunto.create(
+                        {
+                            id_tipoadjunto,
+                            id_descansomedico: idDescansosMedicos[i],
+                            id_documento,
+                            file_name,
+                            file_type,
+                            file_path,
+                            id_persona,
+                            user_crea,
+                            sistema,
+                            estado,
+                        } as IAdjunto,
+                        { transaction }
+                    );
 
-                const nuevoAdjunto = await Adjunto.create(
-                    {
-                        id_tipoadjunto,
-                        id_descansomedico: idDescansosMedicos[i],
-                        id_documento,
-                        file_name,
-                        file_type,
-                        file_path,
-                        // Asignamos el resto de campos relevantes del adjunto original
-                        id_persona,
-                        user_crea,
-                        sistema,
-                        estado,
-                    } as IAdjunto,
-                    { transaction }
-                );
-
-                results.push({
-                    result: true,
-                    message: 'Nuevo adjunto creado con éxito',
-                    data: nuevoAdjunto,
-                    status: 201
-                });
+                    results.push({
+                        result: true,
+                        message: 'Nuevo adjunto creado con éxito',
+                        data: nuevoAdjunto,
+                        status: 201
+                    });
+                }
+            } else {
+                console.log('---- no existen más descansos médicos ----')
             }
 
             await transaction.commit();

@@ -108,11 +108,11 @@ class UpdateCanjeService {
 
             const htmlContent = notificationCanjeObservado(dataEmail)
 
-            await this.emailRepository.sendEmail({
-                to: email,
-                subject: '¡ESTADO DEL PROCESO DE CANJE!',
-                html: htmlContent
-            });
+            // await this.emailRepository.sendEmail({
+            //     to: email,
+            //     subject: '¡ESTADO DEL PROCESO DE CANJE!',
+            //     html: htmlContent
+            // });
 
             console.log(`Correo de notificación de estado de descanso médico ${nombreCompleto}`);
         } else if (estado_registro === ECanje.CANJE_CONFORME) {
