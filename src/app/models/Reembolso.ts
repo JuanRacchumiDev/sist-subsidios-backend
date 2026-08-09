@@ -4,7 +4,6 @@ import { EReembolso } from '../enums/EReembolso';
 import { Canje } from './Canje';
 import { Persona } from './Persona';
 import sequelize from '../../config/database'
-import { Colaborador } from './Colaborador';
 
 interface ReembolsoCreationAttributes extends Optional<IReembolso, 'id'> { }
 
@@ -16,13 +15,16 @@ export class Reembolso extends Model<IReembolso, ReembolsoCreationAttributes> im
     public codigo?: string | undefined;
     public codigo_reembolso?: string | undefined;
     public numero_expediente?: string | undefined;
+    public fecha_solicitud?: string | undefined;
     public fecha_registro?: string | undefined;
     public fecha_reembolso?: string | undefined;
     public fecha_maxima_reembolso?: string | undefined;
     public fecha_maxima_subsanar?: string | undefined;
     public fecha_pago?: string | undefined;
+    public fecha_actualiza?: string | undefined;
     public is_cobrable?: boolean | undefined;
     public observacion?: string | undefined;
+    public valor_dia?: number | undefined;
     public estado_registro?: EReembolso | undefined;
     public nombre_colaborador?: string | undefined;
     public user_crea?: string | undefined;
@@ -38,7 +40,7 @@ export class Reembolso extends Model<IReembolso, ReembolsoCreationAttributes> im
 
     // Asociaciones
     public getCanje!: () => Promise<Canje>
-    public getColaborador!: () => Promise<Colaborador>
+    public getColaborador!: () => Promise<Persona>
 }
 
 Reembolso.init({
@@ -81,6 +83,10 @@ Reembolso.init({
         type: DataTypes.STRING(30),
         allowNull: true
     },
+    fecha_solicitud: {
+        type: DataTypes.STRING(12),
+        allowNull: true
+    },
     fecha_registro: {
         type: DataTypes.STRING(12),
         allowNull: true
@@ -99,6 +105,14 @@ Reembolso.init({
     },
     fecha_pago: {
         type: DataTypes.STRING(12),
+        allowNull: true
+    },
+    fecha_actualiza: {
+        type: DataTypes.STRING(12),
+        allowNull: true
+    },
+    valor_dia: {
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: true
     },
     is_cobrable: {

@@ -11,6 +11,7 @@ import { CANJE_INCLUDE } from "../../../includes/CanjeInclude"
 import { IReembolsoFilter } from "../../interfaces/Reembolso/IReembolsoFilter"
 import { Op, WhereOptions } from 'sequelize';
 import { Persona } from "../../models/Persona"
+import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude"
 
 class ReembolsoRepository {
     /**
@@ -21,7 +22,7 @@ class ReembolsoRepository {
         try {
             const reembolsos = await Reembolso.findAll({
                 attributes: REEMBOLSO_ATTRIBUTES,
-                include: [CANJE_INCLUDE],
+                include: [CANJE_INCLUDE, COLABORADOR_INCLUDE],
                 order: [
                     ['fecha_registro', 'DESC']
                 ]
@@ -91,7 +92,7 @@ class ReembolsoRepository {
                     CANJE_INCLUDE,
                     {
                         model: Persona,
-                        as: 'persona',
+                        as: 'colaborador',
                         required: false, // LEFT JOIN para no excluir si la búsqueda coincide en Reembolso.nombre_colaborador
                         where: wherePersona
                     }
@@ -137,7 +138,7 @@ class ReembolsoRepository {
         try {
             const reembolso = await Reembolso.findByPk(id, {
                 attributes: REEMBOLSO_ATTRIBUTES,
-                include: [CANJE_INCLUDE]
+                include: [CANJE_INCLUDE, COLABORADOR_INCLUDE]
             })
 
             if (!reembolso) {

@@ -14,8 +14,8 @@ export const COLABORADOR_INCLUDE = {
         'fecha_ingreso',
         'nombre_area',
         'nombre_sede',
-        'correo_institucional',
-        'correo_personal',
-        'numero_celular'
+        'email_institucional',
+        'email_personal',
+        'telefono'
     ]
 }

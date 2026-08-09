@@ -125,21 +125,21 @@ class CobroRepository {
         // const transaction = await sequelize.transaction()
 
         try {
-            const { codigo } = data
+            // const { codigo } = data
 
-            if (!codigo) {
-                return { result: false, message: 'El código es requerido para crear un cobro' }
-            }
+            // if (!codigo) {
+            //     return { result: false, message: 'El código es requerido para crear un cobro' }
+            // }
 
-            const fields = { codigo }
+            // const fields = { codigo }
 
-            const validateFields = await this.validateFieldsRegistered(fields, "crear")
+            // const validateFields = await this.validateFieldsRegistered(fields, "crear")
 
-            const { result: resultValidate, message: messageValidate } = validateFields
+            // const { result: resultValidate, message: messageValidate } = validateFields
 
-            if (resultValidate) {
-                return { result: !resultValidate, message: messageValidate, status: 409 }
-            }
+            // if (resultValidate) {
+            //     return { result: !resultValidate, message: messageValidate, status: 409 }
+            // }
 
             const newCobro = await Cobro.create(data)
 

@@ -54,7 +54,7 @@ Cobro.init({
     },
     codigo: {
         type: DataTypes.STRING(30),
-        allowNull: false
+        allowNull: true
     },
     codigo_cheque: {
         type: DataTypes.STRING(15),
@@ -76,7 +76,7 @@ Cobro.init({
     },
     fecha_maxima_cobro: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: true
     },
     observacion: {
         type: DataTypes.TEXT,

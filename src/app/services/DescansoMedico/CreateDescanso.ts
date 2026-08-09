@@ -20,6 +20,7 @@ import { TDetalleDescansoMedico } from '../../types/TDetalleEmail';
 import { CanjeResponse, ICanje } from "../../interfaces/Canje/ICanje";
 import { FECHA_MAXIMA_CANJE, TOTAL_DIAS_DESCANSO_MEDICO } from '../../../helpers/HParameter';
 import { ECanje } from '../../enums/ECanje';
+import { EPerfil } from "../../enums/EPerfil"
 
 class CreateDescansoService {
     private descansoMedicoRepository: DescansoMedicoRepository;
@@ -50,7 +51,7 @@ class CreateDescansoService {
             fecha_inicio,
             fecha_final,
             total_dias,
-            slug_perfil,
+            nombre_perfil_url,
             codigo_temp,
             estado_registro,
             nombre_colaborador,
@@ -113,7 +114,7 @@ class CreateDescansoService {
         const isReembolsableCanje: boolean = true; // Por defecto es reembolsable si pasa esta validación.
 
         // Definiendo arreglo de descansos médicos
-        const recordsToCreateDM: IDescansoMedico[] = []
+        const registrosParaCrearDM: IDescansoMedico[] = []
 
         // Definiendo registros de descansos médicos
         let responsesDM: DescansoMedicoResponse | DescansoMedicoResponse[]
@@ -121,13 +122,13 @@ class CreateDescansoService {
         data.fecha_inicio_ingresado = fecha_inicio
         data.fecha_final_ingresado = fecha_final
 
-        let recordsToCreateCanje: ICanje[] = [];
+        let registrosParaCrearCanje: ICanje[] = [];
 
         try {
             // Verificar si ambas fechas están en el mismo mes
             if (isSameMonth(startDate, endDate)) {
                 console.log('fechas en el mismo mes')
-                recordsToCreateDM.push({ ...data })
+                registrosParaCrearDM.push({ ...data })
             } else {
                 console.log('fechas en meses distintos')
                 let currentStartDate = startDate
@@ -154,38 +155,38 @@ class CreateDescansoService {
                         total_dias: differenceInCalendarDays(currentEndDate, currentStartDate) + 1
                     }
 
-                    recordsToCreateDM.push(newRecord)
+                    registrosParaCrearDM.push(newRecord)
 
-                    // console.log({ recordsToCreateDM })
+                    // console.log({ registrosParaCrearDM })
 
                     currentStartDate = addMonths(startOfMonth(currentStartDate), 1)
                 }
             }
 
             console.log('---- registros para crear descansos médicos ----')
-            console.log({ recordsToCreateDM })
+            console.log({ registrosParaCrearDM })
 
             // Aquí se llama a la función para gestionar los solapamientos de fechas
-            const recordsToCreateWithOverlapHandling = await this.descansoMedicoRepository.validateSolapamientoFechas(recordsToCreateDM)
+            const registrosDMSinSolapamiento = await this.descansoMedicoRepository.validateSolapamientoFechas(registrosParaCrearDM)
             console.log('aplicando métodos de solapamiento en fechas de descanso médico')
-            console.log({ recordsToCreateWithOverlapHandling })
+            console.log({ registrosDMSinSolapamiento })
 
             // Se eliminan los descansos médicos que queden sin días después del manejo del solapamiento
-            const finalRecordsToCreate = recordsToCreateWithOverlapHandling.filter(
+            const finalRegistrosParaCrearDM = registrosDMSinSolapamiento.filter(
                 descanso => HDate.differenceDates(
                     descanso.fecha_inicio as string, descanso.fecha_final as string
                 ) + 1 > 0
             );
 
             console.log('---- descansos médicos después del solapamiento ----')
-            console.log({ finalRecordsToCreate })
+            console.log({ finalRegistrosParaCrearDM })
 
-            if (recordsToCreateDM.length === 1) {
+            if (registrosParaCrearDM.length === 1) {
                 console.log('único registro recordsToCreate')
-                responsesDM = await this.descansoMedicoRepository.create(finalRecordsToCreate[0]) as DescansoMedicoResponse
+                responsesDM = await this.descansoMedicoRepository.create(finalRegistrosParaCrearDM[0]) as DescansoMedicoResponse
             } else {
                 console.log('múltiples registros recordsToCreate')
-                responsesDM = await this.descansoMedicoRepository.createMultiple(finalRecordsToCreate) as DescansoMedicoResponse[]
+                responsesDM = await this.descansoMedicoRepository.createMultiple(finalRegistrosParaCrearDM) as DescansoMedicoResponse[]
             }
 
             console.log({ responsesDM })
@@ -236,14 +237,17 @@ class CreateDescansoService {
 
             console.log('Creando canjes para maternidad o por superar los 20 días');
 
-            if (slug_perfil === 'especialista' && estado_registro === EDescansoMedico.REGISTRO_EXITOSO) {
-                console.log('creando canjes como especialista')
+            console.log('---- validando nombre_perfil_url ----')
+            console.log({ nombre_perfil_url })
+
+            if (nombre_perfil_url === EPerfil.ESPECIALISTA_EMPRESA && estado_registro === EDescansoMedico.REGISTRO_EXITOSO) {
+                console.log('creando canjes como especialista empresa')
                 console.log('creando canjes desde nuevo descanso')
 
                 if (esMaternidad) {
                     console.log('crear subsidio por maternidad')
 
-                    recordsToCreateCanje = await this.crearCanjesPorMaternidad(
+                    registrosParaCrearCanje = await this.crearCanjesPorMaternidad(
                         fecha_inicio as string,
                         fecha_final as string,
                         fecha_otorgamiento as string,
@@ -252,7 +256,7 @@ class CreateDescansoService {
                         responsesDM
                     )
                 } else {
-                    recordsToCreateCanje = await this.crearCanjesSinMaternidad(
+                    registrosParaCrearCanje = await this.crearCanjesSinMaternidad(
                         fecha_otorgamiento as string,
                         fechaActual,
                         id_colaborador,
@@ -261,19 +265,19 @@ class CreateDescansoService {
                 }
 
                 // Aquí se llama a la función para gestionar los solapamientos de fechas
-                const recordsToCreateWithOverlapHandling = await this.canjeRepository.validateSolapamientoFechas(recordsToCreateCanje)
+                const registrosDMSinSolapamiento = await this.canjeRepository.validateSolapamientoFechas(registrosParaCrearCanje)
 
                 console.log('---- canjes sin solapamiento de fechas ----')
-                console.log({ recordsToCreateWithOverlapHandling })
+                console.log({ registrosDMSinSolapamiento })
 
                 // Se eliminan los canjes que queden sin días después del manejo del solapamiento
-                const finalRecordsToCreate = recordsToCreateWithOverlapHandling.filter(canje => HDate.differenceDates(canje.fecha_inicio_subsidio as string, canje.fecha_final_subsidio as string) + 1 > 0);
+                const finalRegistrosParaCrearDM = registrosDMSinSolapamiento.filter(canje => HDate.differenceDates(canje.fecha_inicio_subsidio as string, canje.fecha_final_subsidio as string) + 1 > 0);
 
                 console.log('---- obteniendo canjes finales ----')
-                console.log({ finalRecordsToCreate })
+                console.log({ finalRegistrosParaCrearDM })
 
-                if (finalRecordsToCreate.length > 0) {
-                    const resultsCanjes = await this.canjeRepository.createMultiple(finalRecordsToCreate) as CanjeResponse[];
+                if (finalRegistrosParaCrearDM.length > 0) {
+                    const resultsCanjes = await this.canjeRepository.createMultiple(finalRegistrosParaCrearDM) as CanjeResponse[];
                     const allSuccessful = resultsCanjes.every(res => res.result);
 
                     if (allSuccessful) {
@@ -394,7 +398,7 @@ class CreateDescansoService {
     ): Promise<ICanje[]> => {
         console.log('crear canjes por maternidad')
 
-        let recordsToCreateCanje: ICanje[] = []
+        let registrosParaCrearCanje: ICanje[] = []
 
         if (Array.isArray(listResponseDMs)) {
 
@@ -409,7 +413,8 @@ class CreateDescansoService {
                     id_colaborador,
                     nombre_colaborador,
                     nombre_tipocontingencia,
-                    nombre_tipodescansomedico
+                    nombre_tipodescansomedico,
+                    user_crea
                 } = itemDescanso
 
                 const startDateSubsidio = parseISO(fechaInicioSubsidio as string)
@@ -433,10 +438,11 @@ class CreateDescansoService {
                         total_dias: differenceInCalendarDays(endDateSubsidio, startDateSubsidio) + 1,
                         nombre_colaborador,
                         nombre_tipocontingencia,
-                        nombre_tipodescansomedico
+                        nombre_tipodescansomedico,
+                        user_crea
                     };
 
-                    recordsToCreateCanje.push(payloadCanjeMaternidad)
+                    registrosParaCrearCanje.push(payloadCanjeMaternidad)
                 } else {
                     console.log('fechas de canje en meses distintos')
                     let currentStartDateCanje = startDateSubsidio
@@ -471,10 +477,11 @@ class CreateDescansoService {
                             estado_registro: ECanje.CANJE_REGISTRADO,
                             nombre_colaborador,
                             nombre_tipocontingencia,
-                            nombre_tipodescansomedico
+                            nombre_tipodescansomedico,
+                            user_crea
                         };
 
-                        recordsToCreateCanje.push(payloadCanjeMaternidad)
+                        registrosParaCrearCanje.push(payloadCanjeMaternidad)
 
                         currentStartDateCanje = addMonths(startOfMonth(currentStartDateCanje), 1)
                     }
@@ -482,7 +489,7 @@ class CreateDescansoService {
             }
         }
 
-        return recordsToCreateCanje
+        return registrosParaCrearCanje
     }
 
     crearCanjesSinMaternidad = async (
@@ -493,7 +500,7 @@ class CreateDescansoService {
     ): Promise<ICanje[]> => {
         console.log('crear canje que no es maternidad')
 
-        let recordsToCreateCanje: ICanje[] = []
+        let registrosParaCrearCanje: ICanje[] = []
 
         let fechaInicioSubsidio: string = ""
         let fechaFinalSubsidio: string = ""
@@ -515,10 +522,11 @@ class CreateDescansoService {
                     id_colaborador,
                     nombre_colaborador,
                     nombre_tipocontingencia,
-                    nombre_tipodescansomedico
+                    nombre_tipodescansomedico,
+                    user_crea
                 } = itemDescanso
 
-                const responseTotalDias = await this.descansoMedicoRepository.getTotalDiasByColaboradorWithoutIdDescanso(
+                const responseTotalDias = await this.descansoMedicoRepository.getTotalDiasByColaboradorSinIdDescanso(
                     id_colaborador as string,
                     id as string,
                     fecha_otorgamiento as string
@@ -555,7 +563,7 @@ class CreateDescansoService {
                         console.log({ fechaInicioSubsidio })
                         console.log({ fechaFinalSubsidio })
 
-                        const payloadCanjeWithoutSubsidio: ICanje = {
+                        const payloadCanjeSinSubsidio: ICanje = {
                             id_descansomedico: id,
                             id_colaborador,
                             fecha_otorgamiento,
@@ -570,12 +578,13 @@ class CreateDescansoService {
                             total_dias: differenceInCalendarDays(fechaFinalSubsidio, fechaInicioSubsidio) + 1,
                             nombre_colaborador,
                             nombre_tipocontingencia,
-                            nombre_tipodescansomedico
+                            nombre_tipodescansomedico,
+                            user_crea
                         };
 
-                        console.log({ payloadCanjeWithoutSubsidio })
+                        console.log({ payloadCanjeSinSubsidio })
 
-                        recordsToCreateCanje.push(payloadCanjeWithoutSubsidio);
+                        registrosParaCrearCanje.push(payloadCanjeSinSubsidio);
                     }
 
                     const diasRestantes = newDiasAcumulados - TOTAL_DIAS_DESCANSO_MEDICO;
@@ -624,12 +633,13 @@ class CreateDescansoService {
                             total_dias: differenceInCalendarDays(fechaFinalSubsidio, fechaInicioSubsidio) + 1,
                             nombre_colaborador,
                             nombre_tipocontingencia,
-                            nombre_tipodescansomedico
+                            nombre_tipodescansomedico,
+                            user_crea
                         };
 
                         console.log({ payloadCanjeWithSubsidio })
 
-                        recordsToCreateCanje.push(payloadCanjeWithSubsidio);
+                        registrosParaCrearCanje.push(payloadCanjeWithSubsidio);
                     }
                 }
 
@@ -651,12 +661,13 @@ class CreateDescansoService {
                     total_dias,
                     nombre_colaborador,
                     nombre_tipocontingencia,
-                    nombre_tipodescansomedico
+                    nombre_tipodescansomedico,
+                    user_crea
                 } = data as IDescansoMedico
 
                 const idDescansoMedico = id as string
 
-                const responseTotalDias = await this.descansoMedicoRepository.getTotalDiasByColaboradorWithoutIdDescanso(
+                const responseTotalDias = await this.descansoMedicoRepository.getTotalDiasByColaboradorSinIdDescanso(
                     id_colaborador as string,
                     idDescansoMedico,
                     fecha_otorgamiento_dm
@@ -694,7 +705,7 @@ class CreateDescansoService {
                         console.log({ fechaInicioSubsidio })
                         console.log({ fechaFinalSubsidio })
 
-                        const payloadCanjeWithoutSubsidio: ICanje = {
+                        const payloadCanjeSinSubsidio: ICanje = {
                             id_descansomedico: idDescansoMedico,
                             id_colaborador,
                             fecha_otorgamiento,
@@ -709,10 +720,11 @@ class CreateDescansoService {
                             total_dias: differenceInCalendarDays(fechaFinalSubsidio, fechaInicioSubsidio) + 1,
                             nombre_colaborador,
                             nombre_tipocontingencia,
-                            nombre_tipodescansomedico
+                            nombre_tipodescansomedico,
+                            user_crea
                         };
 
-                        recordsToCreateCanje.push(payloadCanjeWithoutSubsidio);
+                        registrosParaCrearCanje.push(payloadCanjeSinSubsidio);
                     }
 
                     const diasRestantes = newDiasAcumulados - TOTAL_DIAS_DESCANSO_MEDICO;
@@ -761,18 +773,19 @@ class CreateDescansoService {
                             total_dias: differenceInCalendarDays(fechaFinalSubsidio, fechaInicioSubsidio) + 1,
                             nombre_colaborador,
                             nombre_tipocontingencia,
-                            nombre_tipodescansomedico
+                            nombre_tipodescansomedico,
+                            user_crea
                         };
 
                         console.log({ payloadCanjeWithSubsidio })
 
-                        recordsToCreateCanje.push(payloadCanjeWithSubsidio);
+                        registrosParaCrearCanje.push(payloadCanjeWithSubsidio);
                     }
                 }
             }
         }
 
-        return recordsToCreateCanje
+        return registrosParaCrearCanje
     }
 }
 

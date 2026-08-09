@@ -7,8 +7,8 @@ import { IEmpresa } from "../Empresa/IEmpresa"
 
 export interface IDescansoMedico {
     id?: string
-    id_colaborador?: string
     id_empresa?: string
+    id_colaborador?: string
     id_tipodescansomedico?: string
     id_tipocontingencia?: string
     codcie10_diagnostico?: string
@@ -58,7 +58,7 @@ export interface IDescansoMedico {
     diagnostico?: IDiagnostico
     canje?: ICanje
     id_usuario?: string
-    slug_perfil?: string
+    nombre_perfil_url?: string
 }
 
 export interface DescansoMedicoResponse {

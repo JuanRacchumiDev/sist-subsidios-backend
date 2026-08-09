@@ -22,10 +22,17 @@ export type TDetalleCanje = {
     descansoMedico?: Omit<TDetalleDescansoMedico, 'observacion'>
 }
 
+export type TDetalleReembolso = {
+    fecha_registro?: string
+    observacion?: string
+    canje?: Omit<TDetalleCanje, 'observacion'>
+}
+
 /**
  * Contenido principal de datos para plantillas de notificación de emails.
  */
 export type TDetalleEmail = {
     descansoMedico?: TDetalleDescansoMedico
     canje?: TDetalleCanje
+    reembolso?: TDetalleReembolso
 }

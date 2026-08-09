@@ -1,6 +1,6 @@
 import CanjeRepository from '../../repositories/Canje/CanjeRepository';
 import { ICanje, CanjeResponse } from '../../interfaces/Canje/ICanje';
-import { IReembolso } from '../../interfaces/Reembolso/IReembolso'
+import { IReembolso, ReembolsoResponse } from '../../interfaces/Reembolso/IReembolso'
 import { IPersona } from "../../interfaces/Persona/IPersona"
 import { ECanje } from '../../enums/ECanje';
 import { TDetalleCanje } from '../../types/TDetalleEmail';
@@ -31,12 +31,9 @@ class UpdateCanjeService {
      * Puede actualizar cualquier campo definido en ICanje, incluyendo el nombre y el estado.
      * @param {string} id - El ID UUID del canje a actualizar.
      * @param {ICanje} payload - Los datos parciales o completos del canje a actualizar.
-     * @returns {Promise<CanjeResponse>} La respuesta de la operación.
+     * @returns {Promise<CanjeResponse | ReembolsoResponse>} La respuesta de la operación.
      */
-    async execute(id: string, payload: ICanje): Promise<CanjeResponse> {
-        let nombreCompleto: string = ""
-        let email: string = ""
-
+    async execute(id: string, payload: ICanje): Promise<CanjeResponse | ReembolsoResponse> {
         const responseCanje = await this.canjeRepository.update(id, payload);
 
         console.log({ responseCanje })
@@ -57,8 +54,13 @@ class UpdateCanjeService {
             estado_registro,
             observacion,
             descansoMedico,
-            user_crea
+            user_crea,
+            user_actualiza
         } = canje
+
+        console.log({ user_crea })
+
+        console.log({ user_actualiza })
 
         console.log('canje.descansomedico', descansoMedico)
 
@@ -79,8 +81,6 @@ class UpdateCanjeService {
         console.log({ colaborador })
 
         const { id: idColaborador, email_personal, nombre_completo } = colaborador
-        nombreCompleto = nombre_completo as string
-        email = email_personal as string
 
         if (estado_registro === ECanje.CANJE_OBSERVADO) {
             const detalleCanje: TDetalleCanje = {
@@ -99,7 +99,7 @@ class UpdateCanjeService {
             }
 
             const dataEmail = {
-                nombreCompleto,
+                nombreCompleto: nombre_completo as string,
                 detalle: detalleCanje,
                 appUrl: process.env.APP_URL || 'http://localhost:3000'
             }
@@ -109,12 +109,12 @@ class UpdateCanjeService {
             const htmlContent = notificationCanjeObservado(dataEmail)
 
             // await this.emailRepository.sendEmail({
-            //     to: email,
+            //     to: email_personal as string,
             //     subject: '¡ESTADO DEL PROCESO DE CANJE!',
             //     html: htmlContent
             // });
 
-            console.log(`Correo de notificación de estado de descanso médico ${nombreCompleto}`);
+            console.log(`Correo de notificación de estado de descanso médico ${nombre_completo as string}`);
         } else if (estado_registro === ECanje.CANJE_CONFORME) {
             // Registrar nuevo reembolso
             const fechaActual: string = HDate.getCurrentDateToString('yyyy-MM-dd')
@@ -126,8 +126,8 @@ class UpdateCanjeService {
                 fecha_maxima_reembolso: fechaActual,
                 is_cobrable: false,
                 estado_registro: EReembolso.REEMBOLSO_INGRESADO,
-                nombre_colaborador: nombreCompleto,
-                user_crea
+                nombre_colaborador: nombre_completo as string,
+                user_crea: (user_actualiza ? user_actualiza : user_crea) as string
             }
 
             console.log({ payloadReembolso })
@@ -146,7 +146,7 @@ class UpdateCanjeService {
                 };
             }
 
-            return responseCanje;
+            return responseReembolso;
         }
 
         return responseCanje

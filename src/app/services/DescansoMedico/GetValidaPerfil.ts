@@ -1,7 +1,8 @@
 import DescansoMedicoRepository from "../../repositories/DescansoMedico/DescansoMedicoRepository";
-import { DescansoMedicoResponse, IDescansoMedico } from '../../interfaces/DescansoMedico/IDescansoMedico';
+import { IDescansoMedico } from '../../interfaces/DescansoMedico/IDescansoMedico';
 import UsuarioRepository from "../../repositories/Usuario/UsuarioRepository";
 import { IUsuario } from "../../interfaces/Usuario/IUsuario";
+import { EPerfil } from "../../enums/EPerfil"
 
 export interface IValidaPerfilResponse {
     result: boolean
@@ -46,7 +47,7 @@ class GetValidaPerfilService {
             if (resultUsuario && dataUsuario) {
                 const usuario = dataUsuario as IUsuario
 
-                const isValidaEspCliente = usuario && usuario.perfil && usuario.perfil.nombre_url === 'especialista-empresa'
+                const isValidaEspCliente = usuario && usuario.perfil && usuario.perfil.nombre_url === EPerfil.ESPECIALISTA_EMPRESA
 
                 const nombrePerfil = (isValidaEspCliente) ? usuario.perfil?.nombre_url as string : 'sin perfil asignado'
 

@@ -1,6 +1,6 @@
 import { EReembolso } from "../../enums/EReembolso"
 import { ICanje } from "../Canje/ICanje"
-import { IColaborador } from "../Colaborador/IColaborador"
+import { IPersona } from "../Persona/IPersona"
 
 export interface IReembolso {
     id?: string
@@ -10,11 +10,14 @@ export interface IReembolso {
     codigo?: string
     codigo_reembolso?: string
     numero_expediente?: string
+    fecha_solicitud?: string
     fecha_registro?: string
     fecha_reembolso?: string
     fecha_maxima_reembolso?: string
     fecha_maxima_subsanar?: string
     fecha_pago?: string
+    fecha_actualiza?: string
+    valor_dia?: number
     is_cobrable?: boolean
     observacion?: string
     nombre_colaborador?: string
@@ -25,7 +28,7 @@ export interface IReembolso {
     sistema?: boolean
     estado?: boolean
     canje?: ICanje
-    colaborador?: IColaborador
+    colaborador?: IPersona
 }
 
 export interface ReembolsoResponse {

@@ -373,7 +373,7 @@ class DescansoMedicoRepository {
      * @param {string} fechaOtorgamiento - La fecha de otorgamiento a considerar
      * @return {Promise<TTotalDias>} La suma de días acumulados
      */
-    async getTotalDiasByColaboradorWithoutIdDescanso(
+    async getTotalDiasByColaboradorSinIdDescanso(
         idColaborador: string,
         idDescansoMedico: string,
         fechaOtorgamiento: string

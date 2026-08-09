@@ -14,6 +14,7 @@ import { addMonths, differenceInCalendarDays, endOfMonth, format, isSameMonth, p
 import { EmailRepository } from '../../repositories/Email/EmailRepository'
 import UsuarioRepository from '../../repositories/Usuario/UsuarioRepository'
 import { IUsuario } from '../../interfaces/Usuario/IUsuario';
+import { EPerfil } from "../../enums/EPerfil"
 
 /**
  * @class UpdateDescansoService
@@ -129,7 +130,7 @@ class UpdateDescansoService {
 
                     console.log({ usuario })
 
-                    const isValidaEspCliente = usuario && usuario.perfil && (usuario.perfil.nombre_url as string) === 'especialista-empresa'
+                    const isValidaEspCliente = usuario && usuario.perfil && (usuario.perfil.nombre_url as string) === EPerfil.ESPECIALISTA_EMPRESA
 
                     console.log({ isValidaEspCliente })
 
@@ -163,15 +164,13 @@ class UpdateDescansoService {
                         //     html: htmlContent
                         // });
 
-                        console.log(`Correo de notificación de estado de descanso médico para especialista cliente`);
+                        console.log(`Correo de notificación de estado de descanso médico para especialista empresa`);
                     }
                 }
 
             } else if (estado_registro === EDescansoMedico.REGISTRO_EXITOSO) {
 
                 console.log('creando canjes desde update descanso')
-
-                const fechaActual: string = HDate.getCurrentDateToString('yyyy-MM-dd')
 
                 let fechaInicioSubsidio: string;
 
@@ -212,7 +211,6 @@ class UpdateDescansoService {
                             fecha_inicio_dm: fecha_inicio,
                             fecha_final_dm: fecha_final,
                             fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
-                            fecha_registro: fechaActual,
                             is_reembolsable: isReembolsable,
                             estado_registro: ECanje.CANJE_REGISTRADO,
                             nombre_colaborador,
@@ -251,7 +249,6 @@ class UpdateDescansoService {
                                 fecha_inicio_dm: fecha_inicio,
                                 fecha_final_dm: fecha_final,
                                 fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
-                                fecha_registro: fechaActual,
                                 is_reembolsable: true,
                                 estado_registro: ECanje.CANJE_REGISTRADO,
                                 nombre_colaborador,
@@ -270,7 +267,7 @@ class UpdateDescansoService {
                     }
                 } else {
                     console.log('crear canje que no es maternidad')
-                    const responseTotalDias = await this.descansoMedicoRepository.getTotalDiasByColaboradorWithoutIdDescanso(
+                    const responseTotalDias = await this.descansoMedicoRepository.getTotalDiasByColaboradorSinIdDescanso(
                         id_colaborador as string,
                         id as string,
                         fecha_otorgamiento as string
@@ -327,7 +324,7 @@ class UpdateDescansoService {
                         console.log({ fechaInicioSubsidio })
                         console.log({ fechaFinalSubsidio })
 
-                        const payloadCanjeWithoutSubsidio: ICanje = {
+                        const payloadCanjeSinSubsidio: ICanje = {
                             id_descansomedico: id as string,
                             id_colaborador,
                             fecha_otorgamiento,
@@ -336,7 +333,6 @@ class UpdateDescansoService {
                             fecha_inicio_dm: fecha_inicio,
                             fecha_final_dm: fecha_final,
                             fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
-                            fecha_registro: fechaActual,
                             is_reembolsable: false,
                             estado_registro: ECanje.CANJE_REGISTRADO,
                             nombre_colaborador,
@@ -345,9 +341,9 @@ class UpdateDescansoService {
                             user_crea
                         };
 
-                        console.log({ payloadCanjeWithoutSubsidio })
+                        console.log({ payloadCanjeSinSubsidio })
 
-                        recordsToCreateCanje.push(payloadCanjeWithoutSubsidio);
+                        recordsToCreateCanje.push(payloadCanjeSinSubsidio);
                     }
 
                     // Lógica del segundo canje (subsidiado)
@@ -393,7 +389,6 @@ class UpdateDescansoService {
                             fecha_inicio_dm: fecha_inicio,
                             fecha_final_dm: fecha_final,
                             fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
-                            fecha_registro: fechaActual,
                             is_reembolsable: isReembolsable,
                             estado_registro: ECanje.CANJE_REGISTRADO,
                             nombre_colaborador,

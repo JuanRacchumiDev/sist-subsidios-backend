@@ -43,6 +43,10 @@ module.exports = {
         type: Sequelize.STRING(30),
         allowNull: true
       },
+      fecha_solicitud: {
+        type: Sequelize.STRING(12),
+        allowNull: false
+      },
       fecha_registro: {
         type: Sequelize.STRING(12),
         allowNull: false
@@ -62,6 +66,14 @@ module.exports = {
       fecha_pago: {
         type: Sequelize.STRING(12),
         allowNull: true
+      },
+      fecha_actualiza: {
+        type: Sequelize.STRING(12),
+        allowNull: true
+      },
+      valor_dia: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false
       },
       is_cobrable: {
         type: Sequelize.BOOLEAN,

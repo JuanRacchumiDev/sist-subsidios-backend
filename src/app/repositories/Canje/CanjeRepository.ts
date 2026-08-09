@@ -40,7 +40,8 @@ class CanjeRepository {
             const canjes = await Canje.findAll({
                 attributes: CANJE_ATTRIBUTES,
                 include: [
-                    DESCANSOMEDICO_INCLUDE
+                    DESCANSOMEDICO_INCLUDE,
+                    COLABORADOR_INCLUDE
                 ],
                 where: {
                     is_reembolsable: true
@@ -129,13 +130,13 @@ class CanjeRepository {
                     },
                     {
                         model: Persona,
-                        as: 'persona',
+                        as: 'colaborador',
                         required: !!wherePersona,
                         where: wherePersona
                     }
                 ],
                 order: [
-                    [{ model: Persona, as: 'persona' }, 'apellido_paterno', 'ASC'],
+                    [{ model: Persona, as: 'colaborador' }, 'apellido_paterno', 'ASC'],
                     ['fecha_inicio_subsidio', 'ASC']
                 ]
             });
@@ -176,7 +177,7 @@ class CanjeRepository {
                 attributes: CANJE_ATTRIBUTES,
                 include: [
                     DESCANSOMEDICO_INCLUDE,
-                    // COLABORADOR_INCLUDE
+                    COLABORADOR_INCLUDE
                 ]
             })
 
@@ -454,110 +455,6 @@ class CanjeRepository {
             return { result: false, error: errorMessage, status: 500 }
         }
     }
-
-    /**
-     * 
-     * @param {string} idColaborador - El ID del colaborador 
-     * @param fechaInicio - La fecha de inicio del nuevo canje
-     * @param fechaFinal - La fecha de final del nuevo canje
-     * @returns {Promise<{fechaInicio: string, fechaFinal: string} | null>} - Un objeto con las fechas ajustadas
-     */
-    // async validateAcoplamiento(
-    //     idColaborador: string,
-    //     fechaInicio: string,
-    //     fechaFinal: string
-    // ): Promise<{ fechaInicio: string, fechaFinal: string } | null> {
-    //     try {
-    //         const nuevaFechaInicio = new Date(fechaInicio);
-    //         const nuevaFechaFinal = new Date(fechaFinal);
-
-    //         // console.log({ nuevaFechaInicio })
-    //         // console.log({ nuevaFechaFinal })
-
-    //         // Buscar descansos médicos existentes para el colaborador que se solapen con el nuevo registro.
-    //         const canjesExistentes = await Canje.findAll({
-    //             where: {
-    //                 id_colaborador: idColaborador,
-    //                 [Op.and]: [
-    //                     {
-    //                         fecha_inicio_subsidio: {
-    //                             [Op.lte]: nuevaFechaFinal
-    //                         }
-    //                     },
-    //                     {
-    //                         fecha_final_subsidio: {
-    //                             [Op.gte]: nuevaFechaInicio
-    //                         }
-    //                     }
-    //                 ]
-    //             },
-    //             order: [
-    //                 ['fecha_inicio_subsidio', 'ASC']
-    //             ]
-    //         }) as Canje[]
-
-    //         // console.log({ canjesExistentes })
-
-    //         // Si no hay solapamiento, no hay que hacer nada, se puede guardar el registro tal cual
-    //         if (canjesExistentes.length === 0) {
-    //             // console.log('no hay solapamiento')
-    //             return { fechaInicio, fechaFinal };
-    //         }
-
-    //         // Si hay solapamiento, ajusta las fechas
-    //         let fechaInicioAjustada = nuevaFechaInicio;
-    //         let fechaFinalAjustada = nuevaFechaFinal;
-
-    //         // Ordena los canjes existentes por fecha de inicio de subsidio para procesarlos en orden
-    //         // canjesExistentes.sort((a, b) => new Date(a.fecha_inicio_subsidio) - new Date(b.fecha_inicio_subsidio));
-
-    //         // Procesa cada solapamiento y ajusta las fechas del nuevo registro
-    //         for (const canje of canjesExistentes) {
-    //             // Se verifica que las fechas existan antes de convertirlas a tipo Date
-    //             const fechaInicioExistente = canje.fecha_inicio_subsidio ? new Date(canje.fecha_inicio_subsidio) : null;
-    //             const fechaFinalExistente = canje.fecha_final_subsidio ? new Date(canje.fecha_final_subsidio) : null;
-
-    //             // Continúa con la lógica solo si las fechas existen
-    //             if (fechaInicioExistente && fechaFinalExistente) {
-    //                 // Caso 1: Nuevo canje totalmente cubierto por uno existente
-    //                 if (fechaInicioAjustada >= fechaInicioExistente && fechaFinalAjustada <= fechaFinalExistente) {
-    //                     // console.log('aa')
-    //                     return null;
-    //                 }
-
-    //                 // Caso 2: El nuevo canje se solapa al inicio
-    //                 if (fechaInicioAjustada >= fechaInicioExistente && fechaInicioAjustada <= fechaFinalExistente) {
-    //                     // console.log('bb')
-    //                     fechaInicioAjustada = new Date(fechaFinalExistente);
-    //                     fechaInicioAjustada.setDate(fechaInicioAjustada.getDate() + 1);
-    //                 }
-
-    //                 // Caso 3: El nuevo canje se solapa al final
-    //                 if (fechaFinalAjustada >= fechaInicioExistente && fechaFinalAjustada <= fechaFinalExistente) {
-    //                     // console.log('cc')
-    //                     fechaFinalAjustada = new Date(fechaInicioExistente);
-    //                     fechaFinalAjustada.setDate(fechaFinalAjustada.getDate() - 1);
-    //                 }
-    //             }
-    //         }
-
-    //         // Si las fechas ajustadas son válidas (fecha de inicio de subsidio es anterior a la fecha de finalización), devuélvelas
-    //         if (fechaInicioAjustada <= fechaFinalAjustada) {
-    //             // console.log('dd')
-    //             return {
-    //                 fechaInicio: fechaInicioAjustada.toISOString().split('T')[0],
-    //                 fechaFinal: fechaFinalAjustada.toISOString().split('T')[0]
-    //             };
-    //         } else {
-    //             // console.log('ee')
-    //             return null; // El ajuste resultó en un período inválido, lo que implica solapamiento total
-    //         }
-    //     } catch (error) {
-    //         // console.log('ff')
-    //         console.error("Error al validar y ajustar descanso canje:", error);
-    //         return null
-    //     }
-    // }
 
     /**
      * Procesa un array de canjes a crear y ajusta sus fechas para evitar solapamiento con registros existentes.

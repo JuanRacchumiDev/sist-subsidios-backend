@@ -1,4 +1,4 @@
-import { TDetalleEmail, TDetalleDescansoMedico, TDetalleCanje } from '../types/TDetalleEmail'
+import { TDetalleEmail, TDetalleDescansoMedico, TDetalleCanje, TDetalleReembolso } from '../types/TDetalleEmail'
 import { IPersona } from "../interfaces/Persona/IPersona";
 import { IDetalleParametro } from "../interfaces/DetalleParametro/IDetalleParametro"
 
@@ -21,6 +21,12 @@ interface INotificationCanjeObservadoProps {
   nombreCompleto: string;
   detalle: TDetalleCanje | TDetalleEmail['canje'];
   appUrl: string;
+}
+
+interface INotificationReembolsoObservadoProps {
+  nombreCompleto: string
+  detalle: TDetalleReembolso | TDetalleEmail['reembolso']
+  appUrl: string
 }
 
 export function newUserNotificationTemplate(
@@ -511,6 +517,110 @@ export function notificationCanjeObservado(
   </html>
   `;
 }
+
+export function notificationReembolsoObservado(
+  data: INotificationReembolsoObservadoProps): string {
+  const { nombreCompleto, detalle, appUrl } = data;
+  const canje = detalle?.canje;
+
+  return `
+  <!DOCTYPE html>
+  <html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observación de Canje</title>
+  </head>
+  <body style="margin: 0; padding: 0; background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-font-smoothing: antialiased;">
+    
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f6f9; padding: 30px 10px;">
+      <tr>
+        <td align="center">
+          
+          <!-- Contenedor Principal -->
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);">
+            
+            <!-- Encabezado / Header -->
+            <tr>
+              <td style="background-color: #1e293b; padding: 28px 32px; text-align: center;">
+                <h1 style="color: #ffffff; font-size: 20px; font-weight: 700; margin: 0; letter-spacing: 0.5px; text-transform: uppercase;">
+                  Notificación de Canje Observado
+                </h1>
+                <p style="color: #94a3b8; font-size: 13px; margin: 6px 0 0 0;">
+                  Gestión de Descansos Médicos y Subsidios
+                </p>
+              </td>
+            </tr>
+
+            <!-- Cuerpo del mensaje -->
+            <tr>
+              <td style="padding: 32px 32px 20px 32px;">
+                <p style="font-size: 15px; color: #334155; margin: 0 0 16px 0; line-height: 1.5;">
+                  Estimado(a) <strong>${nombreCompleto}</strong>,
+                </p>
+                <p style="font-size: 14px; color: #475569; margin: 0 0 20px 0; line-height: 1.6;">
+                  Le informamos que el trámite de <strong style="color: #dc2626;">canje de su descanso médico presenta observaciones</strong>. Solicitamos su pronta atención para subsanar los documentos requeridos en el sistema.
+                </p>
+
+                <!-- Caja de Observación (Alerta) -->
+                ${detalle?.observacion ? `
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 24px;">
+                  <tr>
+                    <td style="background-color: #fef2f2; border-left: 4px solid #ef4444; border-radius: 4px; padding: 14px 16px;">
+                      <span style="font-size: 12px; font-weight: 700; color: #991b1b; text-transform: uppercase; display: block; margin-bottom: 4px;">
+                        Motivo de la Observación del Canje:
+                      </span>
+                      <span style="font-size: 13px; color: #7f1d1d; line-height: 1.4;">
+                        ${detalle.observacion}
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+                ` : ''}
+
+                <!-- Botón Call To Action -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 24px;">
+                  <tr>
+                    <td align="center">
+                      <a href="${appUrl}" target="_blank" style="background-color: #2563eb; color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; display: inline-block; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);">
+                        Subsanar Canje
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+
+                <p style="font-size: 13px; color: #64748b; margin: 0; line-height: 1.5; text-align: center;">
+                  Si tiene dudas sobre las observaciones registradas, comuníquese con el área de Trabajo Social.
+                </p>
+              </td>
+            </tr>
+
+            <!-- Pie de página / Footer -->
+            <tr>
+              <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 20px 32px; text-align: center;">
+                <p style="font-size: 12px; color: #94a3b8; margin: 0 0 4px 0;">
+                  Atentamente,
+                </p>
+                <p style="font-size: 13px; font-weight: 600; color: #475569; margin: 0 0 12px 0;">
+                  Equipo de Trabajo Social y Subsidios
+                </p>
+                <p style="font-size: 11px; color: #cbd5e1; margin: 0;">
+                  Este es un correo automático. Por favor no responda a este mensaje.
+                </p>
+              </td>
+            </tr>
+
+          </table>
+          
+        </td>
+      </tr>
+    </table>
+
+  </body>
+  </html>
+  `;
+}
+
 
 export function newNotificationDescansoMedico(
   data: {

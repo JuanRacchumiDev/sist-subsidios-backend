@@ -201,15 +201,15 @@ class TrabajadorSocialRepository {
                 id_cargo,
                 id_empresa,
                 numero_documento,
-                correo_personal,
-                correo_institucional
+                email_personal,
+                email_institucional
             } = data
 
             if (!id_tipodocumento || !id_cargo || !id_empresa || !numero_documento) {
                 return { result: false, message: 'El tipo de documento, cargo, empresa o número de documento son requeridos' }
             }
 
-            const fields = { numero_documento, correo_personal, correo_institucional }
+            const fields = { numero_documento, email_personal, email_institucional }
 
             const validateFields = await this.validateFieldsRegistered(fields, "crear")
 
@@ -257,9 +257,9 @@ class TrabajadorSocialRepository {
                 return { result: false, data: [], message: 'Trabajador social no encontrado', status: 404 }
             }
 
-            const { numero_documento, correo_personal, correo_institucional } = data
+            const { numero_documento, email_personal, email_institucional } = data
 
-            const fields = { numero_documento, correo_personal, correo_institucional }
+            const fields = { numero_documento, email_personal, email_institucional }
 
             const validateFields = await this.validateFieldsRegistered(fields, "actualizar")
 
@@ -316,29 +316,29 @@ class TrabajadorSocialRepository {
     }
 
     async validateFieldsRegistered(
-        fields: { numero_documento?: string, correo_personal?: string, correo_institucional?: string },
+        fields: { numero_documento?: string, email_personal?: string, email_institucional?: string },
         accion: string
     ): Promise<TValidateFields> {
-        const { numero_documento, correo_personal, correo_institucional } = fields
+        const { numero_documento, email_personal, email_institucional } = fields
 
         let returnValidate: TValidateFields = {
             result: false,
             message: ""
         }
 
-        if (numero_documento || correo_personal || correo_institucional) {
+        if (numero_documento || email_personal || email_institucional) {
             const whereConditions: any[] = []
 
             if (numero_documento) {
                 whereConditions.push({ numero_documento })
             }
 
-            if (correo_personal) {
-                whereConditions.push({ correo_personal })
+            if (email_personal) {
+                whereConditions.push({ email_personal })
             }
 
-            if (correo_institucional) {
-                whereConditions.push({ correo_institucional })
+            if (email_institucional) {
+                whereConditions.push({ email_institucional })
             }
 
             const existingTrabSocial = await TrabajadorSocial.findOne({

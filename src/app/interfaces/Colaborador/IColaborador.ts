@@ -27,8 +27,8 @@ export interface IColaborador {
     nombre_area?: string
     nombre_sede?: string
     nombre_pais?: string
-    correo_institucional?: string
-    correo_personal?: string
+    email_institucional?: string
+    email_personal?: string
     numero_celular?: string
     contacto_emergencia?: string
     numero_celular_emergencia?: string

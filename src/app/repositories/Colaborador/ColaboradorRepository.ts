@@ -233,16 +233,16 @@ class ColaboradorRepository {
             const {
                 id_tipodocumento,
                 numero_documento,
-                correo_personal,
-                correo_institucional,
+                email_personal,
+                email_institucional,
                 numero_celular,
                 id_empresa
             } = data
 
             if (
                 !numero_documento ||
-                !correo_personal ||
-                !correo_institucional ||
+                !email_personal ||
+                !email_institucional ||
                 !numero_celular ||
                 !id_empresa
             ) {
@@ -254,8 +254,8 @@ class ColaboradorRepository {
 
             const fields = {
                 numero_documento,
-                correo_personal,
-                correo_institucional,
+                email_personal,
+                email_institucional,
                 numero_celular
             }
 
@@ -281,7 +281,7 @@ class ColaboradorRepository {
 
                 if (result && data) {
                     const payloadUpdate: IPersona = {
-                        email_personal: correo_personal
+                        email_personal: email_personal
                     }
 
                     const persona = data as Persona
@@ -320,9 +320,9 @@ class ColaboradorRepository {
                 return { result: false, data: [], message: 'Colaborador no encontrado', status: 404 }
             }
 
-            const { numero_documento, correo_personal, correo_institucional, numero_celular } = data
+            const { numero_documento, email_personal, email_institucional, numero_celular } = data
 
-            const fields = { numero_documento, correo_personal, correo_institucional, numero_celular }
+            const fields = { numero_documento, email_personal, email_institucional, numero_celular }
 
             const validateFields = await this.validateFieldsRegistered(fields, "actualizar")
 
@@ -405,31 +405,31 @@ class ColaboradorRepository {
     async validateFieldsRegistered(
         fields: {
             numero_documento?: string,
-            correo_personal?: string,
-            correo_institucional?: string
+            email_personal?: string,
+            email_institucional?: string
         },
         accion: string
     ): Promise<TValidateFields> {
-        const { numero_documento, correo_personal, correo_institucional } = fields
+        const { numero_documento, email_personal, email_institucional } = fields
 
         let returnValidate: TValidateFields = {
             result: false,
             message: ""
         }
 
-        if (numero_documento || correo_personal || correo_institucional) {
+        if (numero_documento || email_personal || email_institucional) {
             const whereConditions: any[] = []
 
             if (numero_documento) {
                 whereConditions.push({ numero_documento })
             }
 
-            if (correo_personal) {
-                whereConditions.push({ correo_personal })
+            if (email_personal) {
+                whereConditions.push({ email_personal })
             }
 
-            if (correo_institucional) {
-                whereConditions.push({ correo_institucional })
+            if (email_institucional) {
+                whereConditions.push({ email_institucional })
             }
 
             const existingColaborador = await Colaborador.findOne({

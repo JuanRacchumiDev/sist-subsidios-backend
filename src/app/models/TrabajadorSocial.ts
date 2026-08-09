@@ -31,8 +31,8 @@ export class TrabajadorSocial extends Model<ITrabajadorSocial, TrabajadorSocialC
     public nombre_area?: string | undefined;
     public nombre_sede?: string | undefined;
     public nombre_pais?: string | undefined;
-    public correo_institucional?: string | undefined;
-    public correo_personal?: string | undefined;
+    public email_institucional?: string | undefined;
+    public email_personal?: string | undefined;
     public numero_celular?: string | undefined;
     public foto?: string | undefined;
     public fecha_nacimiento?: string | undefined;
@@ -176,18 +176,18 @@ TrabajadorSocial.init({
             this.setDataValue('nombre_pais', value ? value.trim() : undefined)
         }
     },
-    correo_institucional: {
+    email_institucional: {
         type: DataTypes.STRING(50),
         allowNull: false,
         set(value: string) {
-            this.setDataValue('correo_institucional', value ? value.trim() : undefined)
+            this.setDataValue('email_institucional', value ? value.trim() : undefined)
         }
     },
-    correo_personal: {
+    email_personal: {
         type: DataTypes.STRING(50),
         allowNull: false,
         set(value: string) {
-            this.setDataValue('correo_personal', value ? value.trim() : undefined)
+            this.setDataValue('email_personal', value ? value.trim() : undefined)
         }
     },
     numero_celular: {
