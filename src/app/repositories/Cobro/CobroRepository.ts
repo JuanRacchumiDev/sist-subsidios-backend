@@ -5,6 +5,7 @@ import { Cobro } from "../../models/Cobro"
 import { Op } from "sequelize";
 import { COBRO_ATTRIBUTES } from '../../../constants/CobroConstant';
 import HPagination from '../../../helpers/HPagination';
+import { REEMBOLSO_INCLUDE } from '../../../includes/ReembolsoInclude';
 
 class CobroRepository {
     /**
@@ -15,6 +16,9 @@ class CobroRepository {
         try {
             const cobros = await Cobro.findAll({
                 attributes: COBRO_ATTRIBUTES,
+                include: [
+                    REEMBOLSO_INCLUDE
+                ],
                 order: [
                     ['fecha_registro', 'ASC']
                 ]
@@ -36,6 +40,7 @@ class CobroRepository {
 
             const { count, rows } = await Cobro.findAndCountAll({
                 attributes: COBRO_ATTRIBUTES,
+                include: [REEMBOLSO_INCLUDE],
                 where: whereClause,
                 order: [
                     ['fecha_registro', 'ASC']
@@ -82,6 +87,7 @@ class CobroRepository {
                     estado
                 },
                 attributes: COBRO_ATTRIBUTES,
+                include: [REEMBOLSO_INCLUDE],
                 order: [
                     ['fecha_registro', 'ASC']
                 ]
@@ -102,7 +108,8 @@ class CobroRepository {
     async getById(id: string): Promise<CobroResponse> {
         try {
             const cobro = await Cobro.findByPk(id, {
-                attributes: COBRO_ATTRIBUTES
+                attributes: COBRO_ATTRIBUTES,
+                include: [REEMBOLSO_INCLUDE]
             })
 
             if (!cobro) {

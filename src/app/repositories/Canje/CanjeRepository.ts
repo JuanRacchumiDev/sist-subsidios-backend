@@ -9,7 +9,7 @@ import { Canje } from "../../models/Canje"
 import sequelize from "../../../config/database"
 import { CANJE_ATTRIBUTES } from "../../../constants/CanjeConstant"
 import HPagination from "../../../helpers/HPagination"
-import { Op, literal, fn, col, WhereOptions } from "sequelize"
+import { Op, literal, fn, col, WhereOptions, QueryTypes } from "sequelize"
 import { DESCANSOMEDICO_INCLUDE } from "../../../includes/DescansoMedicoInclude"
 import HDate from "../../../helpers/HDate"
 import { ICanjeFilter } from "../../interfaces/Canje/ICanjeFilter"
@@ -18,17 +18,17 @@ import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude"
 import { DescansoMedico } from "../../models/DescansoMedico"
 import { Persona } from "../../models/Persona"
 
-type TReportResponse = {
-    result: boolean
-    message?: string
-    data?: TItemReport | TItemReport[]
-    error?: string
-    status?: number
-}
+// type TReportResponse = {
+//     result: boolean
+//     message?: string
+//     data?: TItemReport | TItemReport[]
+//     error?: string
+//     status?: number
+// }
 
-const TOTAL_DIAS_NO_CONSECUTIVOS = 'total_dias_no_consecutivos';
-const TOTAL_DIAS_CONSECUTIVOS = 'total_dias_consecutivos';
-const TOTAL_DIAS_GLOBAL = 'total_dias_global';
+// const TOTAL_DIAS_NO_CONSECUTIVOS = 'total_dias_no_consecutivos';
+// const TOTAL_DIAS_CONSECUTIVOS = 'total_dias_consecutivos';
+// const TOTAL_DIAS_GLOBAL = 'total_dias_global';
 
 class CanjeRepository {
     /**
@@ -528,149 +528,140 @@ class CanjeRepository {
     }
 
     /**
-     * Obtiene canjes o subsidios que superan un límite de días de subsidio,
-     * agrupando por colaborador de manera óptima en la BD.
-     * @param type - El tipo de reporte a ejecutar: 
-     * 'no_consecutivos' (90 días) | 'consecutivos' (150 días) | 'global' (340 días)
-     * @param limit - El límite de días a superar.
-     * @returns {Promise<TReportResponse>} - Respuesta con la lista de canjes de los colaboradores identificados.
+     * Reporte 1: 90 Días No Consecutivos (is_continuo = FALSE)
+     */
+    async getReporte90DiasNoConsecutivos(fechaInicio?: string, fechaFinal?: string): Promise<TItemReport[]> {
+        const { dateFilter, replacements } = this.buildDateFilter(fechaInicio, fechaFinal);
+
+        const query = `
+            SELECT 
+                c.id_colaborador,
+                c.nombre_colaborador,
+                COALESCE(SUM(c.total_dias), 0)::INTEGER AS total_dias_acumulados,
+                COUNT(c.id)::INTEGER AS cantidad_canjes,
+                CASE WHEN COALESCE(SUM(c.total_dias), 0) >= 90 THEN TRUE ELSE FALSE END AS excede_limite
+            FROM canje c
+            WHERE 
+                c.is_continuo = FALSE
+                AND c.estado = TRUE
+                AND c.deleted_at IS NULL
+                ${dateFilter}
+            GROUP BY 
+                c.id_colaborador, 
+                c.nombre_colaborador
+            ORDER BY 
+                c.nombre_colaborador ASC;
+        `;
+
+        return await sequelize.query<TItemReport>(query, {
+            replacements,
+            type: QueryTypes.SELECT
+        });
+    }
+
+    /**
+     * Reporte 2: 150 Días Consecutivos (is_continuo = TRUE)
+     */
+    async getReporte150DiasConsecutivos(fechaInicio?: string, fechaFinal?: string): Promise<TItemReport[]> {
+        const { dateFilter, replacements } = this.buildDateFilter(fechaInicio, fechaFinal);
+
+        const query = `
+            SELECT 
+                c.id_colaborador,
+                c.nombre_colaborador,
+                COALESCE(SUM(c.total_dias), 0)::INTEGER AS total_dias_acumulados,
+                COUNT(c.id)::INTEGER AS cantidad_canjes,
+                CASE WHEN COALESCE(SUM(c.total_dias), 0) >= 150 THEN TRUE ELSE FALSE END AS excede_limite
+            FROM canje c
+            WHERE 
+                c.is_continuo = TRUE
+                AND c.estado = TRUE
+                AND c.deleted_at IS NULL
+                ${dateFilter}
+            GROUP BY 
+                c.id_colaborador, 
+                c.nombre_colaborador
+            ORDER BY 
+                c.nombre_colaborador ASC;
+        `;
+
+        return await sequelize.query<TItemReport>(query, {
+            replacements,
+            type: QueryTypes.SELECT
+        });
+    }
+
+    /**
+     * Reporte 3: 340 Días Globales (Sumatoria acumulada total independientemente de is_continuo)
+     */
+    async getReporte340DiasGlobales(fechaInicio?: string, fechaFinal?: string): Promise<TItemReport[]> {
+        const { dateFilter, replacements } = this.buildDateFilter(fechaInicio, fechaFinal);
+
+        const query = `
+            SELECT 
+                c.id_colaborador,
+                c.nombre_colaborador,
+                COALESCE(SUM(c.total_dias), 0)::INTEGER AS total_dias_acumulados,
+                COUNT(c.id)::INTEGER AS cantidad_canjes,
+                CASE WHEN COALESCE(SUM(c.total_dias), 0) >= 340 THEN TRUE ELSE FALSE END AS excede_limite
+            FROM canje c
+            WHERE 
+                c.estado = TRUE
+                AND c.deleted_at IS NULL
+                ${dateFilter}
+            GROUP BY 
+                c.id_colaborador, 
+                c.nombre_colaborador
+            ORDER BY 
+                c.nombre_colaborador ASC;
+        `;
+
+        return await sequelize.query<TItemReport>(query, {
+            replacements,
+            type: QueryTypes.SELECT
+        });
+    }
+
+    /**
+     * Método genérico parametrizado por tipo de reporte
      */
     async getSubsidiosOverLimit(
-        type: 'no_consecutivos' | 'consecutivos' | 'global',
-        limit: number
-    ): Promise<TReportResponse> {
-        try {
-            let havingCondition: string;
-
-            // 1. Definir la cláusula HAVING para filtrar colaboradores por acumulación de días.
-            switch (type) {
-                case 'no_consecutivos':
-                    // Reporte 1: > 90 días NO CONSECUTIVOS (is_continuo = false / 0)
-                    havingCondition = `SUM(CASE WHEN "Canje"."is_continuo" = false THEN "Canje"."total_dias" ELSE 0 END) > ${limit}`;
-                    break;
-                case 'consecutivos':
-                    // Reporte 2: > 150 días CONSECUTIVOS (is_continuo = true / 1)
-                    havingCondition = `SUM(CASE WHEN "Canje"."is_continuo" = true THEN "Canje"."total_dias" ELSE 0 END) > ${limit}`;
-                    break;
-                case 'global':
-                    // Reporte 3: > 340 días TOTALES
-                    havingCondition = `SUM("Canje"."total_dias") > ${limit}`;
-                    break;
-                default:
-                    return { result: false, message: 'Tipo de reporte inválido.', status: 400 };
-            }
-
-            // Definiciones de agregación para incluir las sumas como metadata en la primera consulta
-            const aggregations = [
-                // Suma de Días No Consecutivos (para el reporte 1)
-                [
-                    literal(`SUM(CASE WHEN "Canje"."is_continuo" = false THEN "Canje"."total_dias" ELSE 0 END)`),
-                    TOTAL_DIAS_NO_CONSECUTIVOS
-                ],
-                // Suma de Días Consecutivos (para el reporte 2)
-                [
-                    literal(`SUM(CASE WHEN "Canje"."is_continuo" = true THEN "Canje"."total_dias" ELSE 0 END)`),
-                    TOTAL_DIAS_CONSECUTIVOS
-                ],
-                // Suma de Días Globales (para el reporte 3)
-                [
-                    fn('SUM', col('total_dias')),
-                    TOTAL_DIAS_GLOBAL
-                ]
-            ];
-
-            // 2. Consulta optimizada: Obtener IDs de colaboradores que superan el límite.
-            const collaboratorsOverLimit = await Canje.findAll({
-                attributes: [
-                    'id_colaborador',
-                    ...aggregations as any // Incluye las sumas para usarlas en la metadata del reporte final
-                ],
-                where: {
-                    // Criterio para subsidio: is_reembolsable = true
-                    is_reembolsable: true,
-                    estado: true // Solo registros activos
-                },
-                group: ['id_colaborador'],
-                having: literal(havingCondition), // Aplicar el filtro de acumulación de días
-                // logging: console.log
-            });
-
-            // 3. Extraer los IDs de colaboradores
-            const colaboradorIds = collaboratorsOverLimit.map(c => (c.get('id_colaborador') as string));
-
-            if (colaboradorIds.length === 0) {
-                return {
-                    result: true,
-                    message: `Ningún colaborador con canjes subsidiados supera los ${limit} días (${type}).`,
-                    data: [],
-                    status: 200
-                };
-            }
-
-            // 4. Obtener todos los registros de Canje para los colaboradores identificados.
-            const finalCanjes = await Canje.findAll({
-                attributes: CANJE_ATTRIBUTES,
-                where: {
-                    id_colaborador: {
-                        [Op.in]: colaboradorIds // Filtrar por los IDs que cumplen la condición
-                    },
-                    estado: true
-                },
-                include: [
-                    DESCANSOMEDICO_INCLUDE,
-                    COLABORADOR_INCLUDE
-                ],
-                order: [
-                    ['id_colaborador', 'ASC'],
-                    ['fecha_inicio_subsidio', 'ASC']
-                ],
-                // logging: console.log
-            });
-
-            console.log({ finalCanjes })
-
-            const canjesWithMetadata = finalCanjes.map(canje => {
-                const plainCanje = canje.get({ plain: true })
-
-                const { colaborador } = plainCanje
-
-                return {
-                    numero_documento: colaborador?.numero_documento || "--",
-                    nombre_colaborador: canje.nombre_colaborador,
-                    fecha_otorgamiento: HDate.formatDate(canje.fecha_otorgamiento, "dd/MM/yyyy"),
-                    fecha_inicio_subsidio: HDate.formatDate(canje.fecha_inicio_subsidio, "dd/MM/yyyy"),
-                    fecha_fin_subsidio: HDate.formatDate(canje.fecha_final_subsidio, "dd/MM/yyyy"),
-                    total_dias: canje.total_dias,
-                    fecha_maxima_canje: HDate.formatDate(canje.fecha_maxima_canje, "dd/MM/yyyy"),
-                    nombre_tipodescanso: canje.nombre_tipodescansomedico,
-                    nombre_tipocontingencia: canje.nombre_tipocontingencia,
-                    mes_devengado: canje.mes_devengado
-                }
-            })
-
-            console.log({ canjesWithMetadata })
-
-            const canjesReport = canjesWithMetadata as TItemReport[]
-
-            console.log({ canjesReport })
-
-            return {
-                result: true,
-                message: `Reporte de subsidios que superan ${limit} días (${type}) generado con éxito.`,
-                data: canjesReport,
-                status: 200
-            };
-
-        } catch (error) {
-            console.error('Error al obtener el reporte de subsidios:', error);
-            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-            return {
-                result: false,
-                message: 'Ocurrió un error al generar el reporte.',
-                error: errorMessage,
-                status: 500
-            };
+        type: 'no_consecutivos_90' | 'consecutivos_150' | 'global_340',
+        fechaInicio?: string,
+        fechaFinal?: string
+    ): Promise<TItemReport[]> {
+        switch (type) {
+            case 'no_consecutivos_90':
+                return await this.getReporte90DiasNoConsecutivos(fechaInicio, fechaFinal);
+            case 'consecutivos_150':
+                return await this.getReporte150DiasConsecutivos(fechaInicio, fechaFinal);
+            case 'global_340':
+                return await this.getReporte340DiasGlobales(fechaInicio, fechaFinal);
+            default:
+                throw new Error('Tipo de reporte no soportado');
         }
+    }
+
+    /**
+     * Auxiliar para construir dinámicamente la cláusula WHERE de fechas para SQL nativo
+     */
+    private buildDateFilter(fechaInicio?: string, fechaFinal?: string, formatoFechaBD: string = 'YYYY-MM-DD') {
+        let dateFilter = '';
+        const replacements: Record<string, any> = { formatoFechaBD };
+
+        if (fechaInicio && fechaFinal) {
+            dateFilter = ` AND TO_DATE(c.fecha_inicio_subsidio, :formatoFechaBD) BETWEEN TO_DATE(:fechaInicio, :formatoFechaBD) AND TO_DATE(:fechaFinal, :formatoFechaBD)`;
+            replacements.fechaInicio = fechaInicio;
+            replacements.fechaFinal = fechaFinal;
+        } else if (fechaInicio) {
+            dateFilter = ` AND TO_DATE(c.fecha_inicio_subsidio, :formatoFechaBD) >= TO_DATE(:fechaInicio, :formatoFechaBD)`;
+            replacements.fechaInicio = fechaInicio;
+        } else if (fechaFinal) {
+            dateFilter = ` AND TO_DATE(c.fecha_inicio_subsidio, :formatoFechaBD) <= TO_DATE(:fechaFinal, :formatoFechaBD)`;
+            replacements.fechaFinal = fechaFinal;
+        }
+
+        return { dateFilter, replacements };
     }
 }
 

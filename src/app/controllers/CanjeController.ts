@@ -1,7 +1,7 @@
 import { NextFunction, Response, Request } from "express";
 import GetCanjesService from '../services/Canje/GetCanjes'
 import GetCanjeService from '../services/Canje/GetCanje'
-import GetCanjesForReportService from '../services/Canje/GetCanjesForReport'
+import GetCanjesForReportService, { TReportType } from '../services/Canje/GetCanjesForReport'
 import CreateCanjeService from '../services/Canje/CreateCanje'
 import UpdateCanjeService from '../services/Canje/UpdateCanje'
 import { ICanje } from "../interfaces/Canje/ICanje";
@@ -60,114 +60,119 @@ class CanjeController {
         }
     }
 
+    /**
+     * Controlador principal para obtener el reporte agrupado de canjes/subsidios
+     */
     async getAllForReport(req: Request, res: Response, next: NextFunction) {
         try {
-            const fileSuffix = HDate.getCurrentDateToString("ddMMyyyy")
-
-            const headersColumns: THeaderColumn[] = [
-                {
-                    nameColumn: "DNI",
-                    key: "numero_documento",
-                    width: 10
-                },
-                {
-                    nameColumn: "APELLIDOS Y NOMBRES",
-                    key: "nombre_colaborador",
-                    width: 40
-                },
-                {
-                    nameColumn: "F. Otorgamiento",
-                    key: "fecha_otorgamiento",
-                    width: 20
-                },
-                {
-                    nameColumn: "F. Inicio Subsidio",
-                    key: "fecha_inicio_subsidio",
-                    width: 30
-                },
-                {
-                    nameColumn: "F. Fin Subsidio",
-                    key: "fecha_fin_subsidio",
-                    width: 30
-                },
-                {
-                    nameColumn: "Total Días",
-                    key: "total_dias",
-                    width: 20
-                },
-                {
-                    nameColumn: "F. Máxima Canje",
-                    key: "fecha_maxima_canje",
-                    width: 20
-                },
-                {
-                    nameColumn: "Tipo descanso médico",
-                    key: "nombre_tipodescanso",
-                    width: 40
-                },
-                {
-                    nameColumn: "Tipo contingencia",
-                    key: "nombre_tipocontingencia",
-                    width: 40
-                },
-                {
-                    nameColumn: "MES DEVENGUE",
-                    key: "mes_devengado",
-                    width: 40
-                }
-            ]
-
-            console.log('req.query')
-            console.log(req.query)
+            const fileSuffix = HDate.getCurrentDateToString("ddMMyyyy");
 
             const {
                 type,
                 limit,
-                output
-            } = req.query; // 'type': no_consecutivos, consecutivos, global | 'limit': 90, 150, 340 | 'output': excel, pdf
+                output,
+                fechaInicio,
+                fechaFinal,
+                fecha_inicio,
+                fecha_final
+            } = req.query;
 
+            // 1. Validaciones de parámetros requeridos
             if (!type || !limit) {
-                return res.status(400).json({ message: 'Los parámetros "type" y "limit" son obligatorios.' });
+                return res.status(400).json({
+                    success: false,
+                    message: 'Los parámetros "type" y "limit" son obligatorios.'
+                });
             }
 
-            const parsedLimit = parseInt(limit as string);
+            const parsedLimit = parseInt(limit as string, 10);
+            const reportTypeRaw = type as string;
 
-            const reportType = type as 'no_consecutivos' | 'consecutivos' | 'global';
-
-            console.log({ reportType })
-
-            console.log({ parsedLimit })
-
-            // Define el título del reporte
-            const titleReport: string = await CanjeController.defineTitleReport(reportType, parsedLimit)
-
-            console.log({ titleReport })
-
-            // Ejecuta el servicio
-            const response = await GetCanjesForReportService.execute(reportType, parsedLimit);
-
-            const { result, data } = response
-
-            if (!result || !data) {
-                return res.status(response.status || 500).json(response);
+            // 2. Mapeo seguro al tipo de reporte soportado por el servicio
+            let reportType: TReportType;
+            if (reportTypeRaw === 'no_consecutivos' || reportTypeRaw === 'no_consecutivos_90') {
+                reportType = 'no_consecutivos_90';
+            } else if (reportTypeRaw === 'consecutivos' || reportTypeRaw === 'consecutivos_150') {
+                reportType = 'consecutivos_150';
+            } else if (reportTypeRaw === 'global' || reportTypeRaw === 'global_340') {
+                reportType = 'global_340';
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    message: 'El parámetro "type" es inválido. Permitidos: no_consecutivos, consecutivos, global.'
+                });
             }
 
-            const fileExtension = output === "pdf" ? "pdf" : "xlsx";
+            // 3. Captura opcional de fechas
+            const startDate = (fechaInicio || fecha_inicio) ? String(fechaInicio || fecha_inicio) : undefined;
+            const endDate = (fechaFinal || fecha_final) ? String(fechaFinal || fecha_final) : undefined;
 
-            const filename = `reporte_subsidios_${limit}_${reportType}_${fileSuffix}.${fileExtension}`;
+            // 4. Ejecución del Servicio
+            const dataCanjes: TItemReport[] = await GetCanjesForReportService.execute(
+                reportType,
+                startDate,
+                endDate
+            );
 
-            const dataCanjes = data as TItemReport[]
+            const titleReport = CanjeController.defineTitleReport(reportTypeRaw, parsedLimit);
 
+            // 5. Retorno en formato JSON (por defecto si no solicita archivo)
+            if (!output || output === 'json') {
+                return res.status(200).json({
+                    success: true,
+                    title: titleReport,
+                    total: dataCanjes.length,
+                    data: dataCanjes
+                });
+            }
+
+            // 6. Generación e impresión de reporte Excel
             if (output === 'excel') {
+                const headersColumns: THeaderColumn[] = [
+                    {
+                        nameColumn: "ID / CÓDIGO COLABORADOR",
+                        key: "id_colaborador",
+                        width: 25
+                    },
+                    {
+                        nameColumn: "APELLIDOS Y NOMBRES",
+                        key: "nombre_colaborador",
+                        width: 40
+                    },
+                    {
+                        nameColumn: "CANTIDAD DE CANJES",
+                        key: "cantidad_canjes",
+                        width: 20
+                    },
+                    {
+                        nameColumn: "TOTAL DÍAS ACUMULADOS",
+                        key: "total_dias_acumulados",
+                        width: 25
+                    },
+                    {
+                        nameColumn: "¿EXCEDE LÍMITE?",
+                        key: "excede_limite",
+                        width: 18
+                    }
+                ];
+
+                const fileExtension = "xlsx";
+                const filename = `reporte_subsidios_${parsedLimit}_${reportTypeRaw}_${fileSuffix}.${fileExtension}`;
+
                 const excelBuffer = await generateExcelReport(titleReport, headersColumns, dataCanjes);
+
                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
-                res.send(excelBuffer);
+                res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+                return res.status(200).send(excelBuffer);
             }
 
-        } catch (error) {
-            next(error)
-            res.status(500).json({ message: 'Error interno del servidor al generar el reporte.', error: error });
+            return res.status(400).json({
+                success: false,
+                message: 'Formato de salida "output" no soportado.'
+            });
+
+        } catch (error: any) {
+            next(error);
         }
     }
 
@@ -202,28 +207,23 @@ class CanjeController {
         }
     }
 
-    static async defineTitleReport(
-        type: 'no_consecutivos' | 'consecutivos' | 'global',
-        limit: number
-    ): Promise<string> {
-        let title: string = ""
-
-        console.log('test defineTitleReport')
-        console.log({ type })
-        console.log({ limit })
-
-        if (type === 'consecutivos') {
-            console.log('aa')
-            title = `REPORTE DE SUBSIDIOS - ${limit} DÍAS ${'CONSECUTIVOS'}`
-        } else if (type === 'no_consecutivos') {
-            console.log('bb')
-            title = `REPORTE DE SUBSIDIOS - ${limit} DÍAS ${'NO CONSECUTIVOS'}`
-        } else {
-            console.log('cc')
-            title = `REPORTE DE SUBSIDIOS - ${limit} DÍAS ${'GLOBALES'}`
+    /**
+     * Define el título dynamic para la cabecera del reporte Excel/PDF
+     */
+    private static defineTitleReport(type: string, limit: number): string {
+        switch (type) {
+            case 'no_consecutivos':
+            case 'no_consecutivos_90':
+                return `REPORTE DE SUBSIDIOS NO CONSECUTIVOS (LÍMITE: ${limit} DÍAS)`;
+            case 'consecutivos':
+            case 'consecutivos_150':
+                return `REPORTE DE SUBSIDIOS CONSECUTIVOS (LÍMITE: ${limit} DÍAS)`;
+            case 'global':
+            case 'global_340':
+                return `REPORTE GLOBAL DE SUBSIDIOS (LÍMITE: ${limit} DÍAS)`;
+            default:
+                return `REPORTE ACUMULADO DE SUBSIDIOS MAYORES A ${limit} DÍAS`;
         }
-
-        return title
     }
 }
 
