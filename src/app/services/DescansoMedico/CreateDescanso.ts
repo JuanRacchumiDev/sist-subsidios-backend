@@ -21,6 +21,7 @@ import { CanjeResponse, ICanje } from "../../interfaces/Canje/ICanje";
 import { FECHA_MAXIMA_CANJE, TOTAL_DIAS_DESCANSO_MEDICO } from '../../../helpers/HParameter';
 import { ECanje } from '../../enums/ECanje';
 import { EPerfil } from "../../enums/EPerfil"
+import { IAdjunto } from "../../interfaces/Adjunto/IAdjunto";
 
 class CreateDescansoService {
     private descansoMedicoRepository: DescansoMedicoRepository;
@@ -341,27 +342,70 @@ class CreateDescansoService {
         codigoTemp: string,
         listResponseDMs: DescansoMedicoResponse[] | DescansoMedicoResponse
     ): Promise<void> => {
+        let responseDM: DescansoMedicoResponse
+        let idsDescansosCreados: string[] = []
+        let listAdjuntos: IAdjunto[] = []
+
         if (Array.isArray(listResponseDMs)) {
-            const idsDescansosCreados = listResponseDMs
+            const firstResponseDM = listResponseDMs[0]
+            responseDM = firstResponseDM
+
+            const ids = listResponseDMs
                 .filter(res => res.data && 'id' in res.data)
                 .map(res => (res.data as IDescansoMedico).id as string)
 
-            console.log('---- IDs de descansos médicos creados ----')
-            console.log({ idsDescansosCreados })
+            idsDescansosCreados = ids
 
-            // Obteniendo el id del usuario
-            const responseDM = listResponseDMs[0]
-            const { data } = responseDM
-            const { user_crea } = data as IDescansoMedico
-
-            console.log('---- actualizar y crear adjuntos ----')
-            await this.adjuntoRepository.updateAndCreateForCodeTemp(idsDescansosCreados, user_crea as string, codigoTemp)
         } else {
-            const { data } = listResponseDMs
-            const { id, user_crea } = data as IDescansoMedico
-            console.log('---- actualizar adjuntos ----')
-            await this.adjuntoRepository.updateForCodeTemp(id as string, user_crea as string, codigoTemp)
+            responseDM = listResponseDMs
+            const { data } = responseDM
+            const { id } = data as IDescansoMedico
+            idsDescansosCreados.push(id as string)
         }
+
+        console.log({ idsDescansosCreados })
+
+        const { data: dataDM } = responseDM
+        const descansoMedico = dataDM as IDescansoMedico
+
+        console.log({ descansoMedico })
+
+        const { id, user_crea } = descansoMedico
+
+        // Obteniendo adjuntos
+        const responseAdjuntos = await this.adjuntoRepository.getAllByCodigoTemp(codigoTemp)
+
+        const { result, data } = responseAdjuntos
+
+        if (result && data) {
+            listAdjuntos = data as IAdjunto[]
+        }
+
+        await this.adjuntoRepository.updateDocsIniciales(id as string, user_crea as string, codigoTemp)
+
+        await this.adjuntoRepository.createMultiple(idsDescansosCreados, listAdjuntos, user_crea as string)
+
+        // if (Array.isArray(listResponseDMs)) {
+        //     const idsDescansosCreados = listResponseDMs
+        //         .filter(res => res.data && 'id' in res.data)
+        //         .map(res => (res.data as IDescansoMedico).id as string)
+
+        //     console.log('---- IDs de descansos médicos creados ----')
+        //     console.log({ idsDescansosCreados })
+
+        //     // Obteniendo el id del usuario
+        //     const responseDM = listResponseDMs[0]
+        //     const { data } = responseDM
+        //     const { user_crea } = data as IDescansoMedico
+
+        //     console.log('---- actualizar y crear adjuntos ----')
+        //     await this.adjuntoRepository.updateAndCreateForCodeTemp(idsDescansosCreados, user_crea as string, codigoTemp)
+        // } else {
+        //     const { data } = listResponseDMs
+        //     const { id, user_crea } = data as IDescansoMedico
+        //     console.log('---- actualizar adjuntos ----')
+        //     await this.adjuntoRepository.updateForCodeTemp(id as string, user_crea as string, codigoTemp)
+        // }
     }
 
     notificacionExitosaEmail = async (

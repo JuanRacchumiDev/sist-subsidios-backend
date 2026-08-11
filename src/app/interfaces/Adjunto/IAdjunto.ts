@@ -9,7 +9,7 @@ import { IPersona } from "../Persona/IPersona"
 export interface IAdjunto {
     id?: string
     id_tipoadjunto?: string
-    id_descansomedico?: string
+    id_descansomedico?: string | null
     id_canje?: string
     id_cobro?: string
     id_reembolso?: string

@@ -4,6 +4,7 @@ import { IDiagnostico } from "../Diagnostico/IDiagnostico"
 import { IPersona } from "../Persona/IPersona"
 import { IDetalleParametro } from "../DetalleParametro/IDetalleParametro"
 import { IEmpresa } from "../Empresa/IEmpresa"
+import { IAdjunto } from "../Adjunto/IAdjunto"
 
 export interface IDescansoMedico {
     id?: string
@@ -57,6 +58,7 @@ export interface IDescansoMedico {
     tipoContingencia?: IDetalleParametro
     diagnostico?: IDiagnostico
     canje?: ICanje
+    adjuntos?: IAdjunto
     id_usuario?: string
     nombre_perfil_url?: string
 }
