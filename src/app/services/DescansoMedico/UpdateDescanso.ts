@@ -5,7 +5,7 @@ import { EDescansoMedico } from '../../enums/EDescansoMedico';
 import { notificationDescansoMedicoIncorrecto } from '../../utils/emailTemplate';
 import { TDetalleDescansoMedico } from '../../types/TDetalleEmail'
 import PersonaRepository from '../../repositories/Persona/PersonaRepository'
-import { TOTAL_DIAS_DESCANSO_MEDICO } from '../../../helpers/HParameter';
+import { FECHA_MAXIMA_CANJE, TOTAL_DIAS_DESCANSO_MEDICO } from '../../../helpers/HParameter';
 import HDate from '../../../helpers/HDate';
 import { CanjeResponse, ICanje } from '../../interfaces/Canje/ICanje';
 import { ECanje } from '../../enums/ECanje';
@@ -106,11 +106,11 @@ class UpdateDescansoService {
 
                 const htmlContent = notificationDescansoMedicoIncorrecto(dataEmail)
 
-                // await this.emailRepository.sendEmail({
-                //     to: email_personal as string,
-                //     subject: 'Observación en Registro de Descanso Médico',
-                //     html: htmlContent
-                // });
+                await this.emailRepository.sendEmail({
+                    to: email_personal as string,
+                    subject: 'Observación en Registro de Descanso Médico',
+                    html: htmlContent
+                });
 
                 console.log(`Correo de notificación de estado de descanso médico para colaborador ${nombre_completo as string}`);
 
@@ -158,11 +158,11 @@ class UpdateDescansoService {
 
                         const htmlContent = notificationDescansoMedicoIncorrecto(dataEmail)
 
-                        // await this.emailRepository.sendEmail({
-                        //     to: emailEspCliente as string,
-                        //     subject: 'Observación en Registro de Descanso Médico',
-                        //     html: htmlContent
-                        // });
+                        await this.emailRepository.sendEmail({
+                            to: emailEspCliente as string,
+                            subject: 'Observación en Registro de Descanso Médico',
+                            html: htmlContent
+                        });
 
                         console.log(`Correo de notificación de estado de descanso médico para especialista empresa`);
                     }
@@ -210,7 +210,7 @@ class UpdateDescansoService {
                             fecha_final_subsidio: fechaFinalSubsidio,
                             fecha_inicio_dm: fecha_inicio,
                             fecha_final_dm: fecha_final,
-                            fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
+                            fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, FECHA_MAXIMA_CANJE),
                             is_reembolsable: isReembolsable,
                             estado_registro: ECanje.CANJE_REGISTRADO,
                             nombre_colaborador,
@@ -248,7 +248,7 @@ class UpdateDescansoService {
                                 total_dias: differenceInCalendarDays(currentEndDateCanje, currentStartDateCanje) + 1,
                                 fecha_inicio_dm: fecha_inicio,
                                 fecha_final_dm: fecha_final,
-                                fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
+                                fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, FECHA_MAXIMA_CANJE),
                                 is_reembolsable: true,
                                 estado_registro: ECanje.CANJE_REGISTRADO,
                                 nombre_colaborador,
@@ -332,7 +332,7 @@ class UpdateDescansoService {
                             fecha_final_subsidio: fechaFinalSubsidio,
                             fecha_inicio_dm: fecha_inicio,
                             fecha_final_dm: fecha_final,
-                            fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
+                            fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, FECHA_MAXIMA_CANJE),
                             is_reembolsable: false,
                             estado_registro: ECanje.CANJE_REGISTRADO,
                             nombre_colaborador,
@@ -388,7 +388,7 @@ class UpdateDescansoService {
                             fecha_final_subsidio: fechaFinalSubsidio,
                             fecha_inicio_dm: fecha_inicio,
                             fecha_final_dm: fecha_final,
-                            fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, 30),
+                            fecha_maxima_canje: HDate.addDaysToDate(fecha_otorgamiento as string, FECHA_MAXIMA_CANJE),
                             is_reembolsable: isReembolsable,
                             estado_registro: ECanje.CANJE_REGISTRADO,
                             nombre_colaborador,

@@ -157,7 +157,7 @@ class DescansoMedicoRepository {
                     dm.nombre_colaborador, dm.nombre_tipodescansomedico, dm.nombre_tipocontingencia, dm.nombre_diagnostico,
                     dm.nombre_establecimiento, dm.total_dias, dm.codigo_temp, dm.user_crea,
                     dm.is_subsidio, dm.is_acepta_responsabilidad, dm.is_acepta_politica,
-                    dm.is_continuo, dm.estado_registro, dm.estado,
+                    dm.is_continuo, dm.estado_registro, dm.estado, dm.anio_fecha_inicio,
                     p.apellido_paterno as apellido_paterno_colaborador,
                     p.apellido_materno as apellido_materno_colaborador,
                     p.nombres as nombres_colaborador,

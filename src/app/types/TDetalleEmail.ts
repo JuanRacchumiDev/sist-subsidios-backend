@@ -18,6 +18,7 @@ export type TDetalleDescansoMedico = {
 export type TDetalleCanje = {
     fecha_inicio_subsidio?: string
     fecha_final_subsidio?: string
+    total_dias?: number
     observacion?: string
     descansoMedico?: Omit<TDetalleDescansoMedico, 'observacion'>
 }

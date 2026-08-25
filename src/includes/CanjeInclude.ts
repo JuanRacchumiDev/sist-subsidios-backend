@@ -16,6 +16,7 @@ export const CANJE_INCLUDE = {
         'fecha_final_dm',
         'fecha_maxima_canje',
         'fecha_registro',
+        'total_dias',
         'is_reembolsable',
         'is_continuo',
         'mes_devengado',

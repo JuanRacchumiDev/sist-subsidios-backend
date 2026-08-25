@@ -222,11 +222,11 @@ class CreateDescansoService {
 
                 const htmlContent = notificationDescansoMedicoIncorrecto(dataEmail)
 
-                // await this.emailRepository.sendEmail({
-                //     to: email_personal as string,
-                //     subject: '¡REGISTRO DE NUEVO DESCANSO MÉDICO!',
-                //     html: htmlContent
-                // })
+                await this.emailRepository.sendEmail({
+                    to: email_personal as string,
+                    subject: '¡REGISTRO DE NUEVO DESCANSO MÉDICO!',
+                    html: htmlContent
+                })
 
                 console.log(`Registro de nuevo descanso enviado a ${nombre_colaborador}`);
             }
@@ -420,11 +420,11 @@ class CreateDescansoService {
 
             const htmlContent = newNotificationDescansoMedico(dataEmail)
 
-            // await this.emailRepository.sendEmail({
-            //     to: emailPersonal,
-            //     subject: '¡REGISTRO DE NUEVO DESCANSO MÉDICO!',
-            //     html: htmlContent
-            // })
+            await this.emailRepository.sendEmail({
+                to: emailPersonal,
+                subject: '¡REGISTRO DE NUEVO DESCANSO MÉDICO!',
+                html: htmlContent
+            })
 
             console.log(`Registro de nuevo descanso enviado a ${nombreColaborador}`);
         } catch (emailError) {

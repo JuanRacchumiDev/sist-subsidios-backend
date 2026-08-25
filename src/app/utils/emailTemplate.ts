@@ -1,6 +1,7 @@
 import { TDetalleEmail, TDetalleDescansoMedico, TDetalleCanje, TDetalleReembolso } from '../types/TDetalleEmail'
 import { IPersona } from "../interfaces/Persona/IPersona";
 import { IDetalleParametro } from "../interfaces/DetalleParametro/IDetalleParametro"
+import HDate from "../../helpers/HDate"
 
 interface INewUserNotificationTemplateData {
   persona?: IPersona;
@@ -360,7 +361,10 @@ export function notificationDescansoMedicoIncorrecto(
 export function notificationCanjeObservado(
   data: INotificationCanjeObservadoProps): string {
   const { nombreCompleto, detalle, appUrl } = data;
-  const descanso = detalle?.descansoMedico;
+
+  const fechaInicio = detalle?.fecha_inicio_subsidio ? HDate.formatDate(detalle.fecha_inicio_subsidio, 'dd/MM/yyyy') : 'N/A'
+
+  const fechaFinal = detalle?.fecha_final_subsidio ? HDate.formatDate(detalle.fecha_final_subsidio, 'dd/MM/yyyy') : 'N/A'
 
   return `
   <!DOCTYPE html>
@@ -402,8 +406,7 @@ export function notificationCanjeObservado(
                 </p>
 
                 <!-- Caja de Observación (Alerta) -->
-                ${detalle?.observacion
-      ? `
+                ${detalle?.observacion ? `
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 24px;">
                   <tr>
                     <td style="background-color: #fef2f2; border-left: 4px solid #ef4444; border-radius: 4px; padding: 14px 16px;">
@@ -416,9 +419,7 @@ export function notificationCanjeObservado(
                     </td>
                   </tr>
                 </table>
-                `
-      : ''
-    }
+                ` : ''}
 
                 <!-- Tabla Resumen de Detalles con Estilo Claro y Filas Alternadas -->
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse; margin-bottom: 28px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
@@ -432,47 +433,13 @@ export function notificationCanjeObservado(
                   <tr style="background-color: #ffffff;">
                     <td style="padding: 10px 16px; font-size: 13px; color: #64748b; border-bottom: 1px solid #e2e8f0; width: 40%;">Periodo del Subsidio:</td>
                     <td style="padding: 10px 16px; font-size: 13px; color: #1e293b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
-                      Del ${detalle?.fecha_inicio_subsidio || 'N/A'} al ${detalle?.fecha_final_subsidio || 'N/A'}
-                    </td>
-                  </tr>
-
-                  <!-- Sección 2: Datos del Descanso Médico Asociado -->
-                  ${descanso
-      ? `
-                  <tr>
-                    <td colspan="2" style="padding: 12px 16px; background-color: #f1f5f9; border-bottom: 1px solid #cbd5e1; border-top: 1px solid #cbd5e1; font-size: 13px; font-weight: 700; color: #1e293b; text-transform: uppercase; letter-spacing: 0.3px;">
-                      Descanso Médico Asociado
+                      Del ${fechaInicio} al ${fechaFinal}
                     </td>
                   </tr>
                   <tr style="background-color: #ffffff;">
-                    <td style="padding: 10px 16px; font-size: 13px; color: #64748b; border-bottom: 1px solid #e2e8f0;">Tipo de Descanso:</td>
-                    <td style="padding: 10px 16px; font-size: 13px; color: #1e293b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">${descanso.nombre_tipodescansomedico || 'N/A'}</td>
+                    <td style="padding: 10px 16px; font-size: 13px; color: #64748b; border-bottom: 1px solid #e2e8f0; width: 40%;">Número de días subsidiados:</td>
+                    <td style="padding: 10px 16px; font-size: 13px; color: #1e293b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">${detalle?.total_dias}</td>
                   </tr>
-                  <tr style="background-color: #f8fafc;">
-                    <td style="padding: 10px 16px; font-size: 13px; color: #64748b; border-bottom: 1px solid #e2e8f0;">Tipo de Contingencia:</td>
-                    <td style="padding: 10px 16px; font-size: 13px; color: #1e293b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">${descanso.nombre_tipocontingencia || 'N/A'}</td>
-                  </tr>
-                  <tr style="background-color: #ffffff;">
-                    <td style="padding: 10px 16px; font-size: 13px; color: #64748b; border-bottom: 1px solid #e2e8f0;">Diagnóstico / CIE10:</td>
-                    <td style="padding: 10px 16px; font-size: 13px; color: #1e293b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">${descanso.nombre_diagnostico || 'N/A'}</td>
-                  </tr>
-                  <tr style="background-color: #f8fafc;">
-                    <td style="padding: 10px 16px; font-size: 13px; color: #64748b; border-bottom: 1px solid #e2e8f0;">Establecimiento Salud:</td>
-                    <td style="padding: 10px 16px; font-size: 13px; color: #1e293b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">${descanso.nombre_establecimiento || 'N/A'}</td>
-                  </tr>
-                  <tr style="background-color: #ffffff;">
-                    <td style="padding: 10px 16px; font-size: 13px; color: #64748b; border-bottom: 1px solid #e2e8f0;">Periodo de Descanso:</td>
-                    <td style="padding: 10px 16px; font-size: 13px; color: #1e293b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">
-                      Del ${descanso.fecha_inicio || 'N/A'} al ${descanso.fecha_final || 'N/A'}
-                    </td>
-                  </tr>
-                  <tr style="background-color: #f8fafc;">
-                    <td style="padding: 10px 16px; font-size: 13px; color: #64748b;">Días Totales:</td>
-                    <td style="padding: 10px 16px; font-size: 13px; color: #1e293b; font-weight: 600;">${descanso.total_dias ?? 'N/A'} días</td>
-                  </tr>
-                  `
-      : ''
-    }
                 </table>
 
                 <!-- Botón Call To Action -->
@@ -506,9 +473,7 @@ export function notificationCanjeObservado(
                 </p>
               </td>
             </tr>
-
           </table>
-          
         </td>
       </tr>
     </table>

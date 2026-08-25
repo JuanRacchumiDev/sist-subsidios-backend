@@ -135,6 +135,7 @@ class PersonaController {
                     limit,
                     nombreGrupo,
                     numero_documento,
+                    id_empresa,
                     search
                 }
             } = req
@@ -153,6 +154,7 @@ class PersonaController {
             const filters = {
                 nombreGrupo: (nombreGrupo as string)?.trim(),
                 numero_documento: (numero_documento as string)?.trim(),
+                id_empresa: id_empresa as string,
                 search: (search as string)?.trim()
             };
 

@@ -72,11 +72,11 @@ class UpdateReembolsoService {
 
             const htmlContent = notificationCanjeObservado(dataEmail)
 
-            // await this.emailRepository.sendEmail({
-            //     to: canje?.colaborador?.email_personal as string,
-            //     subject: '¡ESTADO DEL PROCESO DE CANJE!',
-            //     html: htmlContent
-            // });
+            await this.emailRepository.sendEmail({
+                to: canje?.colaborador?.email_personal as string,
+                subject: '¡ESTADO DEL PROCESO DE CANJE!',
+                html: htmlContent
+            });
 
             console.log(`Correo de notificación de estado de descanso médico ${nombre_colaborador as string}`);
         } else if (estado_registro === EReembolso.REEMBOLSO_CORRECTO) {

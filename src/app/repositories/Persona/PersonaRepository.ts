@@ -177,10 +177,15 @@ class PersonaRepository {
     ): Promise<PersonaResponsePaginate> {
         try {
             const offset = HPagination.getOffset(page, limit);
-            const { nombreGrupo, numero_documento, search } = filters;
+            const { nombreGrupo, numero_documento, id_empresa, search } = filters;
 
             const conditions = ["dp.nombre = :nombreGrupo"];
             const replacements: any = { nombreGrupo, limit, offset };
+
+            if (id_empresa) {
+                conditions.push("id_empresa = :id_empresa")
+                replacements.id_empresa = id_empresa
+            }
 
             if (numero_documento) {
                 conditions.push("LOWER(p.numero_documento) = LOWER(:numero_documento)");
