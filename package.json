@@ -13,7 +13,8 @@
     "db:drop": "tsx ./node_modules/sequelize-cli/lib/sequelize db:drop",
     "db:migrate:undo": "tsx ./node_modules/sequelize-cli/lib/sequelize db:migrate:undo",
     "db:seed": "tsx ./node_modules/sequelize-cli/lib/sequelize db:seed:all",
-    "db:seed:undo": "tsx ./node_modules/sequelize-cli/lib/sequelize db:seed:undo:all"
+    "db:seed:undo": "tsx ./node_modules/sequelize-cli/lib/sequelize db:seed:undo:all",
+    "migrate": "tsc && sequelize-cli db:migrate"
   },
   "keywords": [],
   "author": "",
