@@ -23,27 +23,3 @@ const config = {
 };
 
 export = config;
-
-// {
-//   "development": {
-//     "username": "postgres",
-//     "password": "postgres",
-//     "database": "dms_sophia_db",
-//     "host": "127.0.0.1",
-//     "dialect": "postgres"
-//   },
-//   "test": {
-//     "username": "postgres",
-//     "password": "postgres",
-//     "database": "dms_sophia_test_db",
-//     "host": "127.0.0.1",
-//     "dialect": "postgres"
-//   },
-//   "production": {
-//     "username": "postgres",
-//     "password": "postgres",
-//     "database": "dms_sophia_prod_db",
-//     "host": "127.0.0.1",
-//     "dialect": "postgres"
-//   }
-// }

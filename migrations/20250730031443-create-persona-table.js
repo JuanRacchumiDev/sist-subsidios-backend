@@ -127,7 +127,7 @@ module.exports = {
       },
       fecha_nacimiento: {
         type: Sequelize.STRING(10),
-        allowNull: false
+        allowNull: true
       },
       fecha_ingreso: {
         type: Sequelize.STRING(10),

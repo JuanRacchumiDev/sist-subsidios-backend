@@ -23,11 +23,11 @@ module.exports = {
       },
       estado_sunat: {
         type: Sequelize.STRING(20),
-        allowNull: false
+        allowNull: true
       },
       condicion_sunat: {
         type: Sequelize.STRING(20),
-        allowNull: false
+        allowNull: true
       },
       departamento: {
         type: Sequelize.STRING(50),
@@ -43,11 +43,11 @@ module.exports = {
       },
       direccion: {
         type: Sequelize.STRING(80),
-        allowNull: false
+        allowNull: true
       },
       direccion_completa: {
         type: Sequelize.STRING(150),
-        allowNull: false
+        allowNull: true
       },
       ubigeo_sunat: {
         type: Sequelize.STRING(10),
