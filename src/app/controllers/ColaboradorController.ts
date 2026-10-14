@@ -61,7 +61,6 @@ class ColaboradorController {
     async getColaboradorById(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
-
             const result = await GetColaboradorService.execute(id);
 
             res.status(result.status || 200).json(result);

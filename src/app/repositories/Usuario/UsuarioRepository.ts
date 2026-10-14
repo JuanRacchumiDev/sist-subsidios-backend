@@ -8,8 +8,6 @@ import {
 } from '../../interfaces/Usuario/IUsuario';
 import { USUARIO_ATTRIBUTES } from '../../../constants/UsuarioConstant';
 import { PERFIL_INCLUDE } from '../../../includes/PerfilInclude';
-import { COLABORADOR_INCLUDE } from '../../../includes/ColaboradorInclude';
-import { TRABAJADOR_SOCIAL_INCLUDE } from '../../../includes/TrabSocialInclude';
 import { PERSONA_INCLUDE } from '../../../includes/PersonaInclude';
 import { IUsuarioFilter } from '../../interfaces/Usuario/IUsuarioFilter';
 import { Op, WhereOptions } from 'sequelize';

@@ -7,6 +7,7 @@ interface BitacoraCreationAttributes extends Optional<IBitacora, 'id'> { }
 
 export class Bitacora extends Model<IBitacora, BitacoraCreationAttributes> implements IBitacora {
     public id?: string | undefined;
+    public id_exteno?: string | undefined;
     public tabla?: string | undefined;
     public valor_anterior?: string | undefined;
     public valor_nuevo?: string | undefined;
@@ -14,7 +15,6 @@ export class Bitacora extends Model<IBitacora, BitacoraCreationAttributes> imple
     public user_crea?: string | undefined;
     public user_actualiza?: string | undefined;
     public user_elimina?: string | undefined;
-    public nombre_user?: string | undefined;
 
     // Timestamps
     public readonly created_at!: Date
@@ -29,6 +29,11 @@ Bitacora.init({
         primaryKey: true,
         allowNull: false
     },
+    id_externo: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false
+    },
     tabla: {
         type: DataTypes.STRING(30),
         allowNull: false,
@@ -37,21 +42,21 @@ Bitacora.init({
         }
     },
     valor_anterior: {
-        type: DataTypes.STRING(100),
+        type: DataTypes.STRING(50),
         allowNull: false,
         set(value: string) {
             this.setDataValue('valor_anterior', value ? value.trim() : undefined)
         }
     },
     valor_nuevo: {
-        type: DataTypes.STRING(100),
+        type: DataTypes.STRING(50),
         allowNull: false,
         set(value: string) {
             this.setDataValue('valor_nuevo', value ? value.trim() : undefined)
         }
     },
     accion: {
-        type: DataTypes.STRING(30),
+        type: DataTypes.STRING(10),
         allowNull: false
     },
     user_crea: {
@@ -65,10 +70,6 @@ Bitacora.init({
     user_elimina: {
         type: DataTypes.UUID,
         allowNull: true
-    },
-    nombre_user: {
-        type: DataTypes.STRING(10),
-        allowNull: false
     }
 }, {
     tableName: 'bitacora',

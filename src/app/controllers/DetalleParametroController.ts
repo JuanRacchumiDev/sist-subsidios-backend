@@ -9,14 +9,13 @@ import { IDetalleParametro } from '../interfaces/DetalleParametro/IDetalleParame
 class DetalleParametroController {
     async getAllDetalles(req: Request, res: Response, next: NextFunction) {
         try {
-            const { query: { clase, estado, enPersona } } = req
+            const { query: { clase, estado } } = req
             const paramClase = parseInt(clase as string)
             const paramEstado = ((estado as string) === "true") ? true : false
-            // const paramIsPersona = ((enPersona as string) === "true") ? true : false
             const result = await GetDetallesService.execute(paramClase, paramEstado)
             res.status(result.status || 200).json(result)
         } catch (error) {
-            next(error) // Pasa al error al middleware de manejo de errores
+            next(error)
         }
     }
 
@@ -42,8 +41,6 @@ class DetalleParametroController {
         try {
             const { id } = req.params;
             const result = await GetDetalleService.execute(id);
-            console.log('---- result getDetalleById ----')
-            console.log({ result })
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);
@@ -55,7 +52,6 @@ class DetalleParametroController {
             const { body } = req
             const detalleData: IDetalleParametro = body;
             const result = await CreateDetalleService.execute(detalleData);
-            console.log({ result })
             const { status: statusDetalle } = result
 
             if (statusDetalle === 201) {

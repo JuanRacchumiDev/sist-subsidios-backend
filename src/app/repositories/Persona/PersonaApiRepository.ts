@@ -1,10 +1,8 @@
 import axios from 'axios';
 import { API_DNI, API_CEE } from '../../../helpers/HApi';
-// import TipoDocumentoRepository from '../TipoDocumento/TipoDocumentoRepository';
 import DetalleRepository from "../DetalleParametro/DetalleParametroRepository"
 import HDate from '../../../helpers/HDate';
 import { IPersona, PersonaResponse } from '../../interfaces/Persona/IPersona';
-// import { ITipoDocumento } from '../../interfaces/TipoDocumento/ITipoDocumento';
 import { IDetalleParametro } from "../../interfaces/DetalleParametro/IDetalleParametro"
 import PersonaRepository from '../Persona/PersonaRepository'
 import { EOrigen } from '../../enums/EOrigen';
@@ -12,12 +10,10 @@ import { EOrigen } from '../../enums/EOrigen';
 class PersonaApiRepository {
     private personaRepository: PersonaRepository
     private detalleRepository: DetalleRepository
-    // private tipoDocumentoRepository: TipoDocumentoRepository
 
     constructor() {
         this.personaRepository = new PersonaRepository()
         this.detalleRepository = new DetalleRepository()
-        // this.tipoDocumentoRepository = new TipoDocumentoRepository()
     }
 
     /**
@@ -28,14 +24,6 @@ class PersonaApiRepository {
      */
     async getInfoApi(abreviatura: string, numeroDocumento: string): Promise<PersonaResponse> {
         try {
-            // Verificando si existe tipo de documento
-            // const {
-            //     result: tipoDocResult,
-            //     data: dataTipoDocumento,
-            //     message: tipoDocMessage,
-            //     status: tipoDocStatus
-            // } = await this.tipoDocumentoRepository.getBySearch({ abreviatura })
-
             console.log('getInfoApi PersonaApiRepository')
             console.log({ abreviatura })
             console.log({ numeroDocumento })
@@ -55,10 +43,8 @@ class PersonaApiRepository {
                 }
             }
 
-            // const { id: idTipoDocumento } = dataTipoDocumento as ITipoDocumento
             const { id: idTipoDocumento } = dataTipoDocumento as IDetalleParametro
 
-            // Definiendo la url de consulta a la API
             const urlApi = (abreviatura === 'DNI')
                 ? `${API_DNI}${numeroDocumento}`
                 : `${API_CEE}${numeroDocumento}`
@@ -175,7 +161,5 @@ class PersonaApiRepository {
         }
     }
 }
-
-// export default new PersonaApiRepository()
 
 export default PersonaApiRepository

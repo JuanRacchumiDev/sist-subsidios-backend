@@ -129,28 +129,9 @@ class CobroRepository {
      * @returns {Promise<CobroResponse>} Respuesta con el cobro creada o error
      */
     async create(data: ICobro): Promise<CobroResponse> {
-        // const transaction = await sequelize.transaction()
-
         try {
-            // const { codigo } = data
-
-            // if (!codigo) {
-            //     return { result: false, message: 'El código es requerido para crear un cobro' }
-            // }
-
-            // const fields = { codigo }
-
-            // const validateFields = await this.validateFieldsRegistered(fields, "crear")
-
-            // const { result: resultValidate, message: messageValidate } = validateFields
-
-            // if (resultValidate) {
-            //     return { result: !resultValidate, message: messageValidate, status: 409 }
-            // }
 
             const newCobro = await Cobro.create(data)
-
-            // await transaction.commit()
 
             if (newCobro.id) {
                 return { result: true, message: 'Cobro registrado con éxito', data: newCobro, status: 200 }

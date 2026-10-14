@@ -7,59 +7,9 @@ import HPagination from "../../../helpers/HPagination";
 import { TIPO_DOCUMENTO_INCLUDE } from '../../../includes/TipoDocumentoInclude';
 import { CARGO_INCLUDE } from '../../../includes/CargoInclude'
 import { Usuario } from '../../models/Usuario';
+import { DetalleParametro } from '../../models/DetalleParametro';
 
 class PersonaRepository {
-    /**
-     * Obtiene todas las personas
-     * @returns {Promise<PersonaResponse>}
-     */
-    async getAll(): Promise<PersonaResponse> {
-        try {
-            const personas = await Persona.findAll({
-                attributes: PERSONA_ATTRIBUTES,
-                // include: [DETALLE_PARAMETRO_INCLUDE],
-                order: [
-                    ['apellido_paterno', 'ASC'],
-                    ['nombres', 'ASC']
-                ]
-            })
-
-            return { result: true, data: personas, status: 200 }
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-            return { result: false, error: errorMessage, status: 500 }
-        }
-    }
-
-    async getAllSinUsuario(): Promise<PersonaResponse> {
-        try {
-            const personas = await Persona.findAll({
-                attributes: PERSONA_ATTRIBUTES,
-                include: [
-                    {
-                        model: Usuario,
-                        as: 'usuario',
-                        attributes: [],
-                        required: false
-                    }
-                ],
-                where: {
-                    '$usuario.id$': { [Op.is]: null },
-                    estado: true
-                },
-                order: [
-                    ['apellido_paterno', 'ASC'],
-                    ['nombres', 'ASC']
-                ]
-            })
-
-            return { result: true, data: personas, status: 200 }
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-            return { result: false, error: errorMessage, status: 500 };
-        }
-    }
-
     /**
      * Obtiene todas las personas por estado
      * @param {boolean} estado - El estado de las personas a buscar
@@ -85,7 +35,7 @@ class PersonaRepository {
     }
 
     /**
-     * Obtiene todas las personas por estado
+     * Obtiene todas las personas por empresa
      * @param {string} idEmpresa - El ID de la empresa a buscar
      * @returns {Promise<PersonaResponse>}>} Respuesta con la lista de personas filtrados
      */
@@ -250,6 +200,38 @@ class PersonaRepository {
                 pagination,
                 status: 200
             }
+        } catch (error: any) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+            return { result: false, error: errorMessage, status: 500 }
+        }
+    }
+
+    async getAllSinUsuario(): Promise<PersonaResponse> {
+        try {
+            const personas = await Persona.findAll({
+                attributes: PERSONA_ATTRIBUTES,
+                include: [
+                    {
+                        model: Usuario,
+                        as: 'usuario',
+                        attributes: [],
+                        required: false
+                    },
+                    {
+                        model: DetalleParametro,
+                        as: 'grupos',
+                        through: { attributes: [] }
+                    }
+                ],
+                where: {
+                    '$usuario.id$': null
+                },
+                order: [
+                    ['apellido_paterno', 'ASC']
+                ]
+            })
+
+            return { result: true, data: personas, status: 200 };
         } catch (error: any) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return { result: false, error: errorMessage, status: 500 }

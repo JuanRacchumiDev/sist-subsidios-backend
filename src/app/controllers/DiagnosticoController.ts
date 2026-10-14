@@ -76,8 +76,8 @@ class DiagnosticoController {
         try {
             const diagnosticoData: IDiagnostico = req.body;
             const result = await CreateDiagnosticoService.execute(diagnosticoData);
-            // res.status(result.status || 201).json(result);
             const { status: statusDiagnostico } = result
+
             if (statusDiagnostico === 201) {
                 res.status(statusDiagnostico).json(result)
             }

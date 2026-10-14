@@ -51,6 +51,7 @@ export interface IPersona {
     cargo?: IDetalleParametro
     sede?: IDetalleParametro
     pais?: IDetalleParametro
+    grupos?: IDetalleParametro[]
     nombre_grupo?: string
 }
 

@@ -16,7 +16,7 @@ class AdjuntoController {
             const result = await getAdjuntosService.execute()
             res.status(result.status || 200).json(result)
         } catch (error) {
-            next(error) // Pasa al error al middleware de manejo de errores
+            next(error)
         }
     }
 
@@ -43,22 +43,13 @@ class AdjuntoController {
 
             const response = await GetAdjuntoService.execute(id);
 
-            console.log('---- response getAdjuntoById ----')
-            console.log({ response })
-
             const { status, data } = response
 
             if (!status || !data) {
                 return res.status(status || 404).json(response)
             }
 
-            console.log({ data })
-
             const { file_path, file_type, file_name } = data as IAdjunto
-
-            console.log({ file_path })
-            console.log({ file_type })
-            console.log({ file_name })
 
             if (!file_path) {
                 return res.status(404).json({ result: false, message: 'Archivo no encontrado.', status: 404 });
@@ -72,15 +63,12 @@ class AdjuntoController {
                 finalPath = path.join('public', file_path)
             }
 
-            console.log({ finalPath })
-
             res.setHeader('Content-Type', file_type as string)
             res.setHeader('Content-Disposition', `inline; filename="${file_name}"`)
 
             const fileStream = fs.createReadStream(finalPath)
 
             fileStream.on('error', (err) => {
-                console.error('Error en el stream: ', err)
                 if (!res.headersSent) {
                     res.status(500).json({ message: 'Error al leer el archivo físico' })
                 }
@@ -100,97 +88,23 @@ class AdjuntoController {
                 return res.status(400).json({
                     result: false,
                     message: 'No se ha agregado ningún archivo',
-                    status: 400
+                    status: 400,
                 });
             }
 
-            console.log({ body })
+            const result = await CreateAdjuntoService.execute({
+                file,
+                bodyData: body,
+            });
 
-            const {
-                id_tipoadjunto,
-                id_descansomedico,
-                id_canje,
-                id_cobro,
-                id_reembolso,
-                id_persona,
-                id_documento,
-                codigo_temp,
-                ruc,
-                numero_documento
-            } = body
-
-            // const { originalname, mimetype, filename } = file // DiskStorage
-            const { originalname, mimetype, buffer } = file
-
-            // Generar un nombre único para el archivo
-            const uniqueSuffix: string = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-            const extension: string = path.extname(originalname);
-            const filename = `${uniqueSuffix}${extension}`;
-
-            let relativePath: string = "";
-
-            let finalPath: string = ""; // Ruta absoluta para guardar en disco
-
-            const currentYear = HDate.getCurrentYear(); // Asumiendo que esta función está disponible
-
-            if (ruc && numero_documento) {
-                console.log('---- existe ruc y numero_documento ----')
-                console.log({ ruc })
-                console.log({ numero_documento })
-                // Se asume que 'public' está en el mismo nivel que 'src' y 'app'
-                // const baseUploadDir = path.join(process.cwd(), 'public', 'uploads');
-
-                // Definición del path y creación de directorios
-                relativePath = path.join('uploads', ruc, currentYear, numero_documento, filename);
-                finalPath = path.join(process.cwd(), 'public', relativePath);
-
-                console.log({ relativePath })
-                console.log({ finalPath })
-
-                const dir = path.dirname(finalPath);
-                fs.mkdirSync(dir, { recursive: true });
-
-            } else {
-                console.log('---- no existe ruc y numero_documento ----')
-
-                relativePath = path.join('uploads', filename);
-                finalPath = path.join(process.cwd(), 'public', relativePath);
-
-                console.log({ relativePath })
-                console.log({ finalPath })
-            }
-
-            // Guardar el archivo en el disco
-            fs.writeFileSync(finalPath, buffer);
-
-            const fileData: IAdjunto = {
-                id_tipoadjunto,
-                id_descansomedico,
-                id_canje,
-                id_cobro,
-                id_reembolso,
-                id_persona,
-                id_documento,
-                file_name: originalname,
-                file_type: mimetype,
-                file_data: buffer,
-                file_path: relativePath,
-                codigo_temp
-            }
-
-            console.log({ fileData })
-
-            const result = await CreateAdjuntoService.execute(fileData);
             res.status(result.status || 201).json(result);
         } catch (error) {
-            next(error);
+            next(error)
         }
     }
 
     async updateAdjunto(req: Request, res: Response, next: NextFunction) {
         try {
-            console.log({ req })
-
             const { query, body, file } = req
 
             if (!file) {
@@ -200,10 +114,6 @@ class AdjuntoController {
                     status: 400
                 });
             }
-
-            console.log({ query })
-
-            console.log({ body })
 
             const { ruc, numero_documento } = body
 
@@ -227,27 +137,15 @@ class AdjuntoController {
             const currentYear = HDate.getCurrentYear();
 
             if (ruc && numero_documento) {
-                console.log('---- existe ruc y numero_documento ----')
-                console.log({ ruc })
-                console.log({ numero_documento })
-
                 // Definición del path y creación de directorios
                 relativePath = path.join('uploads', ruc, currentYear, numero_documento, filename);
                 finalPath = path.join(process.cwd(), 'public', relativePath);
 
-                console.log({ relativePath })
-                console.log({ finalPath })
-
                 const dir = path.dirname(finalPath);
                 fs.mkdirSync(dir, { recursive: true });
             } else {
-                console.log('---- no existe ruc y numero_documento ----')
-
                 relativePath = path.join('uploads', filename);
                 finalPath = path.join(process.cwd(), 'public', relativePath);
-
-                console.log({ relativePath })
-                console.log({ finalPath })
             }
 
             // Guardar el archivo en el disco
@@ -259,8 +157,6 @@ class AdjuntoController {
             payloadAdjunto.file_type = mimetype
             payloadAdjunto.file_data = buffer
             payloadAdjunto.file_path = relativePath
-
-            console.log({ payloadAdjunto })
 
             const result = await UpdateAdjuntoService.execute(idDescansoMedico, idDocumento, payloadAdjunto)
 

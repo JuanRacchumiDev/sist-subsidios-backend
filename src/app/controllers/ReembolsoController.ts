@@ -31,8 +31,6 @@ class ReembolsoController {
                 numero_expediente: numero_expediente as string
             }
 
-            console.log({ filters })
-
             const result = await GetReembolsosPaginateService.execute(setPage, setLimit, filters)
             res.status(result.status || 200).json(result)
         } catch (error) {

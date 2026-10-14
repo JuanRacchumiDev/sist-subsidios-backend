@@ -33,8 +33,6 @@ class PersonaController {
 
             const result = await GetInfoApiService.execute(abreviaturaStr, numeroDocumentoStr)
 
-            console.log({ result })
-
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)
@@ -46,7 +44,7 @@ class PersonaController {
             const result = await GetPersonasService.execute()
             res.status(result.status || 200).json(result)
         } catch (error) {
-            next(error) // Pasa al error al middleware de manejo de errores
+            next(error)
         }
     }
 
@@ -55,7 +53,7 @@ class PersonaController {
             const result = await GetPersonasSinUsuarioService.execute()
             res.status(result.status || 200).json(result)
         } catch (error) {
-            next(error) // Pasa al error al middleware de manejo de errores
+            next(error)
         }
     }
 
@@ -65,7 +63,7 @@ class PersonaController {
             const result = await GetPersonasByEmpresaService.execute(idEmpresa)
             res.status(result.status || 200).json(result)
         } catch (error) {
-            next(error) // Pasa al error al middleware de manejo de errores
+            next(error)
         }
     }
 

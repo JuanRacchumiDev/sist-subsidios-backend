@@ -66,14 +66,14 @@ Empresa.init({
     },
     estado_sunat: {
         type: DataTypes.STRING(20),
-        allowNull: false,
+        allowNull: true,
         set(value: string) {
             this.setDataValue('estado_sunat', value ? value.trim() : undefined)
         }
     },
     condicion_sunat: {
         type: DataTypes.STRING(20),
-        allowNull: false,
+        allowNull: true,
         set(value: string) {
             this.setDataValue('condicion_sunat', value ? value.trim() : undefined)
         }
@@ -101,14 +101,14 @@ Empresa.init({
     },
     direccion: {
         type: DataTypes.STRING(80),
-        allowNull: false,
+        allowNull: true,
         set(value: string) {
             this.setDataValue('direccion', value ? value.trim() : undefined)
         }
     },
     direccion_completa: {
         type: DataTypes.STRING(150),
-        allowNull: false,
+        allowNull: true,
         set(value: string) {
             this.setDataValue('direccion_completa', value ? value.trim() : undefined)
         }

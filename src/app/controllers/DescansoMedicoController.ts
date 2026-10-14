@@ -58,8 +58,6 @@ class DescansoMedicoController {
                 user_crea: user_crea as string
             };
 
-            console.log({ filters })
-
             const result = await GetDescansosPaginateService.execute(setPage, setLimit, filters)
 
             res.status(result.status || 200).json(result)
@@ -184,12 +182,9 @@ class DescansoMedicoController {
             } else {
                 return res.status(400).json({ message: 'Tipo de reporte no válido.' });
             }
-
-            // res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)
             res.status(500).json({ message: 'Error interno del servidor al generar el reporte.', error: error });
-            // next(error)
         }
     }
 
@@ -279,8 +274,6 @@ class DescansoMedicoController {
 
             const dataDescansos = data as TItemReportSubsidios[]
 
-            console.log({ dataDescansos })
-
             if (tipo === 'pdf') {
                 const pdfBuffer = await generatePdfReport(reportTitle, headersColumns, dataDescansos)
                 res.setHeader('Content-Type', 'application/pdf');
@@ -323,14 +316,9 @@ class DescansoMedicoController {
 
     async createDescanso(req: Request, res: Response, next: NextFunction) {
         try {
-            // console.log('parámetros new descanso médico', req.body)
             const descansoData: IDescansoMedico = req.body;
-
             const response = await CreateDescansoService.execute(descansoData);
-            // console.log('response createDescanso', response)
-
             const dataResponse = response as ResponseTransaction
-            // console.log('dataResponse createDescanso', dataResponse)
 
             res.status(dataResponse.status || 201).json(dataResponse);
         } catch (error) {

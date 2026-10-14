@@ -50,8 +50,6 @@ class CanjeController {
                 fecha_final_subsidio: fecha_final as string,
             };
 
-            console.log({ filters })
-
             const result = await GetCanjesPaginateService.execute(setPage, setLimit, filters)
 
             res.status(result.status || 200).json(result)
@@ -60,9 +58,6 @@ class CanjeController {
         }
     }
 
-    /**
-     * Controlador principal para obtener el reporte agrupado de canjes/subsidios
-     */
     async getAllForReport(req: Request, res: Response, next: NextFunction) {
         try {
             const fileSuffix = HDate.getCurrentDateToString("ddMMyyyy");
@@ -77,7 +72,7 @@ class CanjeController {
                 fecha_final
             } = req.query;
 
-            // 1. Validaciones de parámetros requeridos
+            // Validaciones de parámetros requeridos
             if (!type || !limit) {
                 return res.status(400).json({
                     success: false,
@@ -88,7 +83,7 @@ class CanjeController {
             const parsedLimit = parseInt(limit as string, 10);
             const reportTypeRaw = type as string;
 
-            // 2. Mapeo seguro al tipo de reporte soportado por el servicio
+            // Mapeo seguro al tipo de reporte soportado por el servicio
             let reportType: TReportType;
             if (reportTypeRaw === 'no_consecutivos' || reportTypeRaw === 'no_consecutivos_90') {
                 reportType = 'no_consecutivos_90';
@@ -103,11 +98,11 @@ class CanjeController {
                 });
             }
 
-            // 3. Captura opcional de fechas
+            // Captura opcional de fechas
             const startDate = (fechaInicio || fecha_inicio) ? String(fechaInicio || fecha_inicio) : undefined;
             const endDate = (fechaFinal || fecha_final) ? String(fechaFinal || fecha_final) : undefined;
 
-            // 4. Ejecución del Servicio
+            // Ejecución del Servicio
             const dataCanjes: TItemReport[] = await GetCanjesForReportService.execute(
                 reportType,
                 startDate,
@@ -116,7 +111,7 @@ class CanjeController {
 
             const titleReport = CanjeController.defineTitleReport(reportTypeRaw, parsedLimit);
 
-            // 5. Retorno en formato JSON (por defecto si no solicita archivo)
+            // Retorno en formato JSON (por defecto si no solicita archivo)
             if (!output || output === 'json') {
                 return res.status(200).json({
                     success: true,
@@ -126,7 +121,7 @@ class CanjeController {
                 });
             }
 
-            // 6. Generación e impresión de reporte Excel
+            // Generación e impresión de reporte Excel
             if (output === 'excel') {
                 const headersColumns: THeaderColumn[] = [
                     {
@@ -207,9 +202,6 @@ class CanjeController {
         }
     }
 
-    /**
-     * Define el título dynamic para la cabecera del reporte Excel/PDF
-     */
     private static defineTitleReport(type: string, limit: number): string {
         switch (type) {
             case 'no_consecutivos':

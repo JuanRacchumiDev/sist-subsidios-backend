@@ -78,12 +78,13 @@ class CreateUsuarioService {
 
                 if (resultUsuario && dataUsuario) {
                     const usuario = dataUsuario as IUsuario
+                    const { username, email } = usuario
 
                     const dataEmail = {
                         persona,
                         perfil,
-                        username: usuario.username,
-                        email: usuario.email,
+                        username: username,
+                        email: email,
                         password: passwordBase,
                         appUrl: process.env.APP_URL || "http://localhost:3000"
                     }

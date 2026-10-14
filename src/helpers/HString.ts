@@ -1,3 +1,5 @@
+import * as crypto from 'crypto';
+
 export default class HString {
     static convertToUrlString(text: String): string {
         let urlString: string = text.toLocaleLowerCase()
@@ -22,5 +24,55 @@ export default class HString {
             result += characters.charAt(Math.floor(Math.random() * charactersLength))
         }
         return result
+    }
+
+    static encrypt(text: string): string {
+        const { env } = process
+        const { EMAIL_ALGORITHM = 'aes-256-gcm', EMAIL_ENCRYPTION_KEY } = env
+
+        if (!EMAIL_ENCRYPTION_KEY) {
+            throw new Error('EMAIL_ENCRYPTION_KEY no está definido en las variables de entorno.')
+        }
+
+        const iv = crypto.randomBytes(16);
+
+        const cipher = crypto.createCipheriv(
+            EMAIL_ALGORITHM,
+            Buffer.from(EMAIL_ENCRYPTION_KEY as string),
+            iv
+        ) as crypto.CipherGCM;
+
+        let encrypted = cipher.update(text, 'utf8', 'hex');
+        encrypted += cipher.final('hex');
+        const authTag = cipher.getAuthTag().toString('hex');
+
+        return `${iv.toString('hex')}:${authTag}:${encrypted}`;
+    }
+
+    static decrypt(encryptedText: string): string {
+        const { env } = process
+        const { EMAIL_ALGORITHM = 'aes-256-gcm', EMAIL_ENCRYPTION_KEY } = env
+
+        if (!EMAIL_ENCRYPTION_KEY) {
+            throw new Error('EMAIL_ENCRYPTION_KEY no está definido en las variables de entorno.')
+        }
+
+        const parts = encryptedText.split(':');
+        const iv = Buffer.from(parts[0], 'hex');
+        const authTag = Buffer.from(parts[1], 'hex');
+        const encrypted = parts[2];
+
+        const decipher = crypto.createDecipheriv(
+            EMAIL_ALGORITHM,
+            Buffer.from(EMAIL_ENCRYPTION_KEY),
+            iv
+        ) as crypto.DecipherGCM;
+
+        decipher.setAuthTag(authTag);
+
+        let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+        decrypted += decipher.final('utf8');
+
+        return decrypted;
     }
 }

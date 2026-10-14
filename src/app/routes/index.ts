@@ -2,6 +2,7 @@ import { Router } from 'express'
 const router = Router()
 
 import detalleParametroRoutes from './detalleParametro.routes'
+import configuracionRoutes from './configuracion.routes'
 import tipoEstablecimientoRoutes from './tipoEstablecimiento.routes'
 import tipoDocumentoRoutes from './tipoDocumento.routes'
 import tipoDescansoMedicoRoutes from './tipoDescansoMedico.routes'
@@ -29,6 +30,7 @@ import authRoutes from './auth.routes'
 
 // Define rutas para cada módulo
 router.use('/detalles', detalleParametroRoutes)
+router.use('/configuraciones', configuracionRoutes)
 router.use('/tipo-establecimientos', tipoEstablecimientoRoutes)
 router.use('/tipo-documentos', tipoDocumentoRoutes)
 router.use('/tipo-descanso-medicos', tipoDescansoMedicoRoutes)

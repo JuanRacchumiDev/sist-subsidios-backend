@@ -39,6 +39,14 @@ class CreatePersonaService {
             idGrupo = id as string
         }
 
+        const { nombres, apellido_paterno, apellido_materno } = data
+
+        const nombreCompleto = `${nombres} ${apellido_paterno} ${apellido_materno}`
+        data.nombre_completo = nombreCompleto
+
+        console.log('---- data persona ----')
+        console.log({ data })
+
         const responseCreate = await this.personaRepository.create(data);
 
         const { result: resultCreate, data: dataCreate } = responseCreate
@@ -46,11 +54,12 @@ class CreatePersonaService {
         if (resultCreate && dataCreate) {
             const persona = dataCreate as IPersona
 
-            const { id: idPersona } = persona
+            const { id: idPersona, user_crea } = persona
 
             const payloadGrupoPersona: IGrupoPersona = {
                 id_persona: idPersona,
-                id_grupo: idGrupo
+                id_grupo: idGrupo,
+                user_crea
             }
 
             console.log({ payloadGrupoPersona })

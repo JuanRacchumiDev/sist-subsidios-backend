@@ -182,6 +182,57 @@ class EmpresaRepository {
     }
 
     /**
+   * Obtiene una sola empresa filtrando por razón social o RUC
+   * @param {string} [razonSocial] - Razón social a buscar
+   * @param {string} [ruc] - RUC a buscar
+   * @returns {Promise<EmpresaResponse>}
+   */
+    async getByParams(razonSocial?: string, ruc?: string): Promise<EmpresaResponse> {
+        try {
+            const whereCondition: any = {};
+
+            if (razonSocial && ruc) {
+                whereCondition[Op.or] = [
+                    { nombre_o_razon_social: { [Op.iLike]: `%${razonSocial}%` } },
+                    { ruc: { [Op.iLike]: `%${ruc}%` } }
+                ];
+            } else if (razonSocial) {
+                whereCondition.nombre_o_razon_social = { [Op.iLike]: `%${razonSocial}%` };
+            } else if (ruc) {
+                whereCondition.ruc = { [Op.iLike]: `%${ruc}%` };
+            }
+
+            // Se usa findOne para retornar una única coincidencia
+            const empresa = await Empresa.findOne({
+                where: whereCondition
+            });
+
+            if (!empresa) {
+                return {
+                    result: false,
+                    message: 'No se encontró la empresa con los criterios proporcionados',
+                    data: [],
+                    status: 200
+                };
+            }
+
+            return {
+                result: true,
+                message: 'Empresa encontrada con éxito',
+                data: empresa,
+                status: 200
+            };
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            return {
+                result: false,
+                error: errorMessage,
+                status: 500
+            };
+        }
+    }
+
+    /**
      * Crea una empresa
      * @param {IEmpresa} data - Los datos de la empresa a crear
      * @returns {Promise<EmpresaResponse>} Respuesta con la empresa creada o error
@@ -276,9 +327,13 @@ class EmpresaRepository {
 
             const { nombre_o_razon_social, numero } = data
 
-            const fields = { nombre: nombre_o_razon_social, numero }
+            const fields = { id, nombre: nombre_o_razon_social, numero }
+
+            console.log({ fields })
 
             const validateFields = await this.validateFieldsRegistered(fields, "actualizar")
+
+            console.log({ validateFields })
 
             const { result: resultValidate, message: messageValidate } = validateFields
 
@@ -344,10 +399,10 @@ class EmpresaRepository {
     }
 
     async validateFieldsRegistered(
-        fields: { nombre?: string, numero?: string },
+        fields: { id?: string, nombre?: string, numero?: string },
         accion: string
     ): Promise<TValidateFields> {
-        const { nombre, numero } = fields
+        const { id, nombre, numero } = fields
 
         let returnValidate: TValidateFields = {
             result: false,
@@ -355,26 +410,46 @@ class EmpresaRepository {
         }
 
         if (nombre || numero) {
-            const whereConditions: any[] = []
+            const orConditions: any[] = []
 
             if (nombre) {
-                whereConditions.push({ nombre_o_razon_social: nombre })
+                orConditions.push({ nombre_o_razon_social: nombre })
             }
 
             if (numero) {
-                whereConditions.push({ numero })
+                orConditions.push({ numero })
+            }
+
+            const whereClause: any = {
+                [Op.or]: orConditions
+            };
+
+            if (accion === 'actualizar' && id) {
+                whereClause.id = { [Op.ne]: id };
             }
 
             const existingEmpresa = await Empresa.findOne({
-                where: {
-                    [Op.or]: whereConditions
-                }
+                where: whereClause
             })
 
             if (existingEmpresa) {
-                const message = `La razón social o ruc por ${accion} ya existen`
-                returnValidate.result = true
-                returnValidate.message = message
+                let detail = '';
+
+                const isSameName = nombre && existingEmpresa.nombre_o_razon_social?.trim().toLowerCase() === nombre.trim().toLowerCase();
+                const isSameNumero = numero && existingEmpresa.numero === numero;
+
+                if (isSameName && isSameNumero) {
+                    detail = 'la razón social y el número de RUC';
+                } else if (isSameName) {
+                    detail = 'la razón social';
+                } else if (isSameNumero) {
+                    detail = 'el número de RUC';
+                } else {
+                    detail = 'la razón social o RUC';
+                }
+
+                returnValidate.result = true;
+                returnValidate.message = `No se puede ${accion} la empresa porque ${detail} ya se encuentra registrado por otra empresa.`;
             }
         }
 

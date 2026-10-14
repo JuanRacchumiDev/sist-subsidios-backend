@@ -55,6 +55,13 @@ const setupDatabase = async () => {
         Cobro.hasMany(Adjunto, { foreignKey: 'id_cobro', as: 'adjuntos' })
         Cobro.belongsTo(Reembolso, { foreignKey: 'id_reembolso', as: 'reembolso' })
 
+        DetalleParametro.belongsToMany(Persona, {
+            through: GrupoPersona,
+            foreignKey: 'id_grupo',
+            otherKey: 'id_persona',
+            as: 'personas'
+        })
+
         DescansoMedico.hasOne(Canje, { foreignKey: 'id_descansomedico', as: 'canje' })
         DescansoMedico.belongsTo(Persona, { foreignKey: 'id_colaborador', as: 'colaborador_dm' })
         DescansoMedico.belongsTo(DetalleParametro, { foreignKey: 'id_tipodescansomedico', as: 'tipoDescansoMedico' })
@@ -75,7 +82,7 @@ const setupDatabase = async () => {
         Persona.belongsTo(DetalleParametro, { foreignKey: 'id_tipodocumento', as: 'tipoDocumento' })
         Persona.belongsTo(Empresa, { foreignKey: 'id_empresa', as: 'empresa' })
         Persona.belongsTo(DetalleParametro, { foreignKey: 'id_cargo', as: 'cargo' })
-        Persona.hasMany(GrupoPersona, { foreignKey: 'id_persona', as: 'personaGrupos' });
+        // Persona.hasMany(GrupoPersona, { foreignKey: 'id_persona', as: 'personaGrupos' });
         Persona.belongsToMany(DetalleParametro, {
             through: GrupoPersona,
             foreignKey: 'id_persona',

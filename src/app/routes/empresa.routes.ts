@@ -6,7 +6,9 @@ const router = Router()
 
 router.get('/consulta-api', authToken, EmpresaController.getEmpresaByApi)
 
-router.get('/consulta-razon-social', authToken, EmpresaController.getEmpreByNombre)
+router.get('/consulta-razon-social', authToken, EmpresaController.getEmpresaByNombre)
+
+router.get('/filtrar', authToken, EmpresaController.getEmpresaByParams)
 
 router.get('/paginate', authToken, EmpresaController.getAllEmpresasPaginated)
 

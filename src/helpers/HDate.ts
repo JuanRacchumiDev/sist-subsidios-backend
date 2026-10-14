@@ -1,6 +1,6 @@
 import { addDays, subDays, format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { toZonedTime, fromZonedTime } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 import { TIME_ZONE_AMERICA_LIMA } from './HParameter';
 
 export default class HDate {
@@ -36,21 +36,10 @@ export default class HDate {
    * @returns {string} La nueva fecha en formato 'YYYY-MM-DD'.
    */
     static addDaysToDate(dateString: string, dias: number): string {
-        // console.log('----------------------');
-        // console.log('addDaysToDate')
-        // console.log('----------------------');
-        // console.log({ dateString })
-        // const date = new Date(dateString)
         const date = parseISO(dateString)
         const dateLima = toZonedTime(date, TIME_ZONE_AMERICA_LIMA)
-        // const newDate = addDays(date, dias)
         const newDate = addDays(dateLima, dias)
-        // console.log('----------------------');
-        // console.log('newDate with format')
-        // console.log('----------------------');
         const newDateFormat = format(newDate, 'yyyy-MM-dd')
-        // console.log({ newDate })
-        // console.log({ newDateFormat })
         return newDateFormat
     }
 
@@ -61,10 +50,8 @@ export default class HDate {
    * @returns {string} La nueva fecha en formato 'YYYY-MM-DD'.
    */
     static subDayFromDate(dateString: string, dias: number): string {
-        // const date = new Date(dateString)
         const date = parseISO(dateString)
         const dateLima = toZonedTime(date, TIME_ZONE_AMERICA_LIMA)
-        // const newDate = subDays(date, dias)
         const newDate = subDays(dateLima, dias)
         return format(newDate, 'yyyy-MM-dd')
     }
@@ -75,7 +62,6 @@ export default class HDate {
      * @returns {string} El nombre del mes en mayúsculas (por ejemplo, 'AGOSTO').
      */
     static getMonthName(dateString: string): string {
-        // const date = new Date(dateString)
         const date = parseISO(dateString)
         const monthName = format(date, 'MMMM', { locale: es })
         return monthName.toUpperCase()
@@ -89,9 +75,6 @@ export default class HDate {
     static getCurrentDateToString(formatDate: string): string {
         const now = new Date();
         const dateLima = toZonedTime(now, TIME_ZONE_AMERICA_LIMA)
-        // const fechaActual = new Date()
-        // const fechaString = format(fechaActual, formatDate)
-        // return fechaString
         return format(dateLima, formatDate)
     }
 
@@ -128,8 +111,6 @@ export default class HDate {
      * @returns La diferencia de fechas en días.
      */
     static differenceDates(fechaInicial: string, fechaFinal: string): number {
-        // const fecha1 = new Date(fechaInicial);
-        // const fecha2 = new Date(fechaFinal);
         const fecha1 = parseISO(fechaInicial)
         const fecha2 = parseISO(fechaFinal)
 

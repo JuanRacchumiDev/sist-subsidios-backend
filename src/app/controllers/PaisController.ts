@@ -14,7 +14,7 @@ class PaisController {
 
             res.status(result.status || 200).json(result)
         } catch (error) {
-            next(error) // Pasa al error al middleware de manejo de errores
+            next(error)
         }
     }
 
@@ -30,7 +30,7 @@ class PaisController {
 
     async getPaisByNombre(req: Request, res: Response, next: NextFunction) {
         try {
-            const { nombre } = req.query; // Asumiendo que se pasa como query param
+            const { nombre } = req.query;
 
             if (typeof nombre !== 'string') {
                 return res.status(400).json(

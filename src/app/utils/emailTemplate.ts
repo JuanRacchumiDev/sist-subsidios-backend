@@ -586,7 +586,6 @@ export function notificationReembolsoObservado(
   `;
 }
 
-
 export function newNotificationDescansoMedico(
   data: {
     nombreCompleto: string;

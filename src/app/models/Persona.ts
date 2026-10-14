@@ -1,7 +1,6 @@
-import { DataTypes, Model, Optional } from 'sequelize'
+import { DataTypes, HasManyGetAssociationsMixin, Model, Optional } from 'sequelize'
 import { IPersona } from '../interfaces/Persona/IPersona';
 import { EOrigen } from '../enums/EOrigen';
-// import { TipoDocumento } from './TipoDocumento';
 import sequelize from '../../config/database'
 import { DetalleParametro } from './DetalleParametro';
 import { Empresa } from './Empresa';
@@ -49,6 +48,7 @@ export class Persona extends Model<IPersona, PersonaCreationAttributes> implemen
     public is_representante_legal?: boolean | undefined;
     public sistema?: boolean | undefined;
     public estado?: boolean | undefined;
+    public grupos?: DetalleParametro[]
 
     // Timestamps
     public readonly created_at!: Date
@@ -56,12 +56,12 @@ export class Persona extends Model<IPersona, PersonaCreationAttributes> implemen
     public readonly deleted_at!: Date
 
     // Asociaciones
-    // public getTipoDocumento!: () => Promise<TipoDocumento>
     public getTipoDocumento!: () => Promise<DetalleParametro>
     public getEmpresa!: () => Promise<Empresa>
     public getCargo!: () => Promise<DetalleParametro>
     public getSede!: () => Promise<DetalleParametro>
     public getPais!: () => Promise<DetalleParametro>
+    public getGrupos!: HasManyGetAssociationsMixin<DetalleParametro>
 }
 
 Persona.init({
@@ -234,7 +234,7 @@ Persona.init({
     },
     fecha_nacimiento: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: true
     },
     fecha_ingreso: {
         type: DataTypes.STRING(10),

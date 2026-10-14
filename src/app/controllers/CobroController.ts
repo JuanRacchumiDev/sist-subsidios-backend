@@ -14,7 +14,7 @@ class CobroController {
 
             res.status(result.status || 200).json(result)
         } catch (error) {
-            next(error) // Pasa al error al middleware de manejo de errores
+            next(error)
         }
     }
 
@@ -48,8 +48,8 @@ class CobroController {
         try {
             const payload: ICobro = req.body;
             const result = await CreateCobroService.execute(payload);
-            // res.status(result.status || 201).json(result);
             const { status: statusCobro } = result
+
             if (statusCobro === 201) {
                 res.status(statusCobro).json(result)
             }

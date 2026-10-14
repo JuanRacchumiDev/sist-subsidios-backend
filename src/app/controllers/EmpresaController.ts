@@ -4,6 +4,7 @@ import GetEmpresasPaginateService from '../services/Empresa/GetEmpresasPaginate'
 import GetEmpresaService from '../services/Empresa/GetEmpresa'
 import GetInfoApiService from '../services/Empresa/GetInfoApi'
 import GetEmpresaByNombreService from '../services/Empresa/GetEmpresaByNombre'
+import GetEmpresaByParamsService from '../services/Empresa/GetEmpresaByParams'
 import CreateEmpresaService from '../services/Empresa/CreateEmpresa'
 import UpdateEmpresaService from '../services/Empresa/UpdateEmpresa'
 import UpdateEstadoService from '../services/Empresa/UpdateEstado'
@@ -66,14 +67,13 @@ class EmpresaController {
         try {
             const { id } = req.params;
             const result = await GetEmpresaService.execute(id);
-            console.log({ result })
             res.status(result.status || 200).json(result);
         } catch (error) {
             next(error);
         }
     }
 
-    async getEmpreByNombre(req: Request, res: Response, next: NextFunction) {
+    async getEmpresaByNombre(req: Request, res: Response, next: NextFunction) {
         try {
             const { query: { razonSocial } } = req
 
@@ -94,6 +94,30 @@ class EmpresaController {
             res.status(200).json(result)
         } catch (error) {
             next(error)
+        }
+    }
+
+    async getEmpresaByParams(req: Request, res: Response, next: NextFunction) {
+        try {
+            const { razonSocial, ruc } = req.query;
+
+            if (!razonSocial && !ruc) {
+                return res.status(400).json({
+                    result: false,
+                    message: 'Debe proporcionar al menos un parámetro de búsqueda (razonSocial o ruc)',
+                    status: 400
+                });
+            }
+
+            // Sanitizar comillas simples o dobles que puedan venir adjuntas en la URL
+            const cleanRazonSocial = razonSocial ? String(razonSocial).replace(/['"]/g, '').trim() : undefined;
+            const cleanRuc = ruc ? String(ruc).replace(/['"]/g, '').trim() : undefined;
+
+            const result = await GetEmpresaByParamsService.execute(cleanRazonSocial, cleanRuc);
+
+            return res.status(result.status || 200).json(result);
+        } catch (error) {
+            next(error);
         }
     }
 

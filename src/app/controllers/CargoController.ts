@@ -15,7 +15,7 @@ class CargoController {
             const result = await GetCargosService.execute()
             res.status(result.status || 200).json(result)
         } catch (error) {
-            next(error) // Pasa al error al middleware de manejo de errores
+            next(error)
         }
     }
 
@@ -27,7 +27,6 @@ class CargoController {
 
             const setLimit = parseInt(limit as string) || 10
 
-            // Extracción de filtros opcionales de req.query
             const setFilter = filter as string || ""
 
             const result = await GetCargosPaginateService.execute(setPage, setLimit, setFilter)
@@ -74,8 +73,8 @@ class CargoController {
         try {
             const cargoData: ICargo = req.body;
             const result = await CreateCargoService.execute(cargoData);
-            // res.status(result.status || 201).json(result);
             const { status: statusCargo } = result
+
             if (statusCargo === 201) {
                 res.status(statusCargo).json(result)
             }

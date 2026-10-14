@@ -6,7 +6,6 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     const now = new Date();
 
-    // Detalle parámetro - tipo documento
     const nombreTipoDocumento = 'tipo-documento'
 
     const parametroTipoDocumento = await queryInterface.sequelize.query(
@@ -81,7 +80,6 @@ module.exports = {
 
     await queryInterface.bulkInsert('detalle_parametro', detalleParametroTipoDocumentoData, {})
 
-    // Detalle parámetro perfil
     const nombrePerfil = 'perfil'
 
     const parametroPerfil = await queryInterface.sequelize.query(
@@ -169,7 +167,6 @@ module.exports = {
 
     await queryInterface.bulkInsert('detalle_parametro', detalleParametroPerfilData, {})
 
-    // Detalle parámetro - grupo
     const nombreGrupo = 'grupo'
 
     const parametroGrupo = await queryInterface.sequelize.query(
@@ -268,7 +265,6 @@ module.exports = {
 
     await queryInterface.bulkInsert('detalle_parametro', detalleParametroGrupoData, {})
 
-    // Detalle parámetro - tipo descanso médico
     const nombreTipoDescansoMedico = 'tipo-descanso-medico'
 
     const parametroTipoDescansoMedico = await queryInterface.sequelize.query(
@@ -324,7 +320,6 @@ module.exports = {
 
     await queryInterface.bulkInsert('detalle_parametro', detalleParametroTipoDMData, {})
 
-    // Detalle parámetro - tipo contingencia
     const nombreTipoContingencia = 'tipo-contingencia'
 
     const parametroTipoContingencia = await queryInterface.sequelize.query(
@@ -408,7 +403,6 @@ module.exports = {
 
     await queryInterface.bulkInsert('detalle_parametro', detalleParametroTipoContingenciaData, {})
 
-    // Detalle parámetro - tipo adjunto
     const nombreTipoAdjunto = 'tipo-adjunto'
 
     const parametroTipoAdjunto = await queryInterface.sequelize.query(
@@ -447,7 +441,6 @@ module.exports = {
 
     await queryInterface.bulkInsert('detalle_parametro', detalleParametroTipoAdjuntoData, {})
 
-    // Detalle parámetro - cargo
     const nombreCargo = 'cargo'
 
     const parametroCargo = await queryInterface.sequelize.query(
@@ -519,10 +512,8 @@ module.exports = {
       const parametroTipoDocumentoClase = parametroTipoDocumento[0].clase;
 
       await queryInterface.bulkDelete('detalle_parametro', {
-        parametro_clase: parametroTipoDocumentoId
+        parametro_clase: parametroTipoDocumentoClase
       }, {});
-    } else {
-      console.log('else parametroTipoDocumento')
     }
 
     // Eliminar los registros de grupo
@@ -541,10 +532,8 @@ module.exports = {
       const parametroGrupoClase = parametroGrupo[0].clase;
 
       await queryInterface.bulkDelete('detalle_parametro', {
-        parametro_clase: parametroGrupoId
+        parametro_clase: parametroGrupoClase
       }, {});
-    } else {
-      console.log('else parametroGrupo')
     }
 
     // Eliminar los registros de tipo de descanso médico
@@ -563,10 +552,8 @@ module.exports = {
       const parametroTipoDMClase = parametroTipoDM[0].clase;
 
       await queryInterface.bulkDelete('detalle_parametro', {
-        parametro_clase: parametroTipoDMId
+        parametro_clase: parametroTipoDMClase
       }, {});
-    } else {
-      console.log('else parametroTipoDM')
     }
 
     // Eliminar los registros de tipo de contingencia
@@ -585,10 +572,8 @@ module.exports = {
       const parametroTipoContingenciaClase = parametroTipoContingencia[0].clase;
 
       await queryInterface.bulkDelete('detalle_parametro', {
-        parametro_clase: parametroTipoContingenciaId
+        parametro_clase: parametroTipoContingenciaClase
       }, {});
-    } else {
-      console.log('else parametroTipoContingencia')
     }
 
     // Eliminar los registros de tipo adjunto
@@ -607,10 +592,8 @@ module.exports = {
       const parametroTipoAdjuntoClase = parametroTipoAdjunto[0].clase;
 
       await queryInterface.bulkDelete('detalle_parametro', {
-        parametro_clase: parametroTipoAdjuntoId
+        parametro_clase: parametroTipoAdjuntoClase
       }, {});
-    } else {
-      console.log('else parametroTipoAdjunto')
     }
 
     // Eliminar los registros de cargo
@@ -631,8 +614,6 @@ module.exports = {
       await queryInterface.bulkDelete('detalle_parametro', {
         parametro_clase: parametroCargoClase
       }, {});
-    } else {
-      console.log('else parametroCargo')
     }
   }
 };

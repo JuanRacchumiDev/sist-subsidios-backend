@@ -15,7 +15,7 @@ module.exports = {
         allowNull: false
       },
       tabla: {
-        type: Sequelize.STRING(20),
+        type: Sequelize.STRING(30),
         allowNull: false
       },
       valor_anterior: {
@@ -30,13 +30,31 @@ module.exports = {
         type: Sequelize.STRING(10),
         allowNull: false
       },
-      fecha_registro: {
-        type: Sequelize.STRING(12),
-        allowNull: false
-      },
       user_crea: {
         type: Sequelize.UUID,
-        allowNull: false
+        allowNull: true
+      },
+      user_actualiza: {
+        type: Sequelize.UUID,
+        allowNull: true
+      },
+      user_elimina: {
+        type: Sequelize.UUID,
+        allowNull: true
+      },
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      deleted_at: {
+        type: Sequelize.DATE,
+        allowNull: true
       }
     }, {
       charset: 'utf8mb4',
