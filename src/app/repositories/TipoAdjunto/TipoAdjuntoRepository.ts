@@ -1,5 +1,4 @@
 import { TipoAdjunto } from "../../models/TipoAdjunto";
-import HString from "../../../helpers/HString";
 import { ITipoAdjunto, TipoAdjuntoResponse } from '../../interfaces/TipoAdjunto/ITipoAdjunto';
 import { Op } from 'sequelize'
 import { TIPOADJUNTO_ATTRIBUTES } from "../../../constants/TipoAdjuntoConstant";
@@ -224,7 +223,5 @@ class TipoAdjuntoRepository {
         }
     }
 }
-
-// export default new TipoAdjuntoRepository()
 
 export default TipoAdjuntoRepository

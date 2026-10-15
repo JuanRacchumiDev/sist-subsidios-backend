@@ -56,7 +56,6 @@ class DetalleParametroRepository {
             // Obtenemos los parámetros de consulta
             const offset = HPagination.getOffset(page, limit)
 
-            // const whereClause: any = {}
             const { count, rows } = await DetalleParametro.findAndCountAll({
                 attributes: DETALLE_PARAMETRO_ATTRIBUTES,
                 where: {

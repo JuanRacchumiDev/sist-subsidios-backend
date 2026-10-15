@@ -9,7 +9,7 @@ import { Canje } from "../../models/Canje"
 import sequelize from "../../../config/database"
 import { CANJE_ATTRIBUTES } from "../../../constants/CanjeConstant"
 import HPagination from "../../../helpers/HPagination"
-import { Op, literal, fn, col, WhereOptions, QueryTypes } from "sequelize"
+import { Op, WhereOptions, QueryTypes } from "sequelize"
 import { DESCANSOMEDICO_INCLUDE } from "../../../includes/DescansoMedicoInclude"
 import HDate from "../../../helpers/HDate"
 import { ICanjeFilter } from "../../interfaces/Canje/ICanjeFilter"
@@ -17,18 +17,6 @@ import { TItemReport } from '../../types/Canje/TItemReport'
 import { COLABORADOR_INCLUDE } from "../../../includes/ColaboradorInclude"
 import { DescansoMedico } from "../../models/DescansoMedico"
 import { Persona } from "../../models/Persona"
-
-// type TReportResponse = {
-//     result: boolean
-//     message?: string
-//     data?: TItemReport | TItemReport[]
-//     error?: string
-//     status?: number
-// }
-
-// const TOTAL_DIAS_NO_CONSECUTIVOS = 'total_dias_no_consecutivos';
-// const TOTAL_DIAS_CONSECUTIVOS = 'total_dias_consecutivos';
-// const TOTAL_DIAS_GLOBAL = 'total_dias_global';
 
 class CanjeRepository {
     /**
@@ -307,10 +295,7 @@ class CanjeRepository {
         }
 
         try {
-            // const newCanje = await Canje.create(data, { transaction })
             const newCanje = await Canje.create(payload)
-
-            // const { id: idCanje } = newCanje
 
             if (!newCanje || !newCanje.id) {
                 return {
@@ -342,8 +327,6 @@ class CanjeRepository {
         const transaction = await sequelize.transaction()
 
         const results: CanjeResponse[] = []
-
-        // console.log('registros para crear descansos', dataArray)
 
         try {
             for (const data of dataArray) {
@@ -422,10 +405,7 @@ class CanjeRepository {
      * @returns {Promise<CanjeResponse>} Respuesta con el canje actualizado o error
      */
     async update(id: string, data: ICanje): Promise<CanjeResponse> {
-        // const transaction = await sequelize.transaction()
-
         try {
-            // const canje = await Canje.findByPk(id, { transaction })
             const canje = await Canje.findByPk(id, {
                 attributes: CANJE_ATTRIBUTES,
                 include: [DESCANSOMEDICO_INCLUDE]
@@ -443,10 +423,7 @@ class CanjeRepository {
 
             const dataUpdateCanje: Partial<ICanje> = data
 
-            // const updatedCanje = await canje.update(dataUpdateCanje, { transaction })
             const updatedCanje = await canje.update(dataUpdateCanje)
-
-            // await transaction.commit()
 
             return { result: true, message: 'Canje actualizado con éxito', data: updatedCanje, status: 200 }
         } catch (error) {
@@ -664,7 +641,5 @@ class CanjeRepository {
         return { dateFilter, replacements };
     }
 }
-
-// export default new CanjeRepository()
 
 export default CanjeRepository

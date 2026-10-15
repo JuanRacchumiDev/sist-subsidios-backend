@@ -1,5 +1,4 @@
 import DescansoMedicoRepository from "../../repositories/DescansoMedico/DescansoMedicoRepository";
-import { DescansoMedicoResponse } from '../../interfaces/DescansoMedico/IDescansoMedico';
 import { TItemReportDescansos } from "../../types/DescansoMedico/TItemReport";
 
 type TReportDescansosResponse = {
@@ -31,6 +30,3 @@ class GetDescansosForReportService {
 }
 
 export default new GetDescansosForReportService()
-
-
-// getAllFilteredForReports

@@ -16,8 +16,6 @@ router.get('/empresa/:idEmpresa', authToken, PersonaController.getAllPersonasByE
 
 router.get('/buscar-unico', authToken, PersonaController.getPersonaUnique)
 
-router.get('/', authToken, PersonaController.getAllPersonas)
-
 router.get('/no-usuarios', authToken, PersonaController.getAllPersonasSinUsuario)
 
 router.get('/:id', authToken, PersonaController.getPersonaById)

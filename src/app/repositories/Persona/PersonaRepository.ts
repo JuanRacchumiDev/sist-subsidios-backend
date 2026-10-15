@@ -303,10 +303,6 @@ class PersonaRepository {
      * @returns {Promise<PersonaResponse>} Respuesta con la persona creada o error
      */
     async create(data: IPersona): Promise<PersonaResponse> {
-
-        // Accede a la instancia de Sequelize a través de db.sequelize
-        // const transaction = await sequelize.transaction()
-
         try {
             const { numero_documento } = data
 
@@ -323,8 +319,6 @@ class PersonaRepository {
 
             const newPersona = await Persona.create(data as IPersona)
 
-            // await transaction.commit()
-
             const { id } = newPersona
 
             if (id) {
@@ -333,7 +327,6 @@ class PersonaRepository {
 
             return { result: false, error: 'Error al registrar la persona', data: [], status: 500 }
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -346,18 +339,12 @@ class PersonaRepository {
      * @returns {Promise<PersonaResponse>} Respuesta con la persona actualizada o error
      */
     async update(id: string, data: IPersona): Promise<PersonaResponse> {
-
-        // Accede a la instancia de Sequelize a travé de db.sequelize
-        // const transaction = await sequelize.transaction()
-
         try {
             const { numero_documento } = data
 
-            // const persona = await Persona.findByPk(id, { transaction })
             const persona = await Persona.findByPk(id)
 
             if (!persona) {
-                // await transaction.rollback();
                 return { result: false, data: [], message: 'Persona no encontrada', status: 404 }
             }
 
@@ -373,21 +360,16 @@ class PersonaRepository {
                 })
 
                 if (existingPersona) {
-                    // await transaction.rollback()
                     return { result: false, message: 'El número de documento ya existe', status: 409 }
                 }
             }
 
             const dataUpdatePersona: Partial<IPersona> = data
 
-            // const updatedPersona = await persona.update(dataUpdatePersona, { transaction })
             const updatedPersona = await persona.update(dataUpdatePersona)
-
-            // await transaction.commit()
 
             return { result: true, message: 'Persona actualizada con éxito', data: updatedPersona, status: 200 }
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -423,32 +405,23 @@ class PersonaRepository {
      * @returns {Promise<PersonaResponse>} Respuesta de la eliminación
      */
     async delete(id: string): Promise<PersonaResponse> {
-        // Inicia la transacción
         const transaction = await sequelize.transaction()
 
         try {
-            // const persona = await Persona.findByPk(id, { transaction });
             const persona = await Persona.findByPk(id);
 
             if (!persona) {
-                // await transaction.rollback()
                 return { result: false, data: [], message: 'Persona no encontrada', status: 404 };
             }
 
-            // await persona.destroy({ transaction });
             await persona.destroy();
-
-            // await transaction.commit()
 
             return { result: true, data: persona, message: 'Persona eliminada correctamente', status: 200 };
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 };
         }
     }
 }
-
-// export default new PersonaRepository()
 
 export default PersonaRepository

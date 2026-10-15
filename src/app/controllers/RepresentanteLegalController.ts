@@ -45,7 +45,6 @@ class RepresentanteLegalController {
             const numDocStr = numDoc as string
 
             const result = await GetByTipoDocAndNumDocService.execute(idTipoDocStr, numDocStr)
-            // res.status(result.status || 200).json(result)
             if (result.status === 500) {
                 res.status(result.status).json(result)
             }

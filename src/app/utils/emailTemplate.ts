@@ -486,7 +486,6 @@ export function notificationCanjeObservado(
 export function notificationReembolsoObservado(
   data: INotificationReembolsoObservadoProps): string {
   const { nombreCompleto, detalle, appUrl } = data;
-  const canje = detalle?.canje;
 
   return `
   <!DOCTYPE html>

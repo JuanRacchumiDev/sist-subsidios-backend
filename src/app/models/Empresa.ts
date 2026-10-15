@@ -2,7 +2,6 @@ import { DataTypes, Model, Optional } from 'sequelize'
 import { IEmpresa } from '../interfaces/Empresa/IEmpresa';
 import sequelize from '../../config/database'
 import { Persona } from './Persona'
-// import { Colaborador } from './Colaborador';
 
 interface EmpresaCreationAttributes extends Optional<IEmpresa, 'id'> { }
 
@@ -30,8 +29,6 @@ export class Empresa extends Model<IEmpresa, EmpresaCreationAttributes> implemen
     public readonly deleted_at!: Date
 
     // Asociaciones
-    // public getColaboradores?: () => Promise<Colaborador[]>
-    // public getRepresentantes?: () => Promise<RepresentanteLegal[]>
     public getColaboradores?: () => Promise<Persona[]>
     public getRepresentantes?: () => Promise<Persona[]>
 }

@@ -231,6 +231,4 @@ class PaisRepository {
     }
 }
 
-// export default new PaisRepository()
-
 export default PaisRepository

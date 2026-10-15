@@ -151,9 +151,6 @@ class UsuarioRepository {
      * @returns {Promise<UsuarioResponse>} Respuesta con el usuario creado o error
      */
     async create(data: IUsuario): Promise<UsuarioResponse> {
-        // Accede a la instancia de Sequelize a través de db.sequelize
-        // const transaction = await sequelize.transaction()
-
         console.log('---- data usuario create ----')
         console.log({ data })
 
@@ -167,8 +164,6 @@ class UsuarioRepository {
             data.password = hashedPassword
 
             const newUsuario = await Usuario.create(data)
-
-            // await transaction.commit()
 
             const { id: idUsuario } = newUsuario
 
@@ -189,7 +184,6 @@ class UsuarioRepository {
             }
 
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return {
                 result: false,
@@ -206,14 +200,10 @@ class UsuarioRepository {
      * @returns {Promise<UsuarioResponse>} Respuesta con el usuario actualizado o error
      */
     async update(id: string, data: IUsuario): Promise<UsuarioResponse> {
-        // const transaction = await sequelize.transaction()
-
         try {
-            // const usuario = await Usuario.findByPk(id, { transaction })
             const usuario = await Usuario.findByPk(id)
 
             if (!usuario) {
-                // await transaction.rollback()
                 return {
                     result: false,
                     data: [],
@@ -224,10 +214,7 @@ class UsuarioRepository {
 
             const dataUpdateUsuario: Partial<IUsuario> = data
 
-            // const updatedUsuario = await usuario.update(dataUpdateUsuario, { transaction })
             const updatedUsuario = await usuario.update(dataUpdateUsuario)
-
-            // await transaction.commit()
 
             return {
                 result: true,
@@ -236,7 +223,6 @@ class UsuarioRepository {
                 status: 200
             }
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
             return {
                 result: false,

@@ -1,5 +1,4 @@
 import { DataTypes, Model, Optional } from 'sequelize'
-import { IDescansoMedico } from '../interfaces/DescansoMedico/IDescansoMedico';
 import { ITipoDescansoMedico } from '../interfaces/TipoDescansoMedico/ITipoDescansoMedico';
 import sequelize from '../../config/database'
 import { DescansoMedico } from './DescansoMedico';

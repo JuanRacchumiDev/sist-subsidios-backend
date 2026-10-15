@@ -17,7 +17,7 @@ class TipoDocumentoController {
 
             res.status(status || 200).json(response)
         } catch (error) {
-            next(error) // Pasa al error al middleware de manejo de errores
+            next(error)
         }
     }
 

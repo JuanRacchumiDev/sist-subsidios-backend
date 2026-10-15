@@ -1,9 +1,5 @@
 import { IRepresentanteLegal, RepresentanteLegalResponse } from "../../interfaces/RepresentanteLegal/IRepresentanteLegal";
-import { Cargo } from "../../models/Cargo";
-import { Empresa } from "../../models/Empresa";
 import { RepresentanteLegal } from "../../models/RepresentanteLegal";
-import { TipoDocumento } from "../../models/TipoDocumento";
-import sequelize from '../../../config/database'
 import { TValidateFields } from "../../types/TTypeFields";
 import { Op } from "sequelize";
 import { REPRESENTANTE_LEGAL_ATTRIBUTES } from "../../../constants/RepresentanteLegalConstant";
@@ -170,9 +166,6 @@ class RepresentanteRepository {
     * @returns {Promise<RepresentanteLegalResponse>} Respuesta con el representante legal creado o error
     */
     async create(data: IRepresentanteLegal): Promise<RepresentanteLegalResponse> {
-        // Accede a la instancia de Sequelize a través de db.sequelize
-        // const transaction = await sequelize.transaction()
-
         try {
             const {
                 id_tipodocumento,
@@ -210,8 +203,6 @@ class RepresentanteRepository {
 
             const newRepresentante = await RepresentanteLegal.create(data as IRepresentanteLegal)
 
-            // await transaction.commit()
-
             const { id } = newRepresentante
 
             if (id) {
@@ -233,13 +224,8 @@ class RepresentanteRepository {
                 return { result: true, message: 'Representante legal registrado con éxito', data: newRepresentante, status: 200 }
             }
 
-            // if (id) {
-            //     return { result: true, message: 'Representante legal registrado con éxito', data: newRepresentante, status: 200 }
-            // }
-
             return { result: false, error: 'Error al registrar al representante legal', data: [], status: 500 }
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -252,16 +238,10 @@ class RepresentanteRepository {
      * @returns {Promise<RepresentanteLegalResponse>} Respuesta con el representante legal actualizado o error
      */
     async update(id: string, data: IRepresentanteLegal): Promise<RepresentanteLegalResponse> {
-
-        // Accede a la instancia de Sequelize a travé de db.sequelize
-        // const transaction = await sequelize.transaction()
-
         try {
-            // const representante = await RepresentanteLegal.findByPk(id, { transaction })
             const representante = await RepresentanteLegal.findByPk(id)
 
             if (!representante) {
-                // await transaction.rollback();
                 return { result: false, data: [], message: 'Representante legal no encontrado', status: 404 }
             }
 
@@ -279,14 +259,10 @@ class RepresentanteRepository {
 
             const dataRepresentante: Partial<IRepresentanteLegal> = data
 
-            // const updatedRepresentante = await representante.update(dataRepresentante, { transaction })
             const updatedRepresentante = await representante.update(dataRepresentante)
-
-            // await transaction.commit()
 
             return { result: true, message: 'Representante legal actualizado con éxito', data: updatedRepresentante, status: 200 }
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -298,26 +274,17 @@ class RepresentanteRepository {
      * @returns {Promise<RepresentanteLegalResponse>} Respuesta de la eliminación
      */
     async delete(id: string): Promise<RepresentanteLegalResponse> {
-        // Inicia la transacción
-        // const transaction = await sequelize.transaction()
-
         try {
-            // const representante = await RepresentanteLegal.findByPk(id, { transaction });
             const representante = await RepresentanteLegal.findByPk(id);
 
             if (!representante) {
-                // await transaction.rollback()
                 return { result: false, data: [], message: 'Representante legal no encontrado', status: 200 };
             }
 
-            // await representante.destroy({ transaction });
             await representante.destroy();
-
-            // await transaction.commit()
 
             return { result: true, data: representante, message: 'Representante legal eliminado correctamente', status: 200 };
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 };
         }
@@ -364,7 +331,5 @@ class RepresentanteRepository {
         return returnValidate
     }
 }
-
-// export default new RepresentanteRepository()
 
 export default RepresentanteRepository

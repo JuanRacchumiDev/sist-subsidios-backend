@@ -127,10 +127,6 @@ class DocumentoTipoContRepository {
     * @returns {Promise<DocumentoTipoContResponse>} Respuesta con el documento creado o error
     */
     async create(data: IDocumentoTipoCont): Promise<DocumentoTipoContResponse> {
-
-        // Accede a la instancia de Sequelize a través de db.sequelize
-        // const transaction = await sequelize.transaction()
-
         try {
             const { nombre } = data
 
@@ -143,15 +139,12 @@ class DocumentoTipoContRepository {
 
             const newDocumento = await DocumentoTipoCont.create(data as IDocumentoTipoCont)
 
-            // await transaction.commit()
-
             if (newDocumento.id) {
                 return { result: true, message: 'Documento registrado con éxito', data: newDocumento, status: 200 }
             }
 
             return { result: false, error: 'Error al registrar el documento', data: [], status: 500 }
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -164,30 +157,20 @@ class DocumentoTipoContRepository {
      * @returns {Promise<DocumentoTipoContResponse>} Respuesta con el colaborador actualizado o error
      */
     async update(id: string, data: IDocumentoTipoCont): Promise<DocumentoTipoContResponse> {
-
-        // Accede a la instancia de Sequelize a travé de db.sequelize
-        // const transaction = await sequelize.transaction()
-
         try {
-            // const documento = await DocumentoTipoCont.findByPk(id, { transaction })
             const documento = await DocumentoTipoCont.findByPk(id)
 
             if (!documento) {
-                // await transaction.rollback();
                 return { result: false, data: [], message: 'Documento no encontrado', status: 200 }
             }
 
             const dataDocumento: Partial<IDocumentoTipoCont> = data
             dataDocumento.nombre_url = HString.convertToUrlString(data.nombre as string)
 
-            // const updatedDocumento = await documento.update(dataDocumento, { transaction })
             const updatedDocumento = await documento.update(dataDocumento)
-
-            // await transaction.commit()
 
             return { result: true, message: 'Documento actualizado con éxito', data: updatedDocumento, status: 200 }
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -223,33 +206,21 @@ class DocumentoTipoContRepository {
      * @returns {Promise<DocumentoTipoContResponse>} Respuesta de la eliminación
      */
     async delete(id: string): Promise<DocumentoTipoContResponse> {
-        // Inicia la transacción
-        // const transaction = await sequelize.transaction()
-
         try {
-            // const documento = await DocumentoTipoCont.findByPk(id, { transaction });
-
             const documento = await DocumentoTipoCont.findByPk(id);
 
             if (!documento) {
-                // await transaction.rollback()
                 return { result: false, data: [], message: 'Documento no encontrado', status: 200 };
             }
 
-            // await documento.destroy({ transaction });
             await documento.destroy();
-
-            // await transaction.commit()
 
             return { result: true, data: documento, message: 'Documento eliminado correctamente', status: 200 };
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 };
         }
     }
 }
-
-// export default new DocumentoTipoContRepository()
 
 export default DocumentoTipoContRepository

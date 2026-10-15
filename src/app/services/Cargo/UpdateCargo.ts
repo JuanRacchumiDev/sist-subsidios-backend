@@ -20,11 +20,6 @@ class UpdateCargoService {
      * @returns {Promise<CargoResponse>} La respuesta de la operación.
      */
     async execute(id: string, data: ICargo): Promise<CargoResponse> {
-        // Si solo se está actualizando el estado, podríamos llamar a un método más específico
-        // pero para simplificar, el repositorio 'update' puede manejarlo
-        // if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
-        //     return await CargoRepository.updateEstado(id, data.estado);
-        // }
         return await this.cargoRepository.update(id, data);
     }
 }

@@ -190,10 +190,6 @@ class TrabajadorSocialRepository {
     * @returns {Promise<TrabajadorSocialResponse>} Respuesta con el trabajador social creado o error
     */
     async create(data: ITrabajadorSocial): Promise<TrabajadorSocialResponse> {
-
-        // Accede a la instancia de Sequelize a través de db.sequelize
-        // const transaction = await sequelize.transaction()
-
         try {
 
             const {
@@ -221,8 +217,6 @@ class TrabajadorSocialRepository {
 
             const newTrabajadorSocial = await TrabajadorSocial.create(data)
 
-            // await transaction.commit()
-
             const { id } = newTrabajadorSocial
 
             if (id) {
@@ -231,7 +225,6 @@ class TrabajadorSocialRepository {
 
             return { result: false, error: 'Error al registrar al trabajador social', data: [], status: 500 }
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -244,16 +237,10 @@ class TrabajadorSocialRepository {
      * @returns {Promise<TrabajadorSocialResponse>} Respuesta con el trabajador social actualizado o error
      */
     async update(id: string, data: ITrabajadorSocial): Promise<TrabajadorSocialResponse> {
-
-        // Accede a la instancia de Sequelize a travé de db.sequelize
-        // const transaction = await sequelize.transaction()
-
         try {
-            // const trabajadorSocial = await TrabajadorSocial.findByPk(id, { transaction })
             const trabajadorSocial = await TrabajadorSocial.findByPk(id)
 
             if (!trabajadorSocial) {
-                // await transaction.rollback();
                 return { result: false, data: [], message: 'Trabajador social no encontrado', status: 404 }
             }
 
@@ -271,14 +258,10 @@ class TrabajadorSocialRepository {
 
             const dataUpdateTrabSocial: Partial<ITrabajadorSocial> = data
 
-            // const updatedTrabSocial = await trabajadorSocial.update(dataUpdateTrabSocial, { transaction })
             const updatedTrabSocial = await trabajadorSocial.update(dataUpdateTrabSocial)
-
-            // await transaction.commit()
 
             return { result: true, message: 'Trabajador social actualizado con éxito', data: updatedTrabSocial, status: 200 }
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -290,26 +273,17 @@ class TrabajadorSocialRepository {
      * @returns {Promise<TrabajadorSocialResponse>} Respuesta de la eliminación
      */
     async delete(id: string): Promise<TrabajadorSocialResponse> {
-        // Inicia la transacción
-        // const transaction = await sequelize.transaction()
-
         try {
-            // const trabSocial = await TrabajadorSocial.findByPk(id, { transaction });
             const trabSocial = await TrabajadorSocial.findByPk(id);
 
             if (!trabSocial) {
-                // await transaction.rollback()
                 return { result: false, data: [], message: 'Trabajador social no encontrado', status: 404 };
             }
 
-            // await trabSocial.destroy({ transaction });
             await trabSocial.destroy();
-
-            // await transaction.commit()
 
             return { result: true, data: trabSocial, message: 'Trabajador social eliminado correctamente', status: 200 };
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 };
         }
@@ -357,7 +331,5 @@ class TrabajadorSocialRepository {
         return returnValidate
     }
 }
-
-// export default new TrabajadorSocialRepository()
 
 export default TrabajadorSocialRepository

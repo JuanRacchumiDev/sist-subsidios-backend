@@ -1,10 +1,4 @@
-// import { IArea } from "../Area/IArea"
-// import { ICargo } from "../Cargo/ICargo"
 import { IEmpresa } from "../Empresa/IEmpresa"
-// import { IPais } from "../Pais/IPais"
-// import { IParentesco } from "../Parentesco/IParentesco"
-// import { ISede } from "../Sede/ISede"
-// import { ITipoDocumento } from "../TipoDocumento/ITipoDocumento"
 import { IDetalleParametro } from "../DetalleParametro/IDetalleParametro"
 
 export interface IColaborador {

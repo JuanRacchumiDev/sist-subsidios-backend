@@ -215,13 +215,11 @@ class DiagnosticoRepository {
             return { result: false, message: 'Error al registrar el diagnóstico', status: 500 }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-            // return { result: false, error: errorMessage, status: 500 }
             return {
                 result: false,
                 message: 'No se pudo crear el detalle',
                 error: errorMessage,
                 status: 500,
-                // error: ''
             }
         }
     }
@@ -317,7 +315,5 @@ class DiagnosticoRepository {
         }
     }
 }
-
-// export default new DiagnosticoRepository()
 
 export default DiagnosticoRepository

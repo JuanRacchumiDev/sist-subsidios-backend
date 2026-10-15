@@ -226,9 +226,6 @@ class ColaboradorRepository {
     * @returns {Promise<ColaboradorResponse>} Respuesta con el colaborador creado o error
     */
     async create(data: IColaborador): Promise<ColaboradorResponse> {
-        // Accede a la instancia de Sequelize a través de db.sequelize
-        // const transaction = await sequelize.transaction()
-
         try {
             const {
                 id_tipodocumento,
@@ -269,8 +266,6 @@ class ColaboradorRepository {
 
             const newColaborador = await Colaborador.create(data as IColaborador)
 
-            // await transaction.commit()
-
             const { id } = newColaborador
 
             if (id) {
@@ -307,16 +302,10 @@ class ColaboradorRepository {
      * @returns {Promise<ColaboradorResponse>} Respuesta con el colaborador actualizado o error
      */
     async update(id: string, data: IColaborador): Promise<ColaboradorResponse> {
-
-        // Accede a la instancia de Sequelize a travé de db.sequelize
-        // const transaction = await sequelize.transaction()
-
         try {
-            // const colaborador = await Colaborador.findByPk(id, { transaction })
             const colaborador = await Colaborador.findByPk(id)
 
             if (!colaborador) {
-                // await transaction.rollback();
                 return { result: false, data: [], message: 'Colaborador no encontrado', status: 404 }
             }
 
@@ -334,14 +323,10 @@ class ColaboradorRepository {
 
             const dataColaborador: Partial<IColaborador> = data
 
-            // const updatedColaborador = await colaborador.update(dataColaborador, { transaction })
             const updatedColaborador = await colaborador.update(dataColaborador)
-
-            // await transaction.commit()
 
             return { result: true, message: 'Colaborador actualizado con éxito', data: updatedColaborador, status: 200 }
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
@@ -377,26 +362,17 @@ class ColaboradorRepository {
      * @returns {Promise<ColaboradorResponse>} Respuesta de la eliminación
      */
     async delete(id: string): Promise<ColaboradorResponse> {
-        // Inicia la transacción
-        // const transaction = await sequelize.transaction()
-
         try {
-            // const colaborador = await Colaborador.findByPk(id, { transaction });
             const colaborador = await Colaborador.findByPk(id);
 
             if (!colaborador) {
-                // await transaction.rollback()
                 return { result: false, data: [], message: 'Colaborador no encontrado', status: 200 };
             }
 
-            // await colaborador.destroy({ transaction });
             await colaborador.destroy();
-
-            // await transaction.commit()
 
             return { result: true, data: colaborador, message: 'Colaborador eliminado correctamente', status: 200 };
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 };
         }
@@ -448,7 +424,5 @@ class ColaboradorRepository {
         return returnValidate
     }
 }
-
-// export default new ColaboradorRepository()
 
 export default ColaboradorRepository

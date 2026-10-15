@@ -1,9 +1,6 @@
-// import TipoDocumentoRepository from "../../repositories/TipoDocumento/TipoDocumentoRepository"
 import PersonaApiRepository from "../../repositories/Persona/PersonaApiRepository"
 import DetalleRepository from "../../repositories/DetalleParametro/DetalleParametroRepository"
-// import { ITipoDocumento } from "../../interfaces/TipoDocumento/ITipoDocumento";
 import { IDetalleParametro } from "../../interfaces/DetalleParametro/IDetalleParametro"
-import { TTipoDocumentoSearch } from "../../types/TipoDocumento/TTipoDocumentoSearch";
 import PersonaRepository from "../../repositories/Persona/PersonaRepository";
 
 /**
@@ -30,13 +27,6 @@ class GetInfoApiService {
      * @returns La respuesta de la operación
      */
     async execute(abreviatura: string, numeroDocumento: string) {
-        // Obtenemos el tipo de documento
-        // const paramSearch: TTipoDocumentoSearch = {
-        //     nombre: undefined,
-        //     abreviatura
-        // } 
-
-        // const responseTipoDocumento = await this.tipoDocumentoRepository.getBySearch(paramSearch);
         const responseTipoDocumento = await this.detalleRepository.getByAbreviatura(abreviatura)
 
         console.log({ responseTipoDocumento })
@@ -51,7 +41,6 @@ class GetInfoApiService {
             }
         }
 
-        // const { id } = data as ITipoDocumento
         const { id } = data as IDetalleParametro
 
         const idStr = id as string
@@ -68,7 +57,6 @@ class GetInfoApiService {
             return responsePersona
         }
 
-        // return null
         return await this.personaApiRepository.getInfoApi(abreviatura, numeroDocumento)
     }
 }

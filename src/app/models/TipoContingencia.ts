@@ -1,6 +1,5 @@
 import { DataTypes, Model, Optional } from 'sequelize'
 import { ITipoContingencia } from '../interfaces/TipoContingencia/ITipoContingencia';
-// import { IDetalleParametro } from '../interfaces/DetalleParametro/IDetalleParametro'
 import sequelize from '../../config/database'
 import { DescansoMedico } from './DescansoMedico';
 import { DocumentoTipoCont } from './DocumentoTipoCont';

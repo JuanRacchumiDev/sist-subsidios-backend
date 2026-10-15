@@ -99,7 +99,7 @@ class UpdateDescansoService {
                 const dataEmail = {
                     nombreCompleto: nombre_completo as string,
                     detalle: detalleDescanso,
-                    appUrl: process.env.APP_URL || 'http://localhost:3000'
+                    appUrl: process.env.APP_URL || 'http://localhost:5173'
                 }
 
                 console.log({ dataEmail })
@@ -151,7 +151,7 @@ class UpdateDescansoService {
                         const dataEmail = {
                             nombreCompleto: nombre_completo as string,
                             detalle: detalleDescanso,
-                            appUrl: process.env.APP_URL || 'http://localhost:3000'
+                            appUrl: process.env.APP_URL || 'http://localhost:5173'
                         }
 
                         console.log({ dataEmail })

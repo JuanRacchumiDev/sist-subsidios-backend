@@ -85,11 +85,11 @@ class DescansoMedicoRepository {
                 user_crea
             } = filters
 
-            // 1. Condiciones iniciales
+            // Condiciones iniciales
             const conditions = ["1 = 1"];
             const replacements: any = { limit, offset };
 
-            // 2. Filtros dinámicos
+            // Filtros dinámicos
             if (id_empresa) {
                 conditions.push("p.id_empresa = :id_empresa");
                 replacements.id_empresa = id_empresa;
@@ -139,7 +139,7 @@ class DescansoMedicoRepository {
 
             console.log({ whereClause })
 
-            // 3. Consultas
+            // Consultas
             const baseQuery = `
                 FROM descanso_medico dm
                 INNER JOIN persona p ON p.id = dm.id_colaborador
@@ -259,12 +259,10 @@ class DescansoMedicoRepository {
         try {
             const offset = HPagination.getOffset(page, limit);
 
-            // Construcción dinámica de la claúsula WHERE
             const where: WhereOptions = {}
 
             where.id_colaborador = idColaborador
 
-            // Filtro por tipo de descanso médico (id_tipodescansomedico)
             if (filters.id_tipodescansomedico) {
                 where.id_tipodescansomedico = filters.id_tipodescansomedico
             }
@@ -350,14 +348,9 @@ class DescansoMedicoRepository {
                 ]
             });
 
-            // Suma los 'total_dias' de los resultados obtenidos
             const totalDias = descansosMedicos.reduce((sum, dm) => {
                 return sum + Number(dm.total_dias)
             }, 0)
-
-            // console.log('result días registrados', result)
-
-            // const totalDias = result || 0
 
             return { result: true, data: totalDias, status: 200 }
         } catch (error) {
@@ -408,14 +401,9 @@ class DescansoMedicoRepository {
                 plain: false
             });
 
-            // Suma los 'total_dias' de los resultados obtenidos
             const totalDias = descansosMedicos.reduce((sum, dm) => {
                 return sum + Number(dm.total_dias)
             }, 0)
-
-            // console.log('result días registrados', result)
-
-            // const totalDias = result || 0
 
             return { result: true, data: totalDias, status: 200 }
         } catch (error) {
@@ -517,12 +505,6 @@ class DescansoMedicoRepository {
             console.log('fechaInicioNueva.getTime()', fechaInicioNueva.getTime())
             console.log('diaSiguiente.getTime()', diaSiguiente.getTime())
 
-            // Comparar si la nueva fecha de inicio es igual al día siguiente de la fecha final anterior.
-            // Para la comparación, solo nos interesa la fecha, no la hora, lo cual parseISO ya maneja.
-            // const esMismoDia = fechaInicioNueva.getTime() === diaSiguiente.getTime();
-
-            // console.log({ esMismoDia })
-
             if (fechaInicioNueva.getTime() === diaSiguiente.getTime()) {
                 continuo = true
             } else if (fechaInicioNueva.getTime() !== diaSiguiente.getTime() && !ultimoDescanso?.is_continuo) {
@@ -553,9 +535,6 @@ class DescansoMedicoRepository {
             fecha_inicio,
             fecha_final
         } = data
-
-        // console.log('fecha_inicio create data one descanso', fecha_inicio)
-        // console.log('fecha_final create data one descanso', fecha_final)
 
         const idColaborador = id_colaborador as string
         const fechaInicio = fecha_inicio as string
@@ -596,8 +575,6 @@ class DescansoMedicoRepository {
             user_crea: id_usuario
         }
 
-        // console.log('payload new descanso médico', payload)
-
         try {
             const newDescanso = await DescansoMedico.create(payload)
 
@@ -631,12 +608,8 @@ class DescansoMedicoRepository {
         const transaction = await sequelize.transaction()
         const results: DescansoMedicoResponse[] = []
         const esContinuo = true
-        // console.log('registros para crear descansos', dataArray)
 
         try {
-            // console.log('dataArray createMuliple descansos médicos')
-            // console.log({ dataArray })
-
             for (const data of dataArray) {
                 const {
                     id_usuario,
@@ -681,8 +654,6 @@ class DescansoMedicoRepository {
                     user_crea: id_usuario
                 }
 
-                // console.log('payload new descanso', payload)
-
                 const newDescanso = await DescansoMedico.create(payload, { transaction })
 
                 results.push({
@@ -712,10 +683,7 @@ class DescansoMedicoRepository {
      * @returns {Promise<DescansoMedicoResponse>} Respuesta con el descanso médico actualizado o error
      */
     async update(id: string, data: IDescansoMedico): Promise<DescansoMedicoResponse> {
-        // const transaction = await sequelize.transaction()
-
         try {
-            // const descanso = await DescansoMedico.findByPk(id, { transaction })
             const descanso = await DescansoMedico.findByPk(id, {
                 include: [
                     COLABORADOR_DM_INCLUDE
@@ -725,7 +693,6 @@ class DescansoMedicoRepository {
             console.log({ descanso })
 
             if (!descanso) {
-                // await transaction.rollback();
                 return {
                     result: false,
                     data: [],
@@ -736,12 +703,9 @@ class DescansoMedicoRepository {
 
             const dataUpdateDescanso: Partial<IDescansoMedico> = data
 
-            // const updatedDescanso = await descanso.update(dataUpdateDescanso, { transaction })
             const updatedDescanso = await descanso.update(dataUpdateDescanso)
 
             console.log({ updatedDescanso })
-
-            // await transaction.commit()
 
             return {
                 result: true,
@@ -815,8 +779,6 @@ class DescansoMedicoRepository {
             }
         }
 
-        // console.log({ processedDescansos })
-
         return processedDescansos;
     }
 
@@ -852,39 +814,12 @@ class DescansoMedicoRepository {
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
                 include: [
                     COLABORADOR_DM_INCLUDE,
-                    // TIPODM_INCLUDE,
-                    // TIPO_CONTINGENCIA_INCLUDE,
                     DIAGNOSTICO_INCLUDE
                 ],
                 order: [
                     ['fecha_otorgamiento', 'ASC']
                 ]
             })
-
-            // if (startDate && endDate) {
-            //     descansos = await DescansoMedico.findAll({
-            //         where: {
-            //             fecha_inicio: {
-            //                 [Op.between]: [startDate, endDate]
-            //             }
-            //         },
-            //         attributes: DESCANSOMEDICO_ATTRIBUTES,
-            //         include: [
-            //             TIPODM_INCLUDE,
-            //             TIPO_CONTINGENCIA_INCLUDE,
-            //             DIAGNOSTICO_INCLUDE
-            //         ]
-            //     })
-            // } else {
-            //     descansos = await DescansoMedico.findAll({
-            //         attributes: DESCANSOMEDICO_ATTRIBUTES,
-            //         include: [
-            //             TIPODM_INCLUDE,
-            //             TIPO_CONTINGENCIA_INCLUDE,
-            //             DIAGNOSTICO_INCLUDE
-            //         ]
-            //     })
-            // }
 
             console.log('report descansos')
             console.log({ descansos })
@@ -930,8 +865,6 @@ class DescansoMedicoRepository {
                 attributes: DESCANSOMEDICO_ATTRIBUTES,
                 include: [
                     COLABORADOR_DM_INCLUDE,
-                    // TIPODM_INCLUDE,
-                    // TIPO_CONTINGENCIA_INCLUDE,
                     DIAGNOSTICO_INCLUDE,
                     {
                         model: Canje,
@@ -982,7 +915,5 @@ class DescansoMedicoRepository {
         }
     }
 }
-
-// export default new DescansoMedicoRepository()
 
 export default DescansoMedicoRepository;

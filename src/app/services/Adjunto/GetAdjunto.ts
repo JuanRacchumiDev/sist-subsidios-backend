@@ -1,5 +1,8 @@
 import AdjuntoRepository from "../../repositories/Adjunto/AdjuntoRepository";
-import { AdjuntoResponse } from '../../interfaces/Adjunto/IAdjunto';
+import { AdjuntoResponse, IAdjunto } from '../../interfaces/Adjunto/IAdjunto';
+import { IStorageProvider } from '../../providers/storage/IStorageProvider';
+import { S3StorageProvider } from '../../providers/storage/S3StorgateProvider';
+import { Readable } from 'stream';
 
 /**
  * @class GetAdjuntoService
@@ -7,17 +10,36 @@ import { AdjuntoResponse } from '../../interfaces/Adjunto/IAdjunto';
  */
 class GetAdjuntoService {
     private adjuntoRepository: AdjuntoRepository
+    private storageProvider: IStorageProvider
 
-    constructor() {
+    constructor(storageProvider?: IStorageProvider) {
         this.adjuntoRepository = new AdjuntoRepository()
+        this.storageProvider = storageProvider || new S3StorageProvider()
     }
-    /**
-     * Ejecuta la operación para obtener un adjunto por ID
-     * @param {string} id - El ID UUID del adjunto a buscar
-     * @returns {Promise<AdjuntoResponse>} La respuesta de la operación
-     */
-    async execute(id: string): Promise<AdjuntoResponse> {
-        return await this.adjuntoRepository.getById(id)
+
+    async execute(id: string): Promise<{ response: AdjuntoResponse; stream?: Readable | null }> {
+        const response = await this.adjuntoRepository.getById(id)
+
+        const { result, data } = response
+
+        if (!result || !data) {
+            return { response }
+        }
+
+        const adjunto = data as IAdjunto
+
+        const { file_path } = adjunto
+
+        if (!file_path) {
+            return {
+                response: { result: false, message: 'Ruta de archivo no registrada.', status: 404 }
+            };
+        }
+
+        // Obtenemos el stream directamente desde S3 usando la Key (file_path)
+        const stream = await this.storageProvider.getFileStream(file_path);
+
+        return { response, stream }
     }
 }
 

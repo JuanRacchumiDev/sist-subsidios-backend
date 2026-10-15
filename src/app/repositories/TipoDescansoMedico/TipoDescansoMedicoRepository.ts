@@ -231,6 +231,4 @@ class TipoDescansoMedicoRepository {
     }
 }
 
-// export default new TipoDescansoMedicoRepository()
-
 export default TipoDescansoMedicoRepository

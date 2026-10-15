@@ -131,6 +131,4 @@ class EmpresaApiRepository {
     }
 }
 
-// export default new EmpresaApiRepository()
-
 export default EmpresaApiRepository

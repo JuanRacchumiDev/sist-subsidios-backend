@@ -1,5 +1,4 @@
 import { TValidateFields } from '../../types/TTypeFields';
-import sequelize from '../../../config/database'
 import { ICobro, ICobroPaginate, CobroResponse, CobroResponsePaginate } from "../../interfaces/Cobro/ICobro"
 import { Cobro } from "../../models/Cobro"
 import { Op } from "sequelize";
@@ -262,7 +261,5 @@ class CobroRepository {
         return returnValidate
     }
 }
-
-// export default new CobroRepository()
 
 export default CobroRepository

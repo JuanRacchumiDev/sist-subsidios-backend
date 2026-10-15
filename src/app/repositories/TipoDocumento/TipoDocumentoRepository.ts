@@ -147,34 +147,6 @@ class TipoDocumentoRepository {
     }
 
     /**
-     * Obtiene un tipo de documento por su abreviatura
-     * @param {string} abreviatura - La abreviatura del tipo de documento a buscar 
-     * @returns {Promise<TipoDocumentoResponse>} Respuesta con el tipo de documento encontrado o mensaje de no encontrado
-     */
-    // async getByAbreviatura(abreviatura: string): Promise<TipoDocumentoResponse> {
-    //     try {
-    //         const tipo = await TipoDocumento.findOne({
-    //             where: {
-    //                 abreviatura
-    //             },
-    //             attributes: TIPO_DOCUMENTO_ATTRIBUTES,
-    //             order: [
-    //                 ['id', 'DESC']
-    //             ]
-    //         })
-
-    //         if (!tipo) {
-    //             return { result: false, data: [], message: 'Tipo de documento no encontrado', status: 404 }
-    //         }
-
-    //         return { result: true, data: tipo, message: 'Tipo de documento encontrado', status: 200 }
-    //     } catch (error) {
-    //         const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
-    //         return { result: false, error: errorMessage, status: 500 }
-    //     }
-    // }
-
-    /**
      * Crea un nuevo tipo de documento
      * @param {ITipoDocumento} data - Los datos del tipo de documento a crear 
      * @returns {Promise<TipoDocumentoResponse>} Respuesta con el tipo de documento creado
@@ -305,7 +277,5 @@ class TipoDocumentoRepository {
         }
     }
 }
-
-// export default new TipoDocumentoRepository()
 
 export default TipoDocumentoRepository

@@ -2,9 +2,7 @@ import { TipoContingencia } from "../../models/TipoContingencia";
 import HString from "../../../helpers/HString";
 import { ITipoContingencia, TipoContingenciaResponse } from '../../interfaces/TipoContingencia/ITipoContingencia';
 import { Op } from 'sequelize'
-import { DocumentoTipoCont } from "../../models/DocumentoTipoCont";
 import { TIPO_CONTINGENCIA_ATTRIBUTES } from "../../../constants/TipoContingenciaConstant";
-import { TIPO_DOCUMENTO_INCLUDE } from "../../../includes/TipoDocumentoInclude";
 import { DOCUMENTO_TIPO_CONT_INCLUDE } from '../../../includes/DocumentoTipoContInclude';
 
 class TipoContingenciaRepository {
@@ -236,7 +234,5 @@ class TipoContingenciaRepository {
         }
     }
 }
-
-// export default new TipoContingenciaRepository()
 
 export default TipoContingenciaRepository

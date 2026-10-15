@@ -136,12 +136,7 @@ class EmpresaRepository {
                 include: [{
                     model: Persona,
                     as: 'representantes',
-                    attributes: PERSONA_ATTRIBUTES,
-                    // include: [{
-                    //     model: DetalleParametro,
-                    //     as: 'cargo',
-                    //     attributes: DETALLE_PARAMETRO_ATTRIBUTES
-                    // }]
+                    attributes: PERSONA_ATTRIBUTES
                 }]
             })
 
@@ -202,7 +197,6 @@ class EmpresaRepository {
                 whereCondition.ruc = { [Op.iLike]: `%${ruc}%` };
             }
 
-            // Se usa findOne para retornar una única coincidencia
             const empresa = await Empresa.findOne({
                 where: whereCondition
             });
@@ -456,7 +450,5 @@ class EmpresaRepository {
         return returnValidate
     }
 }
-
-// export default new EmpresaRepository()
 
 export default EmpresaRepository

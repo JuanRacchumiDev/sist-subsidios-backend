@@ -231,6 +231,4 @@ class SedeRepository {
     }
 }
 
-// export default new SedeRepository()
-
 export default SedeRepository

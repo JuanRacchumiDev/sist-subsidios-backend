@@ -7,7 +7,6 @@ import HString from '../../../helpers/HString';
 import { DetalleParametro } from '../../models/DetalleParametro'
 import { Persona } from '../../models/Persona';
 import { IUsuario } from '../../interfaces/Usuario/IUsuario';
-import { IPersona } from '../../interfaces/Persona/IPersona'
 import PersonaRepository from '../Persona/PersonaRepository'
 import { TCodigoTemp } from '../../types/DescansoMedico/TCodigoTemp';
 
@@ -218,7 +217,5 @@ class AuthRepository {
         }
     }
 }
-
-// export default new AuthRepository()
 
 export default AuthRepository

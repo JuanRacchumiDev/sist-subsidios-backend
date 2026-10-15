@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
 import CreatePersonaService from '../services/Persona/CreatePersona'
-import GetPersonasService from '../services/Persona/GetPersonas'
 import GetPersonaService from '../services/Persona/GetPersona'
 import GetPersonasSinUsuarioService from '../services/Persona/GetPersonasSinUsuario'
 import UpdatePersonaService from '../services/Persona/UpdatePersona'
@@ -33,15 +32,6 @@ class PersonaController {
 
             const result = await GetInfoApiService.execute(abreviaturaStr, numeroDocumentoStr)
 
-            res.status(result.status || 200).json(result)
-        } catch (error) {
-            next(error)
-        }
-    }
-
-    async getAllPersonas(req: Request, res: Response, next: NextFunction) {
-        try {
-            const result = await GetPersonasService.execute()
             res.status(result.status || 200).json(result)
         } catch (error) {
             next(error)

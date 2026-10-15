@@ -1,7 +1,6 @@
 import { Establecimiento } from "../../models/Establecimiento";
 import { IEstablecimiento, EstablecimientoResponse } from '../../interfaces/Establecimiento/IEstablecimiento';
 import { Op } from 'sequelize'
-import { TipoEstablecimiento } from "../../models/TipoEstablecimiento";
 import TipoEstablecimientoRepository from "../TipoEstablecimiento/TipoEstablecimientoRepository";
 import { ITipoEstablecimiento } from "../../interfaces/TipoEstablecimiento/ITipoEstablecimiento";
 import { ESTABLECIMIENTO_ATTRIBUTES } from "../../../constants/EstablecimientoConstant";
@@ -253,7 +252,5 @@ class EstablecimientoRepository {
         }
     }
 }
-
-// export default new EstablecimientoRepository()
 
 export default EstablecimientoRepository

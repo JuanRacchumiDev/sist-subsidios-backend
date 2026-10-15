@@ -5,7 +5,6 @@ import GetTipoContingenciaService from '../services/TipoContingencia/GetTipo'
 import GetTipoContingenciasService from '../services/TipoContingencia/GetTipos'
 import GetByNombreService from '../services/TipoContingencia/GetByNombre'
 import UpdateTipoContingenciaService from '../services/TipoContingencia/UpdateTipo'
-// import { ITipoContingencia } from '../interfaces/TipoContingencia/ITipoContingencia';
 import { IDetalleParametro } from "../interfaces/DetalleParametro/IDetalleParametro"
 
 class TipoContingenciaController {

@@ -79,12 +79,6 @@ class CreateAdjuntoService {
 
         return await this.adjuntoRepository.create(fileData)
     }
-
-    // async execute(data: IAdjunto): Promise<AdjuntoResponse> {
-    //     console.log('---- CreateAdjunto - createAdjuntoService ----')
-    //     console.log({ data })
-    //     return await this.adjuntoRepository.create(data);
-    // }
 }
 
 export default new CreateAdjuntoService();

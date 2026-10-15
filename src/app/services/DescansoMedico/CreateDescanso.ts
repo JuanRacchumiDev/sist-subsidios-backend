@@ -158,8 +158,6 @@ class CreateDescansoService {
 
                     registrosParaCrearDM.push(newRecord)
 
-                    // console.log({ registrosParaCrearDM })
-
                     currentStartDate = addMonths(startOfMonth(currentStartDate), 1)
                 }
             }
@@ -217,7 +215,7 @@ class CreateDescansoService {
                 const dataEmail = {
                     nombreCompleto: nombre_colaborador as string,
                     detalle: detalleDescanso,
-                    appUrl: process.env.APP_URL || 'http://localhost:3000'
+                    appUrl: process.env.APP_URL || 'http://localhost:5173'
                 }
 
                 const htmlContent = notificationDescansoMedicoIncorrecto(dataEmail)
@@ -384,28 +382,6 @@ class CreateDescansoService {
         await this.adjuntoRepository.updateDocsIniciales(id as string, user_crea as string, codigoTemp)
 
         await this.adjuntoRepository.createMultiple(idsDescansosCreados, listAdjuntos, user_crea as string)
-
-        // if (Array.isArray(listResponseDMs)) {
-        //     const idsDescansosCreados = listResponseDMs
-        //         .filter(res => res.data && 'id' in res.data)
-        //         .map(res => (res.data as IDescansoMedico).id as string)
-
-        //     console.log('---- IDs de descansos médicos creados ----')
-        //     console.log({ idsDescansosCreados })
-
-        //     // Obteniendo el id del usuario
-        //     const responseDM = listResponseDMs[0]
-        //     const { data } = responseDM
-        //     const { user_crea } = data as IDescansoMedico
-
-        //     console.log('---- actualizar y crear adjuntos ----')
-        //     await this.adjuntoRepository.updateAndCreateForCodeTemp(idsDescansosCreados, user_crea as string, codigoTemp)
-        // } else {
-        //     const { data } = listResponseDMs
-        //     const { id, user_crea } = data as IDescansoMedico
-        //     console.log('---- actualizar adjuntos ----')
-        //     await this.adjuntoRepository.updateForCodeTemp(id as string, user_crea as string, codigoTemp)
-        // }
     }
 
     notificacionExitosaEmail = async (
@@ -415,7 +391,7 @@ class CreateDescansoService {
         try {
             const dataEmail = {
                 nombreCompleto: nombreColaborador,
-                appUrl: process.env.BASE_URL || 'http://localhost:3000',
+                appUrl: process.env.APP_URL || 'http://localhost:5173',
             };
 
             const htmlContent = newNotificationDescansoMedico(dataEmail)

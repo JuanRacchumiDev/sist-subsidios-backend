@@ -30,6 +30,3 @@ class GetDescansosWithCanjesForReportService {
 }
 
 export default new GetDescansosWithCanjesForReportService()
-
-
-// getAllFilteredForReports

@@ -42,7 +42,7 @@ class EmpresaController {
 
             res.status(result.status || 200).json(result)
         } catch (error) {
-            next(error) // Pasa al error al middleware de manejo de errores
+            next(error)
         }
     }
 
@@ -109,7 +109,6 @@ class EmpresaController {
                 });
             }
 
-            // Sanitizar comillas simples o dobles que puedan venir adjuntas en la URL
             const cleanRazonSocial = razonSocial ? String(razonSocial).replace(/['"]/g, '').trim() : undefined;
             const cleanRuc = ruc ? String(ruc).replace(/['"]/g, '').trim() : undefined;
 

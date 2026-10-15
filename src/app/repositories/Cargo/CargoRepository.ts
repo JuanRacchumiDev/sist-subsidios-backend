@@ -299,6 +299,4 @@ class CargoRepository {
     }
 }
 
-// export default new CargoRepository()
-
 export default CargoRepository

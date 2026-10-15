@@ -70,15 +70,6 @@ class ReembolsoRepository {
                 whereReembolso[Op.or as unknown as keyof WhereOptions] = [
                     { nombre_colaborador: { [Op.iLike]: searchPattern } }
                 ];
-
-                // Búsqueda en la tabla Persona por si se consulta a través del JOIN
-                // wherePersona = {
-                //     [Op.or]: [
-                //         { nombres: { [Op.iLike]: searchPattern } },
-                //         { apellido_paterno: { [Op.iLike]: searchPattern } },
-                //         { apellido_materno: { [Op.iLike]: searchPattern } }
-                //     ]
-                // };
             }
 
             // Consulta con Sequelize ORM
@@ -87,13 +78,13 @@ class ReembolsoRepository {
                 where: whereReembolso,
                 limit,
                 offset,
-                distinct: true, // Garantiza el conteo exacto al realizar JOINs
+                distinct: true,
                 include: [
                     CANJE_INCLUDE,
                     {
                         model: Persona,
                         as: 'colaborador',
-                        required: false, // LEFT JOIN para no excluir si la búsqueda coincide en Reembolso.nombre_colaborador
+                        required: false,
                         where: wherePersona
                     }
                 ],
@@ -199,8 +190,6 @@ class ReembolsoRepository {
      * @returns {Promise<ReembolsoResponse>} Respuesta con el reembolso actualizado o error
      */
     async update(id: string, data: IReembolso): Promise<ReembolsoResponse> {
-        // const transaction = await sequelize.transaction()
-
         try {
             const reembolso = await Reembolso.findByPk(id, {
                 attributes: REEMBOLSO_ATTRIBUTES,
@@ -222,13 +211,10 @@ class ReembolsoRepository {
 
             return { result: true, message: 'Reembolso actualizado con éxito', data: updateReembolso, status: 200 }
         } catch (error) {
-            // await transaction.rollback()
             const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
             return { result: false, error: errorMessage, status: 500 }
         }
     }
-
-
 }
 
 export default ReembolsoRepository

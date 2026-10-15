@@ -20,13 +20,6 @@ class UpdatePaisService {
      * @returns {Promise<PaisResponse>} La respuesta de la operación.
      */
     async execute(id: string, data: IPais): Promise<PaisResponse> {
-        // Si solo se está actualizando el estado, podríamos llamar a un método más específico
-        // pero para simplificar, el repositorio 'update' puede manejarlo
-
-        // if (Object.keys(data).length === 1 && 'estado' in data && typeof data.estado === 'boolean') {
-        //     return await PaisRepository.updateEstado(id, data.estado);
-        // }
-
         return await this.paisRepository.update(id, data);
     }
 }

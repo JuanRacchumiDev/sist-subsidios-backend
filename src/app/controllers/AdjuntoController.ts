@@ -41,40 +41,35 @@ class AdjuntoController {
 
             const { id } = params
 
-            const response = await GetAdjuntoService.execute(id);
+            const { response, stream } = await GetAdjuntoService.execute(id);
 
-            const { status, data } = response
+            const { status, data, result } = response
 
-            if (!status || !data) {
+            if (!status || !data || !result) {
                 return res.status(status || 404).json(response)
             }
 
-            const { file_path, file_type, file_name } = data as IAdjunto
+            const { file_type, file_name } = data as IAdjunto
 
-            if (!file_path) {
-                return res.status(404).json({ result: false, message: 'Archivo no encontrado.', status: 404 });
+            if (!stream) {
+                return res.status(404).json({
+                    result: false,
+                    message: 'Archivo no encontrado en el almacenamiento en la nube.',
+                    status: 404
+                });
             }
 
-            let finalPath = file_path
+            res.setHeader('Content-Type', file_type || 'application/octet-stream');
+            res.setHeader('Content-Disposition', `inline; filename="${file_name || 'archivo'}"`);
 
-            const normalizedPath = path.normalize(file_path)
-
-            if (!normalizedPath.startsWith('public' + path.sep) && !normalizedPath.startsWith('public/')) {
-                finalPath = path.join('public', file_path)
-            }
-
-            res.setHeader('Content-Type', file_type as string)
-            res.setHeader('Content-Disposition', `inline; filename="${file_name}"`)
-
-            const fileStream = fs.createReadStream(finalPath)
-
-            fileStream.on('error', (err) => {
+            stream.on('error', (err) => {
+                console.error('Error en el stream de S3:', err);
                 if (!res.headersSent) {
-                    res.status(500).json({ message: 'Error al leer el archivo físico' })
+                    res.status(500).json({ message: 'Error al transmitir el archivo desde S3' });
                 }
-            })
+            });
 
-            fileStream.pipe(res)
+            stream.pipe(res);
         } catch (error) {
             next(error);
         }
